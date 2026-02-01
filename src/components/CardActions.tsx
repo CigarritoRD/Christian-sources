@@ -1,7 +1,7 @@
 // src/components/CardActions.tsx
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
-import { toggleLibrary } from '../lib/libraryApi'
+import { toggleLibrary } from '../lib/LibraryApi' 
 import { useEffect, useState } from 'react'
 
 type Props = {
@@ -24,7 +24,7 @@ export default function CardActions({ resourceId, initial, size = 'md' }: Props)
       setSaved(!!initial.saved)
       setFavorite(!!initial.favorite)
     }
-  }, [initial?.saved, initial?.favorite])
+  }, [initial?.saved, initial?.favorite, initial])
 
   const iconBtn =
     size === 'sm'
