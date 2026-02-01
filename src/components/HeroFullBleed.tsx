@@ -9,7 +9,7 @@ type HeroStats = {
 }
 
 export default function HeroFullBleed({
-  bgImageUrl,
+
   stats,
 }: {
   bgImageUrl: string

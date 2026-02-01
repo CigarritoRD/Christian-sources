@@ -13,6 +13,7 @@ type Props = {
   showMeta?: boolean
   className?: string
   rightSlot?: React.ReactNode
+  id?: string
 }
 
 function typeLabel(t: Resource['type']) {
@@ -72,7 +73,7 @@ export default function ResourceCard({
           loading="lazy"
           onError={() => {
             // fallback ultra seguro (por si algo falla)
-            setImgSrc(getResourceImage({ ...resource, id: `fallback-${String(resource.id ?? 'x')}` }))
+            setImgSrc('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3C/svg%3E')
           }}
         />
 

@@ -10,7 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const nav = useNavigate()
-  const loc = useLocation() as any
+  const loc = useLocation() 
   const redirect = loc.state?.from?.pathname ?? '/'
 
   return (

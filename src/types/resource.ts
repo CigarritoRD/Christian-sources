@@ -1,31 +1,31 @@
-// src/types/resource.ts
-export type ResourceType = 'video' | 'pdf' | 'program' | 'mixed'
+export type ResourceType = 'video' | 'pdf' | 'program'
 
-export type Resource = {
+export interface Resource {
   id: string
   title: string
   slug: string
+  type: ResourceType
 
   description?: string | null
-  thumbnail_url?: string | null
-
-  type: ResourceType
-  is_verified?: boolean | null
-
   ministry?: string | null
   topic?: string | null
 
-  // métricas (pueden ser mock en demo)
-  rating_avg?: number | null
-  rating_count?: number | null
-  views_count?: number | null
+  thumbnail_url?: string | null
 
-  // video/pdf meta
+  // --- media fields (para ResourceDetail) ---
+  video_url?: string | null
+  pdf_url?: string | null
+  pdf_path?: string | null
+
+  // extras que ya usas
   duration_seconds?: number | null
   pages?: number | null
   file_size_mb?: number | null
-
-  // flags opcionales
-  is_featured?: boolean | null
+  views_count?: number | null
+  rating_avg?: number | null
+  rating_count?: number | null
+  is_verified?: boolean | null
   is_premium?: boolean | null
+  is_featured?: boolean | null
+  
 }
