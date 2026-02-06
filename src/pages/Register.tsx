@@ -1,53 +1,59 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
-import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthProvider'
+import { useNavigate, Link } from 'react-router-dom'
 import { AppLayout } from '../components/AppLayout'
 
-
 export default function Register() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [busy, setBusy] = useState(false)
+  const { signUpWithPassword } = useAuth()
   const nav = useNavigate()
 
-  return (
-    <AppLayout>
-      <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h1 className="text-xl font-bold">Crear cuenta</h1>
-        <p className="mt-1 text-sm text-white/60">Regístrate para guardar recursos.</p>
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [err, setErr] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
-        <div className="mt-5 space-y-3">
+  return (
+    <AppLayout title="Crear cuenta" subtitle="Regístrate para guardar recursos." showSearch={false}>
+      <div className="mx-auto max-w-md rounded-2xl border border-app surface p-6">
+        <div className="space-y-3">
           <input
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
+            className="w-full rounded-2xl border border-app surface px-4 py-3 text-app placeholder:text-muted outline-none"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-            placeholder="Contraseña (mín. 6)"
+            className="w-full rounded-2xl border border-app surface px-4 py-3 text-app placeholder:text-muted outline-none"
+            placeholder="Contraseña (mín 6)"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {err ? <div className="text-sm text-red-500">{err}</div> : null}
+
           <button
-            disabled={busy}
             onClick={async () => {
-              setBusy(true)
-              const { error } = await supabase.auth.signUp({ email, password })
-              setBusy(false)
-              if (error) return alert(error.message)
-              alert('Cuenta creada. Revisa tu correo si Supabase requiere confirmación.')
-              nav('/login')
+              setErr(null); setBusy(true)
+              try {
+                await signUpWithPassword(email.trim(), password)
+                nav('/perfil/biblioteca')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } catch (e: any) {
+                setErr(e.message ?? 'Error al crear cuenta')
+              } finally {
+                setBusy(false)
+              }
             }}
-            className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold hover:bg-indigo-400 disabled:opacity-50"
+            disabled={busy}
+            className="w-full rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white hover:bg-brand-soft transition disabled:opacity-60"
           >
-            Crear
+            {busy ? 'Creando…' : 'Crear cuenta'}
           </button>
 
-          <div className="text-sm text-white/60">
-            ¿Ya tienes cuenta? <Link to="/login" className="text-indigo-300 hover:text-indigo-200">Iniciar sesión</Link>
+          <div className="text-sm text-muted">
+            ¿Ya tienes cuenta?{' '}
+            <Link className="text-app underline" to="/login">Iniciar sesión</Link>
           </div>
         </div>
       </div>

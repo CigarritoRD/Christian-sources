@@ -1,56 +1,74 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthProvider'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AppLayout } from '../components/AppLayout'
 
-
-
 export default function Login() {
+  const { signInWithPassword } = useAuth()
+  const nav = useNavigate()
+  const loc = useLocation()
+  const from = loc.state?.from || '/perfil/biblioteca'
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [err, setErr] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const nav = useNavigate()
-  const loc = useLocation() 
-  const redirect = loc.state?.from?.pathname ?? '/'
 
   return (
-    <AppLayout>
-      <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h1 className="text-xl font-bold">Iniciar sesión</h1>
-        <p className="mt-1 text-sm text-white/60">Accede para guardar y ver tu biblioteca.</p>
-
-        <div className="mt-5 space-y-3">
+    <AppLayout title="Iniciar sesión" subtitle="Accede para guardar recursos." showSearch={false}>
+      <div className="mx-auto max-w-md rounded-2xl border border-app surface p-6">
+        <div className="space-y-3">
           <input
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
+            className="w-full rounded-2xl border border-app surface px-4 py-3 text-app placeholder:text-muted outline-none"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
+            className="w-full rounded-2xl border border-app surface px-4 py-3 text-app placeholder:text-muted outline-none"
             placeholder="Contraseña"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {err ? <div className="text-sm text-red-500">{err}</div> : null}
+
           <button
-            disabled={busy}
             onClick={async () => {
-              setBusy(true)
-              const { error } = await supabase.auth.signInWithPassword({ email, password })
-              setBusy(false)
-              if (error) return alert(error.message)
-              nav(redirect, { replace: true })
+              setErr(null); setBusy(true)
+              try {
+                await signInWithPassword(email.trim(), password)
+                nav(from)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } catch (e: any) {
+                setErr(e.message ?? 'Error al iniciar sesión')
+              } finally {
+                setBusy(false)
+              }
             }}
-            className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold hover:bg-indigo-400 disabled:opacity-50"
+            disabled={busy}
+            className="w-full rounded-2xl bg-card border border-app px-4 py-3 text-sm font-semibold text-app hover:bg-brand-soft transition disabled:opacity-60"
           >
-            Entrar
+            {busy ? 'Entrando…' : 'Entrar'}
           </button>
 
-          <div className="text-sm text-white/60">
-            ¿No tienes cuenta? <Link to="/register" className="text-indigo-300 hover:text-indigo-200">Crear cuenta</Link>
+          <div className="text-sm text-muted">
+            ¿No tienes cuenta?{' '}
+            <Link className="text-app underline" to="/register">Crear cuenta</Link>
           </div>
+
+          {/* demo quickfill (opcional) */}
+          <button
+            type="button"
+            onClick={() => {
+              setEmail('demo@chrstn.app')
+              setPassword('Demo123456!')
+            }}
+            className="w-full rounded-2xl border border-app surface px-4 py-3 text-sm text-muted surface-hover transition"
+          >
+            Usar credenciales demo
+          </button>
         </div>
       </div>
     </AppLayout>

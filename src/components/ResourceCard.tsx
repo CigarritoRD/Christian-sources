@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import type { Resource } from '../types/resource'
 import { getResourceImage } from '../lib/resourceImages'
+import { extractDriveFileId, driveThumbUrl } from '../lib/drivePreview'
 import { formatCompactNumber, formatDuration } from '../lib/format'
 
 type Variant = 'grid' | 'carousel' | 'compact'
@@ -42,16 +43,26 @@ export default function ResourceCard({
     variant === 'compact'
       ? 'h-[220px]'
       : variant === 'carousel'
-      ? 'h-[250px]'
-      : 'h-[270px]'
+        ? 'h-[250px]'
+        : 'h-[270px]'
+
 
   const fallbackSrc = getResourceImage(resource)
-  const [imgSrc, setImgSrc] = useState(resource.thumbnail_url || fallbackSrc)
+
+  // Detecta Drive desde pdf_url (porque ahí guardamos el /preview)
+  const driveId =
+    extractDriveFileId(resource.pdf_url ?? null) ||
+    extractDriveFileId(resource.thumbnail_url ?? null)
+
+  const driveThumb =
+    driveId ? driveThumbUrl(driveId, variant === 'compact' ? 700 : 1000) : null
+
+  const [imgSrc, setImgSrc] = useState(driveThumb || resource.thumbnail_url || fallbackSrc)
 
   useEffect(() => {
-    setImgSrc(resource.thumbnail_url || fallbackSrc)
+    setImgSrc(driveThumb || resource.thumbnail_url || fallbackSrc)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resource.thumbnail_url, resource.id])
+  }, [driveThumb, resource.thumbnail_url, resource.id])
 
   return (
     <Link
@@ -72,7 +83,14 @@ export default function ResourceCard({
           className="h-full w-full object-cover transition group-hover:scale-[1.04]"
           loading="lazy"
           onError={() => {
-            // fallback ultra seguro (por si algo falla)
+            if (imgSrc !== resource.thumbnail_url && resource.thumbnail_url) {
+              setImgSrc(resource.thumbnail_url)
+              return
+            }
+            if (imgSrc !== fallbackSrc) {
+              setImgSrc(fallbackSrc)
+              return
+            }
             setImgSrc('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3C/svg%3E')
           }}
         />
@@ -172,10 +190,10 @@ function Badge({
     tone === 'success'
       ? 'bg-emerald-500/12 text-emerald-700 border-emerald-500/25 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/20'
       : tone === 'info'
-      ? 'bg-sky-500/12 text-sky-700 border-sky-500/25 dark:bg-sky-500/15 dark:text-sky-200 dark:border-sky-400/20'
-      : tone === 'gold'
-      ? 'bg-amber-500/12 text-amber-800 border-amber-500/25 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/20'
-      : 'surface text-app border-app opacity-95'
+        ? 'bg-sky-500/12 text-sky-700 border-sky-500/25 dark:bg-sky-500/15 dark:text-sky-200 dark:border-sky-400/20'
+        : tone === 'gold'
+          ? 'bg-amber-500/12 text-amber-800 border-amber-500/25 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/20'
+          : 'surface text-app border-app opacity-95'
 
   return (
     <span

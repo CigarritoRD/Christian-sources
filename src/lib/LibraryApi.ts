@@ -52,6 +52,7 @@ export async function getLibrary(kind: LibraryKind, page: number, pageSize: numb
   if (error) throw error
 
   const items = (data ?? [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((row: any) => row.resource)
     .filter(Boolean) as Resource[]
 
@@ -71,6 +72,7 @@ export async function getLibraryFlags(resourceId: string) {
     .eq('resource_id', resourceId)
 
   if (error) throw error
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const kinds = new Set((data ?? []).map((x: any) => x.kind))
   return { saved: kinds.has('saved'), favorite: kinds.has('favorite') }
 }

@@ -18,82 +18,76 @@ export default function HeroFullBleed({
   const nav = useNavigate()
 
   return (
-    <section className="relative w-full bg-card flex px-10 items-center justify-center sm:h-[600px] lg:h-[800px]">
-   
-      {/* Content */}
-      <div className="relative mx-auto max-w-7xl px-6 py-24 flex-1 align-middle lg:px-8 lg:py-32 flex justify-center">
-        <div className="max-w-3xl">
-          <span className="inline-flex bg-app border-app text-muted items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs text-white/80">
-            ✔ Recursos verificados · Iglesias y ministerios
-          </span>
+    <section className="relative w-full bg-app">
+  {/* glow marca */}
+  <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="absolute -top-24 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-[rgb(var(--surface2))]/15 blur-3xl" />
+    <div className="absolute top-24 left-0 h-[420px] w-[520px] rounded-full bg-[rgb(var(--surface))]/12 blur-3xl" />
+  </div>
 
-          <h1 className="mt-6 lg:text-7xl text-app sm:text-6xl font-extrabold tracking-tight text-white">
-            Equipando a la{' '}
-            <span className="text-indigo-300">Iglesia</span>
-          </h1>
+  <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-14 lg:grid-cols-2 lg:px-8 lg:py-20">
+    {/* LEFT */}
+    <div>
+      <span className="inline-flex items-center gap-2 rounded-full border border-app bg-card px-4 py-1 text-xs text-muted shadow-sm">
+        ✔ Recursos verificados · Iglesias y ministerios
+      </span>
 
-          <p className="mt-4 text-muted max-w-2xl text-base sm:text-[24px] text-white/80">
-            Encuentra material confiable para predicación, discipulado, talleres
-            y ministerios. Ahorra tiempo y prepara con excelencia.
-          </p>
+      <h1 className="mt-6 font-heading text-4xl font-extrabold tracking-tight text-app sm:text-6xl lg:text-7xl">
+        A digital toolbox that equips {' '}
+        <span className="font-heading text-[rgb(var(--surface))]">congregations</span>
+      </h1>
 
-          {/* Search */}
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-2xl border border-app bg-app px-4 py-3">
-              <span className="text-app">🔎</span>
-              <input
-                className="w-full bg-transparent text-sm text-app placeholder:text-muted outline-none"
-                placeholder="Buscar predicaciones, guías, temas, ministerios…"
-              />
-            </div>
+      <p className="mt-4 max-w-2xl text-base  text-muted sm:text-xl font-body">
+       with practical resources and guidance to strengthen stewards, foster healthy community, and support sustainable ministry.
+      </p>
 
-            <button
-              onClick={() => nav('/explorar')}
-              className="rounded-2xl bg-indigo-500 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-400"
-            >
-              Explorar
-            </button>
-          </div>
-          {/* Stats */}
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <StatCard
-              label="Recursos"
-              value={stats?.totalResources ?? 128}
-              hint="Verificados y listos"
-            />
-            <StatCard
-              label="Videos"
-              value={stats?.totalVideos ?? 64}
-              hint="En línea"
-            />
-            <StatCard
-              label="PDFs"
-              value={stats?.totalPdfs ?? 52}
-              hint="Descargables"
-            />
-          </div>
-
-
-          {/* Chips */}
-          <div className="mt-6 flex flex-wrap gap-2 text-app">
-            {['Jóvenes', 'Parejas', 'Discipulado', 'Teología', 'Oración', 'Evangelismo'].map(
-              (chip) => (
-                <button
-                  key={chip}
-                  onClick={() => nav(`/explorar?topic=${encodeURIComponent(chip)}`)}
-                  className="rounded-full border border-app px-3 py-1 text-sm  hover:bg-white/10"
-                >
-                  {chip}
-                </button>
-              )
-            )}
-          </div>
+      {/* Search */}
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-1 items-center gap-2 rounded-2xl border border-app bg-card px-4 py-3 shadow-sm">
+          <span className="text-muted">🔎</span>
+          <input
+            className="w-full bg-transparent text-sm text-app placeholder:text-muted outline-none"
+            placeholder="Buscar predicaciones, guías, temas, ministerios…"
+          />
         </div>
+
+        <button
+          onClick={() => nav('/explorar')}
+          className="rounded-2xl bg-[rgb(var(--surface))] px-6 py-3 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition"
+        >
+          Explore
+        </button>
       </div>
-      <div className=' w-full max-h-[550px] min-w-[350px] flex-1 rounded-lg overflow-hidden drop-shadow-lg'>
-        <img className="w-full h-full object-cover" src={recursosImages} alt="Recursos digitales" />
+
+      {/* Stats */}
+      <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatCard label="Recursos" value={stats?.totalResources ?? 128} hint="Verificados y listos" />
+        <StatCard label="Videos" value={stats?.totalVideos ?? 64} hint="En línea" />
+        <StatCard label="PDFs" value={stats?.totalPdfs ?? 52} hint="Descargables" />
       </div>
-    </section>
+
+      {/* Chips */}
+      <div className="mt-6 flex flex-wrap gap-2">
+        {['Jóvenes', 'Parejas', 'Discipulado', 'Teología', 'Oración', 'Evangelismo'].map((chip) => (
+          <button
+            key={chip}
+            onClick={() => nav(`/explorar?topic=${encodeURIComponent(chip)}`)}
+            className="rounded-full border border-app bg-card px-3 py-1 text-sm text-app shadow-sm hover:border-[rgb(var(--surface))]/40 hover:bg-[rgb(var(--surface2))]/10 transition"
+          >
+            {chip}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* RIGHT IMAGE */}
+    <div className="w-full overflow-hidden rounded-3xl border border-app bg-card shadow-soft">
+      <div className="aspect-[4/3] w-full">
+        <img className="h-full w-full object-cover" src={recursosImages} alt="Recursos digitales" />
+      </div>
+    </div>
+  </div>
+</section>
   )
 }
 function StatCard({
@@ -106,14 +100,14 @@ function StatCard({
   hint?: string
 }) {
   return (
-    <div className="rounded-2xl border border-app bg-app drop-shadow-sm px-4 py-3">
-      <div className="text-xl text-muted">{label}</div>
-      <div className="mt-1 text-3xl font-extrabold tracking-tight text-app">
-        <CountUp value={value} durationMs={1000} />
-        <span className="text-app">+</span>
-      </div>
-      {hint ? <div className="mt-1 text-xs text-muted opacity-90">{hint}</div> : null}
-    </div>
+    <div className="rounded-2xl border border-app bg-card px-4 py-3 shadow-sm">
+  <div className="text-xs text-muted">{label}</div>
+  <div className="mt-1 font-heading text-3xl font-extrabold tracking-tight text-app">
+    <CountUp value={value} durationMs={1000} />
+    <span className="text-[rgb(var(--surface))]">+</span>
+  </div>
+  {hint ? <div className="mt-1 text-xs text-muted">{hint}</div> : null}
+</div>
   )
 }
 

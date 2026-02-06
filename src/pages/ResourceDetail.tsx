@@ -11,6 +11,7 @@ import { fetchResourceBySlug, fetchSuggested } from '../lib/ResourcesApi'
 import ResourceCard from '../components/ResourceCard'
 import { getLibraryFlags, toggleLibrary } from '../lib/LibraryApi'
 import VideoPlayer from '../components/VideoPlayer'
+import { extractDriveFileId, driveDownloadUrl } from '../lib/drivePreview'
 import { AppLayout } from '../components/AppLayout'
 
 export default function ResourceDetail() {
@@ -112,7 +113,8 @@ export default function ResourceDetail() {
 
   const isPdf = resource.type === 'pdf'
   const isVideo = resource.type === 'video'
-
+  const driveId = extractDriveFileId(resource.pdf_url ?? null)
+  const downloadUrl = driveId ? driveDownloadUrl(driveId) : (resource.pdf_url ?? resource.pdf_path ?? null)
   return (
     <AppLayout>
       <PageHeader title={resource.title} subtitle={resource.topic ?? resource.ministry ?? ''} right={right} />
@@ -156,7 +158,7 @@ export default function ResourceDetail() {
             {isPdf && (resource.pdf_url || resource.pdf_path) ? (
               <a
                 className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold hover:bg-indigo-400"
-                href={resource.pdf_url ?? resource.pdf_path!}
+                href={downloadUrl!}
                 target="_blank"
                 rel="noreferrer"
               >

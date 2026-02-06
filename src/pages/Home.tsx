@@ -56,20 +56,36 @@ export default function Home() {
     }>
 
       {loading ? (
-        <div className="flex gap-4 overflow-x-auto">
+        <div className="flex gap-4 overflow-x-auto pb-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <ResourceCardSkeleton key={i} variant="carousel" />
           ))}
         </div>
       ) : (
-        <div className="space-y-10">
-          <CarouselRow title="Más reciente" items={recent} />
+        <div className="space-y-12">
+          <SectionTitle title="Recientes" />
+          <CarouselRow title="" items={recent} />
+
+            <SectionTitle title="Más vistos" /> 
           <CarouselRow title="Más vistos" items={mostViewed} />
           {byTopic.map(([topic, arr]) => (
-            <CarouselRow key={topic} title={topic} items={arr.slice(0, 18)} />
-          ))}
+    <div key={topic} className="space-y-4">
+      <SectionTitle title={topic} />
+      <CarouselRow title="" items={arr.slice(0, 18)} />
+    </div>
+  ))}
         </div>
       )}
     </AppLayout>
+  )
+}
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <div className="flex items-end justify-between gap-4">
+      <h2 className="font-heading text-xl font-extrabold text-app sm:text-2xl">
+        {title}
+      </h2>
+      <div className="h-px flex-1 bg-[rgb(var(--border))] opacity-70" />
+    </div>
   )
 }

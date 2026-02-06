@@ -1,14 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: 'class',
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // ✅ Mantén tu paleta base (dark UI)
       colors: {
-        /* Paleta base */
         bg: {
           DEFAULT: '#070A10',
           soft: '#0B0F19',
@@ -18,10 +15,22 @@ export default {
           hover: 'rgba(255,255,255,0.08)',
           border: 'rgba(255,255,255,0.10)',
         },
+
+        // 🟡 Opcional: marca también en Tailwind (no reemplaza tus tokens CSS)
+        // Úsalo si quieres clases tipo: text-brand-primary, bg-brand-accent, etc.
         brand: {
-          DEFAULT: '#6366F1', // indigo-500
-          soft: '#818CF8',    // indigo-400
+          primary: '#007473',
+          accent: '#00ABC7',
+          gray: '#808080',
+          ink: '#0b1f1e',
+          paper: '#f7fbfb',
         },
+      },
+
+      // ✅ Tipografías (Opción A)
+      fontFamily: {
+        heading: ['"Montserrat"', 'system-ui', 'sans-serif'],
+        body: ['"EB Garamond"', 'ui-serif', 'Georgia', 'serif'],
       },
 
       boxShadow: {

@@ -43,19 +43,23 @@ export function AppLayout({
 
   return (
     <div className="min-h-screen bg-app text-app">
-      <header className="sticky top-0 z-40 border-b border-app bg-card ">
+      <header className="sticky top-0 z-40 border-b border-app bg-app/85 backdrop-blur-xl">
 
         <div className={`flex items-center gap-3 py-3 ${containerClass}`}>
-          <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-app surface">
-              ✦
-            </span>
-            <span className="text-app/90">Recursos</span>
+          <Link to="/" className="flex items-center gap-2 font-heading font-extrabold tracking-tight">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-app bg-card shadow-sm">
+  ✦
+</span>
+<div className='flex flex-col'>
+<span className="text-app/90 text-xl">Flourish</span>
+            <span className='text-sm font-normal text-[#00ABC7]/70'> Tools for Thriving Congregations </span>
+</div>
+            
           </Link>
 
           <nav className="hidden md:flex items-center gap-2 text-sm text-muted">
-            <NavItem to="/explorar" label="Explorar" />
-            <NavItem to="/perfil/biblioteca" label="Mi biblioteca" />
+            <NavItem to="/explorar" label="Explore" />
+            <NavItem to="/perfil/biblioteca" label="My Library" />
           </nav>
 
           {/* Search */}
@@ -97,21 +101,21 @@ export function AppLayout({
                   to="/login"
                   className="rounded-2xl border border-app surface px-3 py-2 text-sm text-muted hover:text-app surface-hover transition"
                 >
-                  Log in
+                  Log In
                 </Link>
                 <Link
-                  to="/register"
-                  className="rounded-2xl bg-brand px-3 py-2 text-sm font-semibold text-app hover:bg-brand-soft transition"
-                >
-                  Crear cuenta
-                </Link>
+  to="/register"
+  className="rounded-2xl bg-[rgb(var(--surface))] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 transition"
+>
+  Sign In
+</Link>
               </>
             ) : (
               <button
                 onClick={() => signOut()}
                 className="rounded-2xl border border-app surface px-3 py-2 text-sm text-muted hover:text-app surface-hover transition"
               >
-                Salir
+                Sign Out
               </button>
             )}
           </div>

@@ -2,25 +2,30 @@
 
 /* Tokens */
 :root {
-  --bg: 255 255 255;
-  --bg-card: 249, 250, 251;
-  --surface: 15 23 42;     /* usado con opacidad */
-  --surface2: 15 23 42;    /* usado con opacidad */
-  --text: 15 23 42;
-  --muted: 71 85 105;
-  --border: 226 232 240;
-  --ring: 99 102 241;
+  --bg: 247 251 251;        /* brand.paper aproximado */
+  --bg-card: 255 255 255;   /* cards blancas limpias */
+  --surface: 0 116 115;     /* brand.primary */
+  --surface2: 0 171 199;    /* brand.accent */
+  --text: 11 31 30;         /* brand.ink */
+  --muted: 128 128 128;     /* brand.gray */
+  --border: 226 232 240;    /* puedes dejarlo así */
+  --ring: 0 116 115;        /* brand.primary */
 }
 
 .dark {
-  --bg: 7 10 16;
-  --bg-card: 15, 15, 15;
-  --surface: 255 255 255;
+  --bg: 7 10 16;            /* tu fondo actual (ok) */
+  --bg-card: 15 15 15;      /* tu card dark (ok) */
+
+  /* en dark, surface usado con opacidad (0.05 / 0.08) */
+  --surface: 255 255 255;   /* mantiene efecto glass */
   --surface2: 255 255 255;
+
   --text: 255 255 255;
   --muted: 170 170 170;
-  --border: 0 90 90;
-  --ring: 99 102 241;
+
+  /* aquí sí metemos marca */
+  --border: 0 116 115;      /* brand.primary */
+  --ring: 0 171 199;        /* brand.accent */
 }
 
 /* Utilities sin @apply */
@@ -37,3 +42,7 @@
 /* scrollbar hidden */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+html { font-family: "EB Garamond", ui-serif, Georgia, serif; }
+.font-heading { font-family: "Montserrat", system-ui, sans-serif; }
+.font-body { font-family: "EB Garamond", ui-serif, Georgia, serif; }
