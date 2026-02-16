@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect,  useRef, useState } from 'react'
 import type { Resource } from '../types/resource'
 import ResourceCard from './ResourceCard'
 
@@ -39,13 +39,16 @@ export default function CarouselRow({
       window.removeEventListener('resize', updateArrows)
     }
      
-  }, [items.length])
+  }, [])
 
-  const step = useMemo(() => {
-    // scroll por “pantalla” aprox (más natural que 360 fijo)
+  const [step, setStep] = useState(420)
+
+  useEffect(() => {
     const el = scrollerRef.current
-    return el ? Math.round(el.clientWidth * 0.9) : 420
-  }, [items.length])
+    if (el) {
+      setStep(Math.round(el.clientWidth * 0.9))
+    }
+  }, [])
 
   return (
     <section className="relative">

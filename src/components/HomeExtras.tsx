@@ -320,7 +320,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 }
 
 function Avatar({ name }: { name: string }) {
-  const initial = (name?.trim()?.[0] ?? 'A').toUpperCase()
+  
   return (
     <div
       className="h-10 w-10 rounded-2xl border border-app grid place-items-center shadow-sm"
