@@ -6,6 +6,7 @@ import ResourceCardSkeleton from '../components/ResourseCardSkeleton'
 import CarouselRow from '../components/CarouselRow'
 import HeroFullBleed from '../components/HeroFullBleed'
 import { AppLayout } from '../components/AppLayout'
+import { HomeExtras } from '../components/HomeExtras'
 
 export default function Home() {
   const [items, setItems] = useState<Resource[]>([])
@@ -28,31 +29,20 @@ export default function Home() {
     return () => { mounted = false }
   }, [])
 
-  const recent = useMemo(() => items.slice(0, 18), [items])
   const mostViewed = useMemo(
     () => [...items].sort((a, b) => (b.views_count ?? 0) - (a.views_count ?? 0)).slice(0, 18),
     [items]
   )
 
-  const byTopic = useMemo(() => {
-    const map = new Map<string, Resource[]>()
-    for (const r of items) {
-      const key = r.topic?.trim() || 'Recursos'
-      if (!map.has(key)) map.set(key, [])
-      map.get(key)!.push(r)
-    }
-    return Array.from(map.entries()).slice(0, 5)
-  }, [items])
-
   return (
     <AppLayout showSearch={false} hero={<HeroFullBleed
-  bgImageUrl="/hero-church.jpg"
-  stats={{
-    totalResources,
-    totalVideos,
-    totalPdfs,
-  }}
-/>
+      bgImageUrl="/hero-church.jpg"
+      stats={{
+        totalResources,
+        totalVideos,
+        totalPdfs,
+      }}
+    />
     }>
 
       {loading ? (
@@ -63,18 +53,17 @@ export default function Home() {
         </div>
       ) : (
         <div className="space-y-12">
-          <SectionTitle title="Recientes" />
-          <CarouselRow title="" items={recent} />
+          {/* tus carruseles */}
 
-            <SectionTitle title="Más vistos" /> 
-          <CarouselRow title="Más vistos" items={mostViewed} />
-          {byTopic.map(([topic, arr]) => (
-    <div key={topic} className="space-y-4">
-      <SectionTitle title={topic} />
-      <CarouselRow title="" items={arr.slice(0, 18)} />
-    </div>
-  ))}
+
+          <SectionTitle title="Most viewed" />
+          <CarouselRow title="" items={mostViewed} />
+
+
+         <HomeExtras />
+
         </div>
+
       )}
     </AppLayout>
   )
@@ -89,3 +78,10 @@ function SectionTitle({ title }: { title: string }) {
     </div>
   )
 }
+
+
+
+
+
+
+

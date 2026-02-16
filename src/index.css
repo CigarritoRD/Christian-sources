@@ -43,6 +43,6 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-html { font-family: "EB Garamond", ui-serif, Georgia, serif; }
+html { font-family: "Montserrat", system-ui, sans-serif; }
 .font-heading { font-family: "Montserrat", system-ui, sans-serif; }
 .font-body { font-family: "EB Garamond", ui-serif, Georgia, serif; }

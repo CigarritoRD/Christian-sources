@@ -7,7 +7,7 @@ import PdfViewer from '../components/PdfViewer'
 import { useAuth } from '../auth/AuthProvider'
 import type { Resource } from '../types/resource'
 import { fetchResourceBySlug, fetchSuggested } from '../lib/ResourcesApi'
- 
+
 import ResourceCard from '../components/ResourceCard'
 import { getLibraryFlags, toggleLibrary } from '../lib/LibraryApi'
 import VideoPlayer from '../components/VideoPlayer'
@@ -45,11 +45,19 @@ export default function ResourceDetail() {
         if (mounted) setLoading(false)
       }
     })()
-    return () => { mounted = false }
+    return () => {
+      mounted = false
+    }
   }, [slug])
 
   const right = useMemo(() => {
     if (!resource) return null
+
+    const baseBtn =
+      'rounded-xl border border-app bg-card px-4 py-2 text-sm font-semibold transition shadow-sm hover:shadow-md'
+    const ghostBtn =
+      'rounded-xl border border-app bg-card px-4 py-2 text-sm transition shadow-sm hover:shadow-md'
+
     return (
       <div className="flex items-center gap-2">
         <button
@@ -65,8 +73,10 @@ export default function ResourceDetail() {
             }
           }}
           className={[
-            'rounded-xl border px-4 py-2 text-sm font-semibold transition',
-            flags.saved ? 'border-white/25 bg-white/10 text-white' : 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10',
+            baseBtn,
+            flags.saved
+              ? 'bg-[rgb(var(--surface2))]/10 border-[rgb(var(--surface))]/25'
+              : 'hover:bg-[rgb(var(--surface2))]/10',
           ].join(' ')}
         >
           {flags.saved ? 'Guardado' : 'Guardar'}
@@ -85,8 +95,10 @@ export default function ResourceDetail() {
             }
           }}
           className={[
-            'rounded-xl border px-4 py-2 text-sm transition',
-            flags.favorite ? 'border-rose-400/30 bg-rose-500/15 text-rose-200' : 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10',
+            ghostBtn,
+            flags.favorite
+              ? 'border-rose-500/30 bg-rose-500/10 text-rose-700'
+              : 'text-app hover:bg-rose-500/10 hover:border-rose-500/20',
           ].join(' ')}
         >
           {flags.favorite ? '♥ Favorito' : '♡ Favorito'}
@@ -98,7 +110,9 @@ export default function ResourceDetail() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white/70">Cargando…</div>
+        <div className="rounded-2xl border border-app bg-card p-8 text-muted shadow-sm">
+          Cargando…
+        </div>
       </AppLayout>
     )
   }
@@ -106,7 +120,9 @@ export default function ResourceDetail() {
   if (!resource) {
     return (
       <AppLayout>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white/70">Recurso no encontrado.</div>
+        <div className="rounded-2xl border border-app bg-card p-8 text-muted shadow-sm">
+          Recurso no encontrado.
+        </div>
       </AppLayout>
     )
   }
@@ -114,29 +130,46 @@ export default function ResourceDetail() {
   const isPdf = resource.type === 'pdf'
   const isVideo = resource.type === 'video'
   const driveId = extractDriveFileId(resource.pdf_url ?? null)
-  const downloadUrl = driveId ? driveDownloadUrl(driveId) : (resource.pdf_url ?? resource.pdf_path ?? null)
+  const downloadUrl = driveId
+    ? driveDownloadUrl(driveId)
+    : resource.pdf_url ?? resource.pdf_path ?? null
+
   return (
     <AppLayout>
-      <PageHeader title={resource.title} subtitle={resource.topic ?? resource.ministry ?? ''} right={right} />
+      <PageHeader
+        title={resource.title}
+        subtitle={resource.topic ?? resource.ministry ?? ''}
+        right={right}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
+        {/* MAIN */}
         <div className="space-y-6">
           {isVideo && resource.video_url ? <VideoPlayer url={resource.video_url} /> : null}
+
           {isPdf && (resource.pdf_url || resource.pdf_path) ? (
-            <PdfViewer url={resource.pdf_url ?? resource.pdf_path!} />
+            <div className="rounded-2xl border border-app bg-card shadow-sm overflow-hidden">
+              <PdfViewer url={resource.pdf_url ?? resource.pdf_path!} />
+            </div>
           ) : null}
 
           {resource.description ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="text-sm font-semibold text-white/90 mb-2">Descripción</div>
-              <div className="text-sm text-white/70 leading-relaxed">{resource.description}</div>
+            <div className="rounded-2xl border border-app bg-card p-5 shadow-sm">
+              <div className="font-heading text-sm font-extrabold text-app mb-2">
+                Descripción
+              </div>
+              <div className="text-[15px] text-muted leading-relaxed font-body">
+                {resource.description}
+              </div>
             </div>
           ) : null}
 
           {suggested.length ? (
-            <div>
-              <div className="mb-3 text-sm font-semibold text-white/90">Sugeridos para ti</div>
-              <div className="flex gap-4 overflow-x-auto pb-3">
+            <div className="space-y-3">
+              <div className="font-heading text-sm font-extrabold text-app">
+                Sugeridos para ti
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar">
                 {suggested.map((r) => (
                   <ResourceCard key={r.id} resource={r} variant="carousel" showDescription={false} />
                 ))}
@@ -145,20 +178,24 @@ export default function ResourceDetail() {
           ) : null}
         </div>
 
+        {/* SIDEBAR */}
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <div className="text-xs text-white/60">DETALLES</div>
-            <div className="mt-2 text-sm text-white/85">
-              <div className="flex justify-between py-1"><span className="text-white/60">Tipo</span><span>{resource.type.toUpperCase()}</span></div>
-              <div className="flex justify-between py-1"><span className="text-white/60">Verificado</span><span>{resource.is_verified ? 'Sí' : 'No'}</span></div>
-              {resource.pages ? <div className="flex justify-between py-1"><span className="text-white/60">Páginas</span><span>{resource.pages}</span></div> : null}
-              {resource.file_size_mb ? <div className="flex justify-between py-1"><span className="text-white/60">Tamaño</span><span>{Number(resource.file_size_mb).toFixed(1)} MB</span></div> : null}
+          <div className="rounded-2xl border border-app bg-card p-5 shadow-sm">
+            <div className="text-xs text-muted font-heading tracking-wide">DETALLES</div>
+
+            <div className="mt-3 text-sm text-app">
+              <Row label="Tipo" value={resource.type.toUpperCase()} />
+              <Row label="Verificado" value={resource.is_verified ? 'Sí' : 'No'} />
+              {resource.pages ? <Row label="Páginas" value={`${resource.pages}`} /> : null}
+              {resource.file_size_mb ? (
+                <Row label="Tamaño" value={`${Number(resource.file_size_mb).toFixed(1)} MB`} />
+              ) : null}
             </div>
 
-            {isPdf && (resource.pdf_url || resource.pdf_path) ? (
+            {isPdf && downloadUrl ? (
               <a
-                className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold hover:bg-indigo-400"
-                href={downloadUrl!}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[rgb(var(--surface))] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition"
+                href={downloadUrl}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -169,5 +206,14 @@ export default function ResourceDetail() {
         </div>
       </div>
     </AppLayout>
+  )
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4 py-1.5">
+      <span className="text-muted">{label}</span>
+      <span className="text-app font-medium">{value}</span>
+    </div>
   )
 }

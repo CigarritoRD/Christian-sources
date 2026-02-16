@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../auth/AuthProvider'
 import ThemeToggle from './ThemeToggle'
+import Footer from './Footer'
 
 type ContainerWidth = '6xl' | '7xl' | 'full'
 
@@ -27,7 +28,7 @@ export function AppLayout({
   sidebar,
   mobileDrawer,
   showSearch = true,
-  containerWidth = '6xl',
+  containerWidth = '7xl',
   contentClassName = '',
 }: Props) {
   const { user, signOut } = useAuth()
@@ -42,7 +43,7 @@ export function AppLayout({
         : 'mx-auto max-w-7xl px-4'
 
   return (
-    <div className="min-h-screen bg-app text-app">
+    <div className="min-h-screen bg-app text-app px-12">
       <header className="sticky top-0 z-40 border-b border-app bg-app/85 backdrop-blur-xl">
 
         <div className={`flex items-center gap-3 py-3 ${containerClass}`}>
@@ -176,6 +177,7 @@ export function AppLayout({
         ) : (
           <main>{children}</main>
         )}
+        <Footer />
       </div>
 
       {/* MOBILE DRAWER */}

@@ -67,9 +67,9 @@ export default function ResourceCard({
   return (
     <Link
       to={`/recurso/${resource.slug}`}
-      className={[
-        'group block rounded-2xl border border-app bg-card shadow-md',
-        'surface-hover transition',
+      className={['min-h-[450px]',
+        'group block  hover:border border-app bg-card hover:shadow-sm',
+        ' transition',
         'shadow-soft overflow-hidden',
         sizeClasses,
         className,
