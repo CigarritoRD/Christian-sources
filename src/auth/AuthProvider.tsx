@@ -10,6 +10,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabaseClient'
 import type { AuthContextType, Profile } from '@/types/auth'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 type AuthProviderProps = {

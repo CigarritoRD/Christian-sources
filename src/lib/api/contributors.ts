@@ -119,7 +119,7 @@ export async function getContributorResources(
     throw new Error(error.message)
   }
 
-  return (data ?? []) as ResourceListItem[]
+  return (data ?? []) as unknown as ResourceListItem[]
 }
 
 export async function getFeaturedContributors(): Promise<ContributorListItem[]> {

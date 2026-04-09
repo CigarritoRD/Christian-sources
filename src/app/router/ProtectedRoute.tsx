@@ -1,6 +1,6 @@
 // src/app/router/ProtectedRoute.tsx
 import { Navigate, useLocation } from 'react-router-dom'
-import { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useAuth } from '@/auth/useAuth'
 
 type ProtectedRouteProps = {

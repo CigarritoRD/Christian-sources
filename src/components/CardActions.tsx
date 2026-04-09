@@ -1,8 +1,8 @@
 // src/components/CardActions.tsx
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../auth/AuthProvider'
 import { toggleLibrary } from '../lib/LibraryApi' 
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/auth/useAuth'
 
 type Props = {
   resourceId: string

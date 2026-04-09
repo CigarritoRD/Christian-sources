@@ -24,7 +24,7 @@ export async function fetchExplore(filters: ExploreFilters) {
     q = q.or(`title.ilike.%${term}%,topic.ilike.%${term}%,ministry.ilike.%${term}%`)
   }
 
-  if (filters.types.length) q = q.in('type', filters.types as any)
+  if (filters.types.length) q = q.in('type', filters.types)
   if (filters.verifiedOnly) q = q.eq('is_verified', true)
   if (filters.ministries.length) q = q.in('ministry', filters.ministries)
   if (filters.topics.length) q = q.in('topic', filters.topics)
