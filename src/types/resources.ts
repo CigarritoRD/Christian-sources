@@ -1,4 +1,6 @@
 export type ResourceListItem = {
+  external_url: unknown
+  file_url: unknown
   id: string
   title: string
   slug: string

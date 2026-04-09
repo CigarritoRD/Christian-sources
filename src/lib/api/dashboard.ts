@@ -35,8 +35,9 @@ export async function getRecentLibraryResources(
   }
 
   return (data ?? [])
-    .map((item: any) => item.resource)
+    .map((item: unknown) => (item as { resource: unknown }).resource)
     .filter(Boolean)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((resource: any) => ({
       ...resource,
       contributor: Array.isArray(resource.contributor)
@@ -121,6 +122,8 @@ export type RecentDownloadItem = {
 }
 
 export type DashboardResourceItem = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  category: any
   id: string
   title: string
   slug: string
@@ -241,7 +244,7 @@ export async function getMyLibrary(userId: string) {
     throw new Error(error.message)
   }
 
-  return ((data ?? []) as RawDashboardLibraryItem[])
+  return ((data ?? []) as unknown as RawDashboardLibraryItem[])
     .map(normalizeLibraryItem)
     .filter((item) => item.resource !== null)
 }
@@ -310,10 +313,11 @@ export async function getRecentDownloads(userId: string, limit = 5) {
     throw new Error(error.message)
   }
 
-  return ((data ?? []) as RawRecentDownloadItem[])
+  return ((data ?? []) as unknown as RawRecentDownloadItem[])
     .map(normalizeRecentDownload)
     .filter((item) => item.resource !== null)
 }
+
 export async function getUserDownloads(
   userId: string,
 ): Promise<DashboardResourceItem[]> {
@@ -348,11 +352,24 @@ export async function getUserDownloads(
   const seen = new Set<string>()
 
   return (data ?? [])
-    .map((item: any) => normalizeResource(item.resource))
-    .filter((resource: DashboardResourceItem | null): resource is DashboardResourceItem => {
+    .map((item: { resource: unknown }) => normalizeResource(item.resource as ResourceListItem))
+    .filter((resource): resource is ResourceListItem => {
       if (!resource) return false
       if (seen.has(resource.id)) return false
       seen.add(resource.id)
       return true
     })
+    .map((resource) => ({
+      category: resource.category,
+      id: resource.id,
+      title: resource.title,
+      slug: resource.slug,
+      description: resource.description,
+      short_description: resource.short_description,
+      thumbnail_url: resource.thumbnail_url,
+      resource_type: resource.resource_type,
+      file_url: resource.file_url,
+      external_url: resource.external_url,
+      contributor: resource.contributor ?? null,
+    }))
 }

@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import ResourceCard from '@/components/resources/ResourceCard'
 import { useAuth } from '@/auth/useAuth'
 import { getUserDownloads } from '@/lib/api/dashboard'
-import type { ResourceListItem } from '@/types/resources'
+
 
 export default function DashboardDownloadsPage() {
   const { user } = useAuth()
 
-  const [downloads, setDownloads] = useState<ResourceListItem[]>([])
+  const [downloads, setDownloads] = useState<Awaited<ReturnType<typeof getUserDownloads>>>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
