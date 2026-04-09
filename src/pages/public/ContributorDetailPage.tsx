@@ -258,8 +258,7 @@ export default function ContributorDetailPage() {
                   thumbnailUrl={resource.thumbnail_url}
                   type={resource.resource_type}
                   contributorName={resource.contributor?.name ?? null}
-                  slug={resource.slug}
-                />
+                  slug={resource.slug} id={''}                />
               ))}
             </div>
           )}

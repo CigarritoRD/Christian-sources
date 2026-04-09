@@ -44,7 +44,7 @@ export default function DashboardHomePage() {
 
         setStats(statsData)
         setRecentLibrary(libraryData)
-        setRecentDownloads(downloadData)
+        setRecentDownloads(downloadData as unknown as ResourceListItem[])
       } catch (err) {
         if (!active) return
         const message =

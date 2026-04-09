@@ -368,8 +368,8 @@ export async function getUserDownloads(
       short_description: resource.short_description,
       thumbnail_url: resource.thumbnail_url,
       resource_type: resource.resource_type,
-      file_url: resource.file_url,
-      external_url: resource.external_url,
+      file_url: resource.file_url as string | null,
+      external_url: resource.external_url as string | null,
       contributor: resource.contributor ?? null,
     }))
 }

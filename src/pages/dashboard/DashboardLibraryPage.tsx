@@ -239,7 +239,7 @@ export default function DashboardLibraryPage() {
 
                         <button
                           type="button"
-                          onClick={() => handleRemove(resource.id, item.kind)}
+                          onClick={() => handleRemove(resource.id, item.kind as 'saved' | 'favorite')}
                           disabled={updatingKey === actionKey}
                           className="inline-flex rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover disabled:opacity-60"
                         >

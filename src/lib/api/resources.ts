@@ -93,7 +93,7 @@ export async function getPublishedResourceBySlug(
     throw new Error(error.message)
   }
 
-  return data as ResourceDetail
+  return data as unknown as ResourceDetail
 }
 
 export async function getRelatedResources(
@@ -137,7 +137,7 @@ export async function getRelatedResources(
     throw new Error(error.message)
   }
 
-  return (data ?? []) as ResourceListItem[]
+  return (data ?? []) as unknown as ResourceListItem[]
 }
 
 
@@ -184,7 +184,7 @@ export async function getPublishedResources(): Promise<ResourceListItem[]> {
     throw new Error(error.message)
   }
 
-  return (data ?? []) as ResourceListItem[]
+  return (data ?? []) as unknown as ResourceListItem[]
 }
 
 export async function getActiveResourceCategories(): Promise<ResourceCategory[]> {
@@ -240,5 +240,5 @@ export async function getFeaturedResources(): Promise<ResourceListItem[]> {
     throw new Error(error.message)
   }
 
-  return (data ?? []).map((item) => normalizeResource(item as RawResourceListItem))
+  return (data ?? []).map((item) => normalizeResource(item as unknown as ResourceListItem))
 }
