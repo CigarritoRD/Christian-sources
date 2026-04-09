@@ -1,48 +1,98 @@
 @import "tailwindcss";
 
-/* Tokens */
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-border: var(--surface-border);
+  --color-surface-strong: var(--surface-strong);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-gray: var(--brand-gray);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-paper: var(--brand-paper);
+
+  --color-neutral-light: var(--neutral-light);
+  --color-neutral-muted: var(--neutral-muted);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --font-heading: "Montserrat", system-ui, sans-serif;
+  --font-body: "EB Garamond", ui-serif, Georgia, serif;
+
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+}
+
+/* Light theme por defecto */
 :root {
-  --bg: 247 251 251;        /* brand.paper aproximado */
-  --bg-card: 255 255 255;   /* cards blancas limpias */
-  --surface: 0 116 115;     /* brand.primary */
-  --surface2: 0 171 199;    /* brand.accent */
-  --text: 11 31 30;         /* brand.ink */
-  --muted: 128 128 128;     /* brand.gray */
-  --border: 226 232 240;    /* puedes dejarlo así */
-  --ring: 0 116 115;        /* brand.primary */
+  --bg: #f7fbfb;
+  --bg-soft: #eef4f4;
+
+  --surface: #ffffff;
+  --surface-hover: #f3f7f7;
+  --surface-border: rgba(11, 31, 30, 0.08);
+  --surface-strong: rgba(11, 31, 30, 0.12);
+
+  --brand-primary: #007473;
+  --brand-accent: #00ABC7;
+  --brand-gray: #808080;
+  --brand-ink: #0b1f1e;
+  --brand-paper: #f7fbfb;
+
+  --neutral-light: #E6F2F2;
+  --neutral-muted: #6f8085;
+
+  --text-primary: #0b1f1e;
+  --text-secondary: #5f7276;
+
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
+/* Dark theme */
 .dark {
-  --bg: 7 10 16;            /* tu fondo actual (ok) */
-  --bg-card: 15 15 15;      /* tu card dark (ok) */
+  --bg: #070A10;
+  --bg-soft: #0B0F19;
 
-  /* en dark, surface usado con opacidad (0.05 / 0.08) */
-  --surface: 255 255 255;   /* mantiene efecto glass */
-  --surface2: 255 255 255;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-border: rgba(255, 255, 255, 0.10);
+  --surface-strong: rgba(255, 255, 255, 0.12);
 
-  --text: 255 255 255;
-  --muted: 170 170 170;
+  --brand-primary: #007473;
+  --brand-accent: #00ABC7;
+  --brand-gray: #808080;
+  --brand-ink: #0b1f1e;
+  --brand-paper: #f7fbfb;
 
-  /* aquí sí metemos marca */
-  --border: 0 116 115;      /* brand.primary */
-  --ring: 0 171 199;        /* brand.accent */
+  --neutral-light: #E6F2F2;
+  --neutral-muted: #A0B3B3;
+
+  --text-primary: #EAF4F4;
+  --text-secondary: #A0B3B3;
+
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
-/* Utilities sin @apply */
-.bg-app { background-color: rgb(var(--bg)); }
-.bg-card { background-color: rgb(var(--bg-card)); }
-.text-app { color: rgb(var(--text)); }
-.text-muted { color: rgb(var(--muted)); }
-.border-app { border-color: rgb(var(--border)); }
+html,
+body,
+#root {
+  min-height: 100%;
+}
 
-.surface { background-color: rgba(var(--surface), 0.05); }
-.surface-hover:hover { background-color: rgba(var(--surface), 0.08); }
-.surface-2 { background-color: rgba(var(--surface2), 0.08); }
+html {
+  background-color: var(--bg);
+}
 
-/* scrollbar hidden */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-html { font-family: "Montserrat", system-ui, sans-serif; }
-.font-heading { font-family: "Montserrat", system-ui, sans-serif; }
-.font-body { font-family: "EB Garamond", ui-serif, Georgia, serif; }
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}

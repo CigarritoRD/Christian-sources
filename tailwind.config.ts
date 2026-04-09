@@ -4,20 +4,19 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      // ✅ Mantén tu paleta base (dark UI)
       colors: {
         bg: {
           DEFAULT: '#070A10',
           soft: '#0B0F19',
         },
+
         surface: {
           DEFAULT: 'rgba(255,255,255,0.05)',
           hover: 'rgba(255,255,255,0.08)',
           border: 'rgba(255,255,255,0.10)',
+          strong: 'rgba(255,255,255,0.12)',
         },
 
-        // 🟡 Opcional: marca también en Tailwind (no reemplaza tus tokens CSS)
-        // Úsalo si quieres clases tipo: text-brand-primary, bg-brand-accent, etc.
         brand: {
           primary: '#007473',
           accent: '#00ABC7',
@@ -25,9 +24,18 @@ export default {
           ink: '#0b1f1e',
           paper: '#f7fbfb',
         },
+
+        neutral: {
+          light: '#E6F2F2',
+          muted: '#A0B3B3',
+        },
+
+        text: {
+          primary: '#EAF4F4',
+          secondary: '#A0B3B3',
+        },
       },
 
-      // ✅ Tipografías (Opción A)
       fontFamily: {
         heading: ['"Montserrat"', 'system-ui', 'sans-serif'],
         body: ['"EB Garamond"', 'ui-serif', 'Georgia', 'serif'],
@@ -48,6 +56,11 @@ export default {
         xs: ['0.75rem', { lineHeight: '1rem' }],
         sm: ['0.875rem', { lineHeight: '1.25rem' }],
         base: ['0.95rem', { lineHeight: '1.5rem' }],
+      },
+
+      spacing: {
+        18: '4.5rem',
+        22: '5.5rem',
       },
 
       transitionTimingFunction: {
