@@ -275,8 +275,7 @@ export default function ResourceDetailPage() {
                   thumbnailUrl={item.thumbnail_url}
                   type={item.resource_type}
                   contributorName={item.contributor?.name ?? null}
-                  slug={item.slug}
-                />
+                  slug={item.slug} id={''}                />
               ))}
             </div>
           </div>
