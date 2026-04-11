@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Search, UserPlus, Users } from 'lucide-react'
 import {
   activateContributor,
   deactivateContributor,
   getAdminContributors,
 } from '@/lib/api/contributors'
+import AppButton from '@/components/ui/AppButton'
+import AppInput from '@/components/ui/AppInput'
+import PageHeader from '@/components/ui/PageHeader'
+import SectionCard from '@/components/ui/SectionCard'
+import StatCard from '@/components/ui/StatCard'
+import StatusBadge from '@/components/ui/StatusBadge'
 
 type ContributorListItem = {
   id: string
@@ -43,8 +50,6 @@ export default function AdminContributorsPage() {
     void loadContributors()
   }, [])
 
-  
-
   const filteredItems = items.filter((item) => {
     const term = search.trim().toLowerCase()
     if (!term) return true
@@ -56,66 +61,92 @@ export default function AdminContributorsPage() {
     )
   })
 
-  return (
-    <div className="space-y-6 p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Contributors</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Manage collaborator profiles shown across the platform.
-          </p>
-        </div>
+  async function handleToggle(item: ContributorListItem) {
+    const action = item.is_active ? 'deactivate' : 'activate'
+    const confirmed = window.confirm(
+      `${action === 'deactivate' ? 'Deactivate' : 'Activate'} "${item.name}"?`,
+    )
+    if (!confirmed) return
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <input
-            type="text"
-            placeholder="Search contributors..."
+    try {
+      setProcessingId(item.id)
+
+      if (item.is_active) {
+        await deactivateContributor(item.id)
+      } else {
+        await activateContributor(item.id)
+      }
+
+      await loadContributors()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to update contributor status.',
+      )
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Contributors"
+        description="Manage collaborator profiles shown across the platform."
+        actions={
+          <Link to="/admin/contributors/new">
+            <AppButton>
+              <UserPlus className="h-4 w-4" />
+              New contributor
+            </AppButton>
+          </Link>
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <StatCard
+          label="Total"
+          value={items.length}
+          icon={<Users className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Active"
+          value={items.filter((item) => item.is_active).length}
+          icon={<Users className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Featured"
+          value={items.filter((item) => item.is_featured).length}
+          icon={<Users className="h-4 w-4" />}
+        />
+      </div>
+
+      <SectionCard className="p-4">
+        <div className="max-w-md">
+          <AppInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-surface-border bg-white px-4 py-2 text-sm outline-none transition focus:border-brand-primary sm:w-72"
+            placeholder="Search contributors..."
+            className="pl-10"
           />
-
-          <Link
-            to="/admin/contributors/new"
-            className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-          >
-            New contributor
-          </Link>
+          <Search className="pointer-events-none relative -mt-8 ml-3 h-4 w-4 text-text-secondary" />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Total</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">{items.length}</p>
-        </div>
-
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Active</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">
-            {items.filter((item) => item.is_active).length}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Featured</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">
-            {items.filter((item) => item.is_featured).length}
-          </p>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-surface-border bg-white">
+      <SectionCard className="overflow-hidden">
         <div className="border-b border-surface-border px-4 py-3">
           <h2 className="text-sm font-medium text-text-primary">Contributor list</h2>
         </div>
 
         {loading ? (
-          <div className="px-4 py-8 text-sm text-text-secondary">Loading contributors...</div>
+          <div className="px-4 py-6 text-sm text-text-secondary">
+            Loading contributors...
+          </div>
         ) : error ? (
-          <div className="px-4 py-8 text-sm text-red-600">{error}</div>
+          <div className="px-4 py-6 text-sm text-red-600">{error}</div>
         ) : filteredItems.length === 0 ? (
-          <div className="px-4 py-8 text-sm text-text-secondary">
+          <div className="px-4 py-6 text-sm text-text-secondary">
             No contributors found.
           </div>
         ) : (
@@ -123,50 +154,47 @@ export default function AdminContributorsPage() {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between"
               >
-                <div className="flex min-w-0 items-center gap-4">
+                <div className="flex min-w-0 items-center gap-3">
                   {item.avatar_url ? (
                     <img
                       src={item.avatar_url}
                       alt={item.name}
-                      className="h-14 w-14 rounded-full object-cover"
+                      className="h-11 w-11 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
                       {item.name.slice(0, 1).toUpperCase()}
                     </div>
                   )}
 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium text-text-primary">{item.name}</p>
+                      <p className="truncate font-medium text-text-primary">
+                        {item.name}
+                      </p>
 
                       {item.is_featured ? (
-                        <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                          Featured
-                        </span>
+                        <StatusBadge label="Featured" tone="warning" />
                       ) : null}
 
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          item.is_active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-zinc-100 text-zinc-600'
-                        }`}
-                      >
-                        {item.is_active ? 'Active' : 'Inactive'}
-                      </span>
+                      <StatusBadge
+                        label={item.is_active ? 'Active' : 'Inactive'}
+                        tone={item.is_active ? 'success' : 'muted'}
+                      />
                     </div>
 
-                    <p className="mt-1 text-sm text-text-secondary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
 
                     {item.specialty ? (
-                      <p className="mt-1 text-sm text-text-secondary">{item.specialty}</p>
+                      <p className="mt-0.5 text-sm text-text-secondary">
+                        {item.specialty}
+                      </p>
                     ) : null}
 
                     {item.short_bio ? (
-                      <p className="mt-2 line-clamp-2 max-w-2xl text-sm text-text-secondary">
+                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-text-secondary">
                         {item.short_bio}
                       </p>
                     ) : null}
@@ -174,70 +202,33 @@ export default function AdminContributorsPage() {
                 </div>
 
                 <div className="flex shrink-0 flex-wrap gap-2">
-  <Link
-    to={`/contributors/${item.slug}`}
-    className="inline-flex items-center justify-center rounded-xl border border-surface-border px-3 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-soft"
-  >
-    View
-  </Link>
+                  <Link to={`/contributors/${item.slug}`}>
+                    <AppButton variant="ghost">View</AppButton>
+                  </Link>
 
-  <Link
-    to={`/admin/contributors/${item.id}/edit`}
-    className="inline-flex items-center justify-center rounded-xl border border-surface-border px-3 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-soft"
-  >
-    Edit
-  </Link>
+                  <Link to={`/admin/contributors/${item.id}/edit`}>
+                    <AppButton variant="secondary">Edit</AppButton>
+                  </Link>
 
-  <button
-    type="button"
-    onClick={async () => {
-      const action = item.is_active ? 'deactivate' : 'activate'
-      const confirmed = window.confirm(
-        `${action === 'deactivate' ? 'Deactivate' : 'Activate'} "${item.name}"?`
-      )
-      if (!confirmed) return
-
-      try {
-        setProcessingId(item.id)
-
-        if (item.is_active) {
-          await deactivateContributor(item.id)
-        } else {
-          await activateContributor(item.id)
-        }
-
-        await loadContributors()
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to update contributor status.'
-        )
-      } finally {
-        setProcessingId(null)
-      }
-    }}
-    disabled={processingId === item.id}
-    className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
-      item.is_active
-        ? 'border-red-200 text-red-700 hover:bg-red-50'
-        : 'border-green-200 text-green-700 hover:bg-green-50'
-    }`}
-  >
-    {processingId === item.id
-      ? item.is_active
-        ? 'Deactivating...'
-        : 'Activating...'
-      : item.is_active
-      ? 'Deactivate'
-      : 'Activate'}
-  </button>
-</div>
+                  <AppButton
+                    variant={item.is_active ? 'danger' : 'success'}
+                    disabled={processingId === item.id}
+                    onClick={() => void handleToggle(item)}
+                  >
+                    {processingId === item.id
+                      ? item.is_active
+                        ? 'Deactivating...'
+                        : 'Activating...'
+                      : item.is_active
+                      ? 'Deactivate'
+                      : 'Activate'}
+                  </AppButton>
+                </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   )
 }

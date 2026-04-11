@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FolderKanban, Plus, Search, TrendingUp } from 'lucide-react'
 import {
   activateResource,
   deactivateResource,
   getAdminResources,
 } from '@/lib/api/resources'
+import AppButton from '@/components/ui/AppButton'
+import AppInput from '@/components/ui/AppInput'
+import PageHeader from '@/components/ui/PageHeader'
+import SectionCard from '@/components/ui/SectionCard'
+import StatCard from '@/components/ui/StatCard'
+import StatusBadge from '@/components/ui/StatusBadge'
 
 type ResourceListItem = {
   id: string
@@ -73,7 +80,6 @@ export default function AdminResourcesPage() {
     const confirmed = window.confirm(
       `${action === 'unpublish' ? 'Unpublish' : 'Publish'} "${item.title}"?`,
     )
-
     if (!confirmed) return
 
     try {
@@ -98,72 +104,68 @@ export default function AdminResourcesPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Resources</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Manage all resources published on the platform.
-          </p>
-        </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Resources"
+        description="Manage all resources published on the platform."
+        actions={
+          <Link to="/admin/resources/new">
+            <AppButton>
+              <Plus className="h-4 w-4" />
+              New resource
+            </AppButton>
+          </Link>
+        }
+      />
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <input
-            type="text"
-            placeholder="Search resources..."
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <StatCard
+          label="Total"
+          value={items.length}
+          icon={<FolderKanban className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Published"
+          value={items.filter((item) => item.is_published).length}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Featured"
+          value={items.filter((item) => item.is_featured).length}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Public"
+          value={items.filter((item) => item.is_public).length}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+      </div>
+
+      <SectionCard className="p-4">
+        <div className="max-w-md">
+          <AppInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-surface-border bg-white px-4 py-2 text-sm outline-none transition focus:border-brand-primary sm:w-72"
+            placeholder="Search resources..."
+            className="pl-10"
           />
-
-          <Link
-            to="/admin/resources/new"
-            className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-          >
-            New resource
-          </Link>
+          <Search className="pointer-events-none relative -mt-8 ml-3 h-4 w-4 text-text-secondary" />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Total</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">{items.length}</p>
-        </div>
-
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Published</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">
-            {items.filter((item) => item.is_published).length}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Featured</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">
-            {items.filter((item) => item.is_featured).length}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-surface-border bg-white p-4">
-          <p className="text-sm text-text-secondary">Public</p>
-          <p className="mt-2 text-2xl font-semibold text-text-primary">
-            {items.filter((item) => item.is_public).length}
-          </p>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-surface-border bg-white">
+      <SectionCard className="overflow-hidden">
         <div className="border-b border-surface-border px-4 py-3">
           <h2 className="text-sm font-medium text-text-primary">Resource list</h2>
         </div>
 
         {loading ? (
-          <div className="px-4 py-8 text-sm text-text-secondary">Loading resources...</div>
+          <div className="px-4 py-6 text-sm text-text-secondary">
+            Loading resources...
+          </div>
         ) : error ? (
-          <div className="px-4 py-8 text-sm text-red-600">{error}</div>
+          <div className="px-4 py-6 text-sm text-red-600">{error}</div>
         ) : filteredItems.length === 0 ? (
-          <div className="px-4 py-8 text-sm text-text-secondary">
+          <div className="px-4 py-6 text-sm text-text-secondary">
             No resources found.
           </div>
         ) : (
@@ -171,60 +173,51 @@ export default function AdminResourcesPage() {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between"
               >
-                <div className="flex min-w-0 items-center gap-4">
+                <div className="flex min-w-0 items-center gap-3">
                   {item.thumbnail_url ? (
                     <img
                       src={item.thumbnail_url}
                       alt={item.title}
-                      className="h-16 w-16 rounded-xl object-cover"
+                      className="h-11 w-11 rounded-xl object-cover"
                     />
                   ) : (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
                       {item.title.slice(0, 1).toUpperCase()}
                     </div>
                   )}
 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium text-text-primary">{item.title}</p>
+                      <p className="truncate font-medium text-text-primary">
+                        {item.title}
+                      </p>
 
                       {item.is_featured ? (
-                        <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                          Featured
-                        </span>
+                        <StatusBadge label="Featured" tone="warning" />
                       ) : null}
 
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          item.is_published
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-zinc-100 text-zinc-600'
-                        }`}
-                      >
-                        {item.is_published ? 'Published' : 'Unpublished'}
-                      </span>
+                      <StatusBadge
+                        label={item.is_published ? 'Published' : 'Draft'}
+                        tone={item.is_published ? 'success' : 'muted'}
+                      />
 
                       {item.is_public ? (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          Public
-                        </span>
+                        <StatusBadge label="Public" tone="info" />
                       ) : null}
                     </div>
 
-                    <p className="mt-1 text-sm text-text-secondary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
 
-                    <div className="mt-1 flex flex-wrap gap-3 text-sm text-text-secondary">
-                      <span>{item.resource_type ?? 'No type'}</span>
-                      <span>•</span>
-                      <span>{item.contributor?.name ?? 'No contributor'}</span>
-                      <span>•</span>
-                      <span>{item.category?.name ?? 'No category'}</span>
-                    </div>
+                    <p className="mt-0.5 text-sm text-text-secondary">
+                      {item.contributor?.name ?? 'No contributor'} ·{' '}
+                      {item.category?.name ?? 'No category'} ·{' '}
+                      {item.resource_type ?? 'No type'}
+                    </p>
 
                     {item.short_description ? (
-                      <p className="mt-2 line-clamp-2 max-w-2xl text-sm text-text-secondary">
+                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-text-secondary">
                         {item.short_description}
                       </p>
                     ) : null}
@@ -232,29 +225,18 @@ export default function AdminResourcesPage() {
                 </div>
 
                 <div className="flex shrink-0 flex-wrap gap-2">
-                  <Link
-                    to={`/resources/${item.slug}`}
-                    className="inline-flex items-center justify-center rounded-xl border border-surface-border px-3 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-soft"
-                  >
-                    View
+                  <Link to={`/resources/${item.slug}`}>
+                    <AppButton variant="ghost">View</AppButton>
                   </Link>
 
-                  <Link
-                    to={`/admin/resources/${item.id}/edit`}
-                    className="inline-flex items-center justify-center rounded-xl border border-surface-border px-3 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-soft"
-                  >
-                    Edit
+                  <Link to={`/admin/resources/${item.id}/edit`}>
+                    <AppButton variant="secondary">Edit</AppButton>
                   </Link>
 
-                  <button
-                    type="button"
-                    onClick={() => void handleTogglePublished(item)}
+                  <AppButton
+                    variant={item.is_published ? 'danger' : 'success'}
                     disabled={processingId === item.id}
-                    className={`inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                      item.is_published
-                        ? 'border-red-200 text-red-700 hover:bg-red-50'
-                        : 'border-green-200 text-green-700 hover:bg-green-50'
-                    }`}
+                    onClick={() => void handleTogglePublished(item)}
                   >
                     {processingId === item.id
                       ? item.is_published
@@ -263,13 +245,13 @@ export default function AdminResourcesPage() {
                       : item.is_published
                       ? 'Unpublish'
                       : 'Publish'}
-                  </button>
+                  </AppButton>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   )
 }

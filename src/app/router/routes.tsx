@@ -29,7 +29,9 @@ import DashboardDownloadsPage from '@/pages/dashboard/DashboardDownloadsPage'
 import DashboardProfilePage from '@/pages/dashboard/DashboardProfilePage'
 
 // Admin pages
-import AdminHomePage from '@/pages/admin/AdminHomePage'
+
+
+import AdminCategoryEditPage from '@/pages/admin/AdminCategoryEditPage'
 import AdminResourcesPage from '@/pages/admin/AdminResourcesPage'
 import AdminResourceCreatePage from '@/pages/admin/AdminResourceCreatePage'
 import AdminResourceEditPage from '@/pages/admin/AdminResourceEditPage'
@@ -37,6 +39,8 @@ import AdminContributorsPage from '@/pages/admin/AdminContributorsPage'
 import AdminContributorCreatePage from '@/pages/admin/AdminResourceCreatePage'
 import AdminContributorEditPage from '@/pages/admin/AdminContributorEditPage'
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage'
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+import AdminCategoryCreatePage from '@/pages/admin/AdminCreateCategoryPage'
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +88,7 @@ export const router = createBrowserRouter([
       { path: 'library', element: <DashboardLibraryPage /> },
       { path: 'downloads', element: <DashboardDownloadsPage /> },
       { path: 'profile', element: <DashboardProfilePage /> },
+
     ],
   },
 
@@ -95,7 +100,7 @@ export const router = createBrowserRouter([
       </AdminRoute>
     ),
     children: [
-      { index: true, element: <AdminHomePage /> },
+      { index: true, element: <AdminDashboardPage /> },
 
       { path: 'resources', element: <AdminResourcesPage /> },
       { path: 'resources/new', element: <AdminResourceCreatePage /> },
@@ -105,7 +110,10 @@ export const router = createBrowserRouter([
       { path: 'contributors/new', element: <AdminContributorCreatePage /> },
       { path: 'contributors/:id/edit', element: <AdminContributorEditPage /> },
 
+
       { path: 'categories', element: <AdminCategoriesPage /> },
+      { path: 'categories/new', element: <AdminCategoryCreatePage /> },
+      { path: 'categories/:id/edit', element: <AdminCategoryEditPage /> },
     ],
   },
 
