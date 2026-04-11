@@ -12,6 +12,7 @@ import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { confirmAction } from '@/lib/api/confirm'
 
 type CategoryItem = {
   id: string
@@ -57,10 +58,13 @@ export default function AdminCategoriesPage() {
 
   async function handleToggle(item: CategoryItem) {
     const action = item.is_active ? 'deactivate' : 'activate'
-    const confirmed = window.confirm(
-      `${action === 'deactivate' ? 'Deactivate' : 'Activate'} "${item.name}"?`,
-    )
-    if (!confirmed) return
+    const confirmed = await confirmAction({
+  title: `${action === 'deactivate' ? 'Deactivate' : 'Activate'} category?`,
+  text: item.name,
+  confirmText: action === 'deactivate' ? 'Deactivate' : 'Activate',
+})
+
+if (!confirmed) return
 
     try {
       setProcessingId(item.id)

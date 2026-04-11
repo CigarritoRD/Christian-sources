@@ -12,6 +12,7 @@ import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { confirmAction } from '@/lib/api/confirm'
 
 type ResourceListItem = {
   id: string
@@ -77,10 +78,13 @@ export default function AdminResourcesPage() {
 
   async function handleTogglePublished(item: ResourceListItem) {
     const action = item.is_published ? 'unpublish' : 'publish'
-    const confirmed = window.confirm(
-      `${action === 'unpublish' ? 'Unpublish' : 'Publish'} "${item.title}"?`,
-    )
-    if (!confirmed) return
+    const confirmed = await confirmAction({
+  title: `${action === 'unpublish' ? 'Unpublish' : 'Publish'} resource?`,
+  text: item.title,
+  confirmText: action === 'unpublish' ? 'Unpublish' : 'Publish',
+})
+
+if (!confirmed) return
 
     try {
       setProcessingId(item.id)

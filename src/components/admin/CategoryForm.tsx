@@ -1,13 +1,18 @@
-import { useMemo, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
+import { z } from 'zod'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import SectionCard from '@/components/ui/SectionCard'
 
-type CategoryFormValues = {
-  name: string
-  slug: string
-  is_active: boolean
-}
+const categorySchema = z.object({
+  name: z.string().trim().min(1, 'Name is required.'),
+  slug: z.string().trim().min(1, 'Slug is required.'),
+  is_active: z.boolean(),
+})
+
+type CategoryFormValues = z.infer<typeof categorySchema>
 
 type CategoryFormProps = {
   initialValues?: Partial<CategoryFormValues>
@@ -31,62 +36,58 @@ export default function CategoryForm({
   onSubmit,
   submitLabel = 'Save category',
 }: CategoryFormProps) {
-  const defaults = useMemo(
-    () => ({
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
       name: initialValues?.name ?? '',
       slug: initialValues?.slug ?? '',
       is_active: initialValues?.is_active ?? true,
-    }),
-    [initialValues],
-  )
+    },
+  })
 
-  const [values, setValues] = useState(defaults)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    reset({
+      name: initialValues?.name ?? '',
+      slug: initialValues?.slug ?? '',
+      is_active: initialValues?.is_active ?? true,
+    })
+  }, [initialValues, reset])
 
-  function updateField<K extends keyof typeof values>(
-    key: K,
-    value: (typeof values)[K],
-  ) {
-    setValues((prev) => ({ ...prev, [key]: value }))
-  }
+  const nameValue = useWatch({
+    control,
+    name: 'name',
+    defaultValue: initialValues?.name ?? '',
+  })
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
+  const slugValue = useWatch({
+    control,
+    name: 'slug',
+    defaultValue: initialValues?.slug ?? '',
+  })
 
-    if (!values.name.trim()) {
-      setError('Name is required.')
-      return
-    }
+  const isActiveValue = useWatch({
+    control,
+    name: 'is_active',
+    defaultValue: initialValues?.is_active ?? true,
+  })
 
-    if (!values.slug.trim()) {
-      setError('Slug is required.')
-      return
-    }
-
-    try {
-      setIsSubmitting(true)
-      await onSubmit({
-        name: values.name.trim(),
-        slug: values.slug.trim(),
-        is_active: values.is_active,
-      })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setIsSubmitting(false)
-    }
+  async function submit(values: CategoryFormValues) {
+    await onSubmit({
+      name: values.name.trim(),
+      slug: values.slug.trim(),
+      is_active: values.is_active,
+    })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 font-heading">
-      {error ? (
-        <SectionCard className="border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-700">{error}</p>
-        </SectionCard>
-      ) : null}
-
+    <form onSubmit={handleSubmit(submit)} className="space-y-5 font-heading">
       <SectionCard className="p-5">
         <div className="space-y-4">
           <div>
@@ -101,26 +102,32 @@ export default function CategoryForm({
           <div className="grid gap-4 md:grid-cols-2">
             <AppInput
               label="Name"
-              value={values.name}
+              value={nameValue ?? ''}
+              error={errors.name?.message}
+              placeholder="Family support"
+              {...register('name')}
               onChange={(e) => {
                 const nextName = e.target.value
                 const currentSlugMatchesName =
-                  !values.slug || values.slug === slugify(values.name)
+                  !slugValue || slugValue === slugify(nameValue || '')
 
-                updateField('name', nextName)
+                setValue('name', nextName, { shouldValidate: true })
 
                 if (currentSlugMatchesName) {
-                  updateField('slug', slugify(nextName))
+                  setValue('slug', slugify(nextName), { shouldValidate: true })
                 }
               }}
-              placeholder="Family support"
             />
 
             <AppInput
               label="Slug"
-              value={values.slug}
-              onChange={(e) => updateField('slug', slugify(e.target.value))}
+              value={slugValue ?? ''}
+              error={errors.slug?.message}
               placeholder="family-support"
+              {...register('slug')}
+              onChange={(e) => {
+                setValue('slug', slugify(e.target.value), { shouldValidate: true })
+              }}
             />
           </div>
         </div>
@@ -140,8 +147,11 @@ export default function CategoryForm({
           <label className="flex items-center gap-2 text-sm text-text-primary">
             <input
               type="checkbox"
-              checked={values.is_active}
-              onChange={(e) => updateField('is_active', e.target.checked)}
+              checked={!!isActiveValue}
+              {...register('is_active')}
+              onChange={(e) => {
+                setValue('is_active', e.target.checked, { shouldValidate: true })
+              }}
             />
             Active
           </label>

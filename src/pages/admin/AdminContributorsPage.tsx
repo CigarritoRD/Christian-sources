@@ -12,6 +12,7 @@ import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { confirmAction } from '@/lib/api/confirm'
 
 type ContributorListItem = {
   id: string
@@ -63,10 +64,13 @@ export default function AdminContributorsPage() {
 
   async function handleToggle(item: ContributorListItem) {
     const action = item.is_active ? 'deactivate' : 'activate'
-    const confirmed = window.confirm(
-      `${action === 'deactivate' ? 'Deactivate' : 'Activate'} "${item.name}"?`,
-    )
-    if (!confirmed) return
+    const confirmed = await confirmAction({
+  title: `${action === 'deactivate' ? 'Deactivate' : 'Activate'} contributor?`,
+  text: item.name,
+  confirmText: action === 'deactivate' ? 'Deactivate' : 'Activate',
+})
+
+if (!confirmed) return
 
     try {
       setProcessingId(item.id)
