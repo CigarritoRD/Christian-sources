@@ -43,7 +43,7 @@ export default function AdminResourcesPage() {
       setLoading(true)
       setError(null)
       const data = await getAdminResources()
-      setItems((data ?? []) as ResourceListItem[])
+      setItems((data ?? []) as unknown as ResourceListItem[])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load resources.')
     } finally {

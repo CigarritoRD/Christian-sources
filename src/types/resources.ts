@@ -1,6 +1,6 @@
 export type ResourceListItem = {
-  external_url: unknown
-  file_url: unknown
+  
+ 
   id: string
   title: string
   slug: string
@@ -13,6 +13,8 @@ export type ResourceListItem = {
   is_featured: boolean
   is_public: boolean
   is_published: boolean
+  external_url?: string;
+  file_url?: string;
   created_at: string
   contributor: {
     id: string

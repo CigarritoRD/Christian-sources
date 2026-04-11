@@ -48,7 +48,7 @@ const [selectedType, setSelectedType] = useState(
         ])
 
         if (!active) return
-        setResources(resourceData)
+        setResources(resourceData as unknown as ResourceListItem[])
         setCategories(categoryData)
       } catch (err) {
         if (!active) return
