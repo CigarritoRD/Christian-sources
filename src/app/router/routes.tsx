@@ -31,16 +31,19 @@ import DashboardProfilePage from '@/pages/dashboard/DashboardProfilePage'
 // Admin pages
 
 
-import AdminCategoryEditPage from '@/pages/admin/AdminCategoryEditPage'
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+
 import AdminResourcesPage from '@/pages/admin/AdminResourcesPage'
 import AdminResourceCreatePage from '@/pages/admin/AdminResourceCreatePage'
 import AdminResourceEditPage from '@/pages/admin/AdminResourceEditPage'
-import AdminContributorsPage from '@/pages/admin/AdminContributorsPage'
-import AdminContributorCreatePage from '@/pages/admin/AdminResourceCreatePage'
-import AdminContributorEditPage from '@/pages/admin/AdminContributorEditPage'
+
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage'
-import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import AdminCategoryCreatePage from '@/pages/admin/AdminCreateCategoryPage'
+import AdminCategoryEditPage from '@/pages/admin/AdminCategoryEditPage'
+
+import AdminContributorsPage from '@/pages/admin/AdminContributorsPage'
+import AdminContributorEditPage from '@/pages/admin/AdminContributorEditPage'
+import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage'
 
 export const router = createBrowserRouter([
   {
@@ -107,7 +110,7 @@ export const router = createBrowserRouter([
       { path: 'resources/:id/edit', element: <AdminResourceEditPage /> },
 
       { path: 'contributors', element: <AdminContributorsPage /> },
-      { path: 'contributors/new', element: <AdminContributorCreatePage /> },
+      { path: 'contributors/new', element:<AdminContributorCreatePage/>},
       { path: 'contributors/:id/edit', element: <AdminContributorEditPage /> },
 
 
