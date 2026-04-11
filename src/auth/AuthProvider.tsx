@@ -29,14 +29,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .eq('id', userId)
       .single()
 
+    console.log('fetchProfile result', { userId, data, error })
+
     if (error) {
-      console.error('Error loading profile:', error.message)
-      setProfile(null)
-      return
+      console.error('Error loading profile:', error)
+      return null
     }
 
-    setProfile(data as Profile)
+    return data as Profile
   }, [])
+
+  const hydrateAuth = useCallback(
+    async (sessionUser: Session['user'] | null) => {
+      setUser(sessionUser)
+
+      if (!sessionUser) {
+        setProfile(null)
+        return
+      }
+
+      const nextProfile = await fetchProfile(sessionUser.id)
+      setProfile(nextProfile)
+    },
+    [fetchProfile],
+  )
 
   const refreshProfile = useCallback(async () => {
     const {
@@ -48,67 +64,65 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return
     }
 
-    await fetchProfile(currentUser.id)
+    const nextProfile = await fetchProfile(currentUser.id)
+    setProfile(nextProfile)
   }, [fetchProfile])
 
   useEffect(() => {
-    let mounted = true
+    let isMounted = true
 
-    const initializeAuth = async () => {
-      setLoading(true)
+    async function initialize() {
+      try {
+        setLoading(true)
 
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession()
 
-      if (error) {
-        console.error('Error getting session:', error.message)
-      }
+        if (error) {
+          console.error('Error getting session:', error)
+        }
 
-      if (!mounted) return
+        if (!isMounted) return
 
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-
-      if (currentUser) {
-        await fetchProfile(currentUser.id)
-      } else {
-        setProfile(null)
-      }
-
-      if (mounted) {
-        setLoading(false)
+        await hydrateAuth(session?.user ?? null)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
-    void initializeAuth()
+    void initialize()
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
+      if (!isMounted) return
 
-      if (currentUser) {
-        void fetchProfile(currentUser.id)
-      } else {
-        setProfile(null)
-      }
-
-      setLoading(false)
+      void (async () => {
+        try {
+          setLoading(true)
+          await hydrateAuth(session?.user ?? null)
+        } finally {
+          if (isMounted) {
+            setLoading(false)
+          }
+        }
+      })()
     })
 
     return () => {
-      mounted = false
+      isMounted = false
       subscription.unsubscribe()
     }
-  }, [fetchProfile])
+  }, [hydrateAuth])
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()
     if (error) {
-      console.error('Error signing out:', error.message)
+      console.error('Error signing out:', error)
       throw error
     }
 

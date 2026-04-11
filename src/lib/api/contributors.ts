@@ -44,7 +44,23 @@ export type ContributorDetail = {
   is_active: boolean
   created_at: string
 }
+export async function deactivateContributor(id: string) {
+  const { error } = await supabase
+    .from('contributors')
+    .update({ is_active: false })
+    .eq('id', id)
 
+  if (error) throw new Error(error.message)
+}
+
+export async function activateContributor(id: string) {
+  const { error } = await supabase
+    .from('contributors')
+    .update({ is_active: true })
+    .eq('id', id)
+
+  if (error) throw new Error(error.message)
+}
 export async function getContributorBySlug(
   slug: string,
 ): Promise<ContributorDetail | null> {
@@ -148,3 +164,151 @@ export async function getFeaturedContributors(): Promise<ContributorListItem[]> 
 
   return (data ?? []) as ContributorListItem[]
 }
+
+export type AdminContributorInput = {
+  name: string
+  slug: string
+  short_bio?: string | null
+  full_bio?: string | null
+  specialty?: string | null
+  avatar_url?: string | null
+  website_url?: string | null
+  instagram_url?: string | null
+  facebook_url?: string | null
+  linkedin_url?: string | null
+  youtube_url?: string | null
+  is_featured?: boolean
+  is_active?: boolean
+}
+
+export async function getAdminContributors() {
+  const { data, error } = await supabase
+    .from('contributors')
+    .select(`
+      id,
+      name,
+      slug,
+      short_bio,
+      specialty,
+      avatar_url,
+      website_url,
+      is_featured,
+      is_active,
+      created_at
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+export async function getContributorById(id: string) {
+  const { data, error } = await supabase
+    .from('contributors')
+    .select(`
+      id,
+      name,
+      slug,
+      short_bio,
+      full_bio,
+      specialty,
+      avatar_url,
+      website_url,
+      instagram_url,
+      facebook_url,
+      linkedin_url,
+      youtube_url,
+      is_featured,
+      is_active,
+      created_at
+    `)
+    .eq('id', id)
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function createContributor(input: AdminContributorInput) {
+  const { data, error } = await supabase
+    .from('contributors')
+    .insert({
+      name: input.name,
+      slug: input.slug,
+      short_bio: input.short_bio ?? null,
+      full_bio: input.full_bio ?? null,
+      specialty: input.specialty ?? null,
+      avatar_url: input.avatar_url ?? null,
+      website_url: input.website_url ?? null,
+      instagram_url: input.instagram_url ?? null,
+      facebook_url: input.facebook_url ?? null,
+      linkedin_url: input.linkedin_url ?? null,
+      youtube_url: input.youtube_url ?? null,
+      is_featured: input.is_featured ?? false,
+      is_active: input.is_active ?? true,
+    })
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function updateContributor(id: string, input: AdminContributorInput) {
+  const { data, error } = await supabase
+    .from('contributors')
+    .update({
+      name: input.name,
+      slug: input.slug,
+      short_bio: input.short_bio ?? null,
+      full_bio: input.full_bio ?? null,
+      specialty: input.specialty ?? null,
+      avatar_url: input.avatar_url ?? null,
+      website_url: input.website_url ?? null,
+      instagram_url: input.instagram_url ?? null,
+      facebook_url: input.facebook_url ?? null,
+      linkedin_url: input.linkedin_url ?? null,
+      youtube_url: input.youtube_url ?? null,
+      is_featured: input.is_featured ?? false,
+      is_active: input.is_active ?? true,
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data
+}
+
+
+
+function sanitizeFileName(fileName: string) {
+  return fileName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9.-]/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+}
+
+export async function uploadContributorAvatar(file: File, contributorSlug: string) {
+  const extension = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+  const safeName = sanitizeFileName(file.name.replace(/\.[^.]+$/, ''))
+  const filePath = `${contributorSlug}/${Date.now()}-${safeName}.${extension}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('contributors')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true,
+    })
+
+  if (uploadError) {
+    throw new Error(uploadError.message)
+  }
+
+  const { data } = supabase.storage.from('contributors').getPublicUrl(filePath)
+
+  return data.publicUrl
+}
+

@@ -1,4 +1,3 @@
-// src/app/router/AdminRoute.tsx
 import { Navigate, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { useAuth } from '@/auth/useAuth'
@@ -11,6 +10,13 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const { user, profile, loading } = useAuth()
   const location = useLocation()
 
+  console.log('AdminRoute', {
+    user,
+    profile,
+    role: profile?.role,
+    loading,
+  })
+
   if (loading) {
     return <div className="p-6">Cargando...</div>
   }
@@ -19,7 +25,11 @@ export default function AdminRoute({ children }: AdminRouteProps) {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 
-  if (profile?.role !== 'admin') {
+  if (!profile) {
+    return <div className="p-6">Cargando perfil...</div>
+  }
+
+  if (profile.role !== 'admin') {
     return <Navigate to="/dashboard" replace />
   }
 

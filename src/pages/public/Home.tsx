@@ -52,7 +52,14 @@ export default function Home() {
         if (!active) return
 
         setCategories(categoriesData.slice(0, 4))
-        setResources(resourcesData)
+        setResources(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          resourcesData.map((resource: any) => ({
+            ...resource,
+            external_url: resource.external_url ?? '',
+            file_url: resource.file_url ?? '',
+          }))
+        )
         setContributors(contributorsData)
       } catch (err) {
         if (!active) return

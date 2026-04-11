@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import ResourceCard from '@/components/resources/ResourceCard'
+
 import {
   getActiveResourceCategories,
   getPublishedResources,
@@ -47,7 +48,6 @@ const [selectedType, setSelectedType] = useState(
         ])
 
         if (!active) return
-
         setResources(resourceData)
         setCategories(categoryData)
       } catch (err) {
