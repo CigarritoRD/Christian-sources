@@ -57,7 +57,7 @@ export default function AdminCategoryEditPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-white p-6">
+        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-text-secondary">Loading category...</p>
         </div>
       </div>
@@ -90,17 +90,17 @@ export default function AdminCategoryEditPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
-        <CategoryForm
-          initialValues={{
-            name: category.name,
-            slug: category.slug,
-            is_active: category.is_active,
-          }}
-          onSubmit={handleSubmit}
-          submitLabel="Save changes"
-        />
-      </div>
+
+      <CategoryForm
+        initialValues={{
+          name: category.name,
+          slug: category.slug,
+          is_active: category.is_active,
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Save changes"
+      />
+
     </div>
   )
 }

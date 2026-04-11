@@ -38,12 +38,12 @@ export default function AdminContributorCreatePage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
-        <ContributorForm
-          onSubmit={handleSubmit}
-          submitLabel="Create contributor"
-        />
-      </div>
+
+      <ContributorForm
+        onSubmit={handleSubmit}
+        submitLabel="Create contributor"
+      />
+
     </div>
   )
 }

@@ -81,7 +81,7 @@ export default function AdminContributorEditPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-white p-6">
+        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-text-secondary">Loading contributor...</p>
         </div>
       </div>
@@ -114,27 +114,27 @@ export default function AdminContributorEditPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
-        <ContributorForm
-          initialValues={{
-            name: contributor.name,
-            slug: contributor.slug,
-            short_bio: contributor.short_bio ?? '',
-            full_bio: contributor.full_bio ?? '',
-            specialty: contributor.specialty ?? '',
-            avatar_url: contributor.avatar_url ?? '',
-            website_url: contributor.website_url ?? '',
-            instagram_url: contributor.instagram_url ?? '',
-            facebook_url: contributor.facebook_url ?? '',
-            linkedin_url: contributor.linkedin_url ?? '',
-            youtube_url: contributor.youtube_url ?? '',
-            is_featured: contributor.is_featured,
-            is_active: contributor.is_active,
-          }}
-          onSubmit={handleSubmit}
-          submitLabel="Save changes"
-        />
-      </div>
+
+      <ContributorForm
+        initialValues={{
+          name: contributor.name,
+          slug: contributor.slug,
+          short_bio: contributor.short_bio ?? '',
+          full_bio: contributor.full_bio ?? '',
+          specialty: contributor.specialty ?? '',
+          avatar_url: contributor.avatar_url ?? '',
+          website_url: contributor.website_url ?? '',
+          instagram_url: contributor.instagram_url ?? '',
+          facebook_url: contributor.facebook_url ?? '',
+          linkedin_url: contributor.linkedin_url ?? '',
+          youtube_url: contributor.youtube_url ?? '',
+          is_featured: contributor.is_featured,
+          is_active: contributor.is_active,
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Save changes"
+      />
+
     </div>
   )
 }

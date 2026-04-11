@@ -85,7 +85,7 @@ export default function AdminResourceEditPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-white p-6">
+        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
           <p className="text-sm text-text-secondary">Loading resource...</p>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function AdminResourceEditPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
+      
         <ResourceForm
           initialValues={{
             title: resource.title,
@@ -138,7 +138,7 @@ export default function AdminResourceEditPage() {
           onSubmit={handleSubmit}
           submitLabel="Save changes"
         />
-      </div>
+      
     </div>
   )
 }

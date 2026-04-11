@@ -53,12 +53,12 @@ export default function AdminResourceCreatePage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
-        <ResourceForm
-          onSubmit={handleSubmit}
-          submitLabel="Create resource"
-        />
-      </div>
+
+      <ResourceForm
+        onSubmit={handleSubmit}
+        submitLabel="Create resource"
+      />
+
     </div>
   )
 }

@@ -24,13 +24,11 @@ export default function AdminCategoryCreatePage() {
           Add a new category for organizing resources.
         </p>
       </div>
+      <CategoryForm
+        onSubmit={handleSubmit}
+        submitLabel="Create category"
+      />
 
-      <div className="rounded-2xl border border-surface-border bg-white p-6">
-        <CategoryForm
-          onSubmit={handleSubmit}
-          submitLabel="Create category"
-        />
-      </div>
     </div>
   )
 }
