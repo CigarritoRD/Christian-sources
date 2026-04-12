@@ -17,6 +17,12 @@ const userNavItems = [
   { label: 'Perfil', to: '/dashboard/profile' },
 ]
 
+const adminNavItems = [
+  { label: 'Recursos', to: '/resources' },
+  { label: 'Colaboradores', to: '/contributors' },
+  { label: 'Admin', to: '/admin' },
+]
+
 export default function PublicNavbar() {
   const navigate = useNavigate()
   const { user, profile, signOut, loading } = useAuth()
@@ -25,7 +31,15 @@ export default function PublicNavbar() {
   const displayName =
     profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Usuario'
 
-  const navItems = user ? userNavItems : guestNavItems
+  const isAuthenticated = !!user
+  const isAdmin = profile?.role === 'admin'
+  const isUser = profile?.role === 'user'
+
+  const navItems = !isAuthenticated
+    ? guestNavItems
+    : isAdmin
+      ? adminNavItems
+      : userNavItems
 
   const closeMobileMenu = () => {
     setMobileOpen(false)
@@ -66,7 +80,7 @@ export default function PublicNavbar() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/dashboard'}
+              end={item.to === '/dashboard' || item.to === '/admin'}
               className={({ isActive }) =>
                 [
                   'text-sm font-medium transition',
@@ -88,7 +102,44 @@ export default function PublicNavbar() {
             <div className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm text-text-secondary">
               Cargando...
             </div>
-          ) : user ? (
+          ) : !isAuthenticated ? (
+            <>
+              <Link
+                to="/login"
+                className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+              >
+                Iniciar sesión
+              </Link>
+
+              <Link
+                to="/register"
+                className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+              >
+                Crear cuenta
+              </Link>
+            </>
+          ) : isAdmin ? (
+            <>
+              <div className="hidden rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm text-text-primary lg:inline-flex">
+                {displayName}
+              </div>
+
+              <Link
+                to="/admin"
+                className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+              >
+                Admin
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+              >
+                Salir
+              </button>
+            </>
+          ) : isUser ? (
             <>
               <Link
                 to="/dashboard/profile"
@@ -112,23 +163,7 @@ export default function PublicNavbar() {
                 Salir
               </button>
             </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
-              >
-                Iniciar sesión
-              </Link>
-
-              <Link
-                to="/register"
-                className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
-              >
-                Crear cuenta
-              </Link>
-            </>
-          )}
+          ) : null}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -154,10 +189,15 @@ export default function PublicNavbar() {
               </div>
             ) : (
               <>
-                {user ? (
+                {isAuthenticated ? (
                   <div className="mb-4 rounded-3xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]">
                     <p className="font-medium text-text-primary">{displayName}</p>
-                    <p className="mt-1 text-sm text-text-secondary">{user.email}</p>
+                    <p className="mt-1 text-sm text-text-secondary">{user?.email}</p>
+                    {isAdmin ? (
+                      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-brand-primary">
+                        Admin
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
 
@@ -166,7 +206,7 @@ export default function PublicNavbar() {
                     <NavLink
                       key={item.to}
                       to={item.to}
-                      end={item.to === '/dashboard'}
+                      end={item.to === '/dashboard' || item.to === '/admin'}
                       onClick={closeMobileMenu}
                       className={({ isActive }) =>
                         [
@@ -183,25 +223,7 @@ export default function PublicNavbar() {
                 </nav>
 
                 <div className="mt-4 flex flex-col gap-2">
-                  {user ? (
-                    <>
-                      <Link
-                        to="/dashboard"
-                        onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
-                      >
-                        Ir al dashboard
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
-                      >
-                        Salir
-                      </button>
-                    </>
-                  ) : (
+                  {!isAuthenticated ? (
                     <>
                       <Link
                         to="/login"
@@ -218,6 +240,42 @@ export default function PublicNavbar() {
                       >
                         Crear cuenta
                       </Link>
+                    </>
+                  ) : isAdmin ? (
+                    <>
+                      <Link
+                        to="/admin"
+                        onClick={closeMobileMenu}
+                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      >
+                        Ir al panel admin
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                      >
+                        Salir
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/dashboard"
+                        onClick={closeMobileMenu}
+                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      >
+                        Ir al dashboard
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                      >
+                        Salir
+                      </button>
                     </>
                   )}
                 </div>

@@ -6,6 +6,7 @@ import {
   uploadResourceThumbnail,
   type AdminResourceInput,
 } from '@/lib/api/resources'
+import PageHeader from '@/components/ui/PageHeader'
 
 type ResourceFormValues = AdminResourceInput & {
   file_url?: string | null
@@ -43,22 +44,16 @@ export default function AdminResourceCreatePage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-text-primary">
-          Create resource
-        </h1>
-        <p className="mt-1 text-sm text-text-secondary">
-          Add a new resource and connect it to a contributor and category.
-        </p>
-      </div>
-
+    <div className="space-y-5">
+      <PageHeader
+        title="Create resource"
+        description="Add a new resource and connect it to a contributor and category."
+      />
 
       <ResourceForm
         onSubmit={handleSubmit}
         submitLabel="Create resource"
       />
-
     </div>
   )
 }

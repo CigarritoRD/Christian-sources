@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FolderKanban, Plus, Search, TrendingUp } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
+import { FolderKanban, Plus, TrendingUp } from 'lucide-react'
 import {
   activateResource,
   deactivateResource,
   getAdminResources,
 } from '@/lib/api/resources'
 import AppButton from '@/components/ui/AppButton'
-import AppInput from '@/components/ui/AppInput'
+
 import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { confirmAction } from '@/lib/api/confirm'
+import SearchInput from '@/components/ui/SearchInput'
 
 type ResourceListItem = {
   id: string
@@ -79,12 +81,12 @@ export default function AdminResourcesPage() {
   async function handleTogglePublished(item: ResourceListItem) {
     const action = item.is_published ? 'unpublish' : 'publish'
     const confirmed = await confirmAction({
-  title: `${action === 'unpublish' ? 'Unpublish' : 'Publish'} resource?`,
-  text: item.title,
-  confirmText: action === 'unpublish' ? 'Unpublish' : 'Publish',
-})
+      title: `${action === 'unpublish' ? 'Unpublish' : 'Publish'} resource?`,
+      text: item.title,
+      confirmText: action === 'unpublish' ? 'Unpublish' : 'Publish',
+    })
 
-if (!confirmed) return
+    if (!confirmed) return
 
     try {
       setProcessingId(item.id)
@@ -147,13 +149,11 @@ if (!confirmed) return
 
       <SectionCard className="p-4">
         <div className="max-w-md">
-          <AppInput
+          <SearchInput
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
             placeholder="Search resources..."
-            className="pl-10"
           />
-          <Search className="pointer-events-none relative -mt-8 ml-3 h-4 w-4 text-text-secondary" />
         </div>
       </SectionCard>
 
@@ -169,8 +169,12 @@ if (!confirmed) return
         ) : error ? (
           <div className="px-4 py-6 text-sm text-red-600">{error}</div>
         ) : filteredItems.length === 0 ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
-            No resources found.
+          <div className="p-4">
+            <EmptyState
+              icon={<FolderKanban className="h-5 w-5" />}
+              title="No resources found"
+              description="Try a different search or add a new resource to the platform."
+            />
           </div>
         ) : (
           <div className="divide-y divide-surface-border">
@@ -247,8 +251,8 @@ if (!confirmed) return
                         ? 'Unpublishing...'
                         : 'Publishing...'
                       : item.is_published
-                      ? 'Unpublish'
-                      : 'Publish'}
+                        ? 'Unpublish'
+                        : 'Publish'}
                   </AppButton>
                 </div>
               </div>

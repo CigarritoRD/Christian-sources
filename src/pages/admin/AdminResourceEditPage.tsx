@@ -8,6 +8,8 @@ import {
   uploadResourceThumbnail,
   type AdminResourceInput,
 } from '@/lib/api/resources'
+import PageHeader from '@/components/ui/PageHeader'
+import SectionCard from '@/components/ui/SectionCard'
 
 type ResourceRecord = AdminResourceInput & {
   id: string
@@ -84,61 +86,51 @@ export default function AdminResourceEditPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <p className="text-sm text-text-secondary">Loading resource...</p>
-        </div>
-      </div>
+      <SectionCard className="p-6">
+        <p className="text-sm text-text-secondary">Loading resource...</p>
+      </SectionCard>
     )
   }
 
   if (error || !resource) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
-          <h1 className="text-lg font-semibold text-red-700">
-            Could not load resource
-          </h1>
-          <p className="mt-2 text-sm text-red-600">
-            {error ?? 'Resource not found.'}
-          </p>
-        </div>
-      </div>
+      <SectionCard className="border-red-200 bg-red-50 p-6">
+        <h1 className="text-lg font-semibold text-red-700">
+          Could not load resource
+        </h1>
+        <p className="mt-2 text-sm text-red-600">
+          {error ?? 'Resource not found.'}
+        </p>
+      </SectionCard>
     )
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-text-primary">
-          Edit resource
-        </h1>
-        <p className="mt-1 text-sm text-text-secondary">
-          Update this resource and its publication settings.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Edit resource"
+        description="Update this resource and its publication settings."
+      />
 
-      
-        <ResourceForm
-          initialValues={{
-            title: resource.title,
-            slug: resource.slug,
-            description: resource.description ?? '',
-            short_description: resource.short_description ?? '',
-            thumbnail_url: resource.thumbnail_url ?? '',
-            resource_type: resource.resource_type ?? '',
-            contributor_id: resource.contributor_id,
-            category_id: resource.category_id,
-            file_url: resource.file_url ?? '',
-            external_url: resource.external_url ?? '',
-            is_featured: resource.is_featured,
-            is_public: resource.is_public,
-            is_published: resource.is_published,
-          }}
-          onSubmit={handleSubmit}
-          submitLabel="Save changes"
-        />
-      
+      <ResourceForm
+        initialValues={{
+          title: resource.title,
+          slug: resource.slug,
+          description: resource.description ?? '',
+          short_description: resource.short_description ?? '',
+          thumbnail_url: resource.thumbnail_url ?? '',
+          resource_type: resource.resource_type ?? '',
+          contributor_id: resource.contributor_id,
+          category_id: resource.category_id,
+          file_url: resource.file_url ?? '',
+          external_url: resource.external_url ?? '',
+          is_featured: resource.is_featured,
+          is_public: resource.is_public,
+          is_published: resource.is_published,
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Save changes"
+      />
     </div>
   )
 }
