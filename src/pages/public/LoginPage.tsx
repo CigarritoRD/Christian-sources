@@ -1,168 +1,85 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { supabase } from '@/lib/supabaseClient'
+import { LogIn } from 'lucide-react'
+import { useAuth } from '@/auth/useAuth'
+import FadeIn from '@/components/ui/FadeIn'
+import AppInput from '@/components/ui/AppInput'
+import AppButton from '@/components/ui/AppButton'
+import SectionCard from '@/components/ui/SectionCard'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { signIn } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    const normalizedEmail = email.trim().toLowerCase()
-
-    if (!normalizedEmail) {
-      toast.error('Escribe tu correo electrónico.')
-      return
-    }
-
-    if (!password) {
-      toast.error('Escribe tu contraseña.')
-      return
-    }
 
     try {
       setLoading(true)
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
-        password,
-      })
+      await signIn(email, password)
 
-      if (error) {
-        throw error
-      }
-
-      toast.success('Sesión iniciada correctamente.')
+      toast.success('Bienvenido de nuevo 👋')
       navigate('/dashboard')
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'No se pudo iniciar sesión.'
-
-      toast.error(message)
+    } catch (err) {
+      console.error(err)
+      toast.error('Credenciales incorrectas.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="bg-bg text-text-primary">
-      <section className="px-6 py-16 md:px-10 lg:px-16">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_460px] lg:items-center">
-          <div className="max-w-2xl">
-            <span className="inline-flex rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-text-secondary shadow-[var(--shadow-soft)]">
-              Toolkit Box
-            </span>
+    <div className="relative min-h-screen bg-bg text-text-primary flex items-center justify-center px-6">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
 
-            <h1 className="mt-5 font-heading text-4xl leading-tight md:text-5xl">
-              Inicia sesión y continúa explorando tu biblioteca.
-            </h1>
-
-            <p className="mt-5 font-body text-lg text-text-secondary">
-              Accede a tu panel personal para guardar recursos, revisar tus
-              descargas y seguir descubriendo materiales y colaboradores.
-            </p>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Accede
-                </p>
-                <p className="mt-3 text-sm text-text-primary">
-                  Entra a tu librería y encuentra tus recursos guardados.
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Organiza
-                </p>
-                <p className="mt-3 text-sm text-text-primary">
-                  Lleva control de favoritos y materiales descargados.
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Descubre
-                </p>
-                <p className="mt-3 text-sm text-text-primary">
-                  Sigue explorando nuevos recursos y perfiles de colaboradores.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)] md:p-8">
-            <div className="mb-6">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                Acceso
-              </p>
-              <h2 className="mt-2 font-heading text-3xl">Iniciar sesión</h2>
+      <FadeIn>
+        <SectionCard className="w-full max-w-md p-8">
+          <div className="mb-6 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+              <LogIn className="h-5 w-5" />
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-text-primary"
-                >
-                  Correo electrónico
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  className="w-full rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-text-primary outline-none transition focus:border-brand-accent"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm font-medium text-text-primary"
-                >
-                  Contraseña
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Tu contraseña"
-                  className="w-full rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-text-primary outline-none transition focus:border-brand-accent"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex w-full items-center justify-center rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? 'Entrando...' : 'Iniciar sesión'}
-              </button>
-            </form>
-
-            <p className="mt-6 text-sm text-text-secondary">
-              ¿No tienes cuenta?{' '}
-              <Link
-                to="/register"
-                className="font-medium text-brand-accent hover:underline"
-              >
-                Crear cuenta
-              </Link>
+            <h1 className="mt-4 font-heading text-2xl">Iniciar sesión</h1>
+            <p className="mt-2 text-sm text-text-secondary">
+              Accede a tu cuenta para continuar
             </p>
           </div>
-        </div>
-      </section>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <AppInput
+              label="Correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="correo@email.com"
+            />
+
+            <AppInput
+              label="Contraseña"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
+
+            <AppButton type="submit" disabled={loading} className="w-full">
+              {loading ? 'Entrando...' : 'Entrar'}
+            </AppButton>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-text-secondary">
+            ¿No tienes cuenta?{' '}
+            <Link to="/register" className="text-brand-accent hover:underline">
+              Crear cuenta
+            </Link>
+          </p>
+        </SectionCard>
+      </FadeIn>
     </div>
   )
 }

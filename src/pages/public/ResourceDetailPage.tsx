@@ -1,8 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  ArrowLeft,
+  Bookmark,
+  Download,
+  ExternalLink,
+  Heart,
+  Layers3,
+  UserRound,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import { useResourceActions } from '@/hooks/useResourceActions'
+import FadeIn from '@/components/ui/FadeIn'
+import EmptyState from '@/components/ui/EmptyState'
+import SectionCard from '@/components/ui/SectionCard'
+import StatusBadge from '@/components/ui/StatusBadge'
+import AppButton from '@/components/ui/AppButton'
 import { getPublishedResourceBySlug } from '@/lib/api/resources'
 import { openTrackedResource } from '@/lib/resourceAccess'
 
@@ -230,19 +244,13 @@ export default function ResourceDetailPage() {
     return (
       <div className="bg-bg text-text-primary">
         <section className="px-6 py-16 md:px-10 lg:px-16">
-          <div className="mx-auto max-w-4xl rounded-3xl border border-surface-border bg-surface p-10 text-center shadow-[var(--shadow-soft)]">
-            <h1 className="font-heading text-3xl text-text-primary">
-              No pudimos mostrar este recurso
-            </h1>
-            <p className="mt-3 text-text-secondary">
-              {error || 'Este recurso no está disponible.'}
-            </p>
-            <Link
-              to="/resources"
-              className="mt-6 inline-flex rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
-            >
-              Volver a recursos
-            </Link>
+          <div className="mx-auto max-w-4xl">
+            <EmptyState
+              title="No pudimos mostrar este recurso"
+              description={error || 'Este recurso no está disponible.'}
+              actionLabel="Volver a recursos"
+              onAction={() => navigate('/resources')}
+            />
           </div>
         </section>
       </div>
@@ -251,163 +259,177 @@ export default function ResourceDetailPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <section className="px-6 py-8 md:px-10 lg:px-16">
+      <section className="relative overflow-hidden px-6 py-8 md:px-10 lg:px-16">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
         <div className="mx-auto max-w-6xl">
-          <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-text-secondary">
-            <Link to="/" className="hover:text-text-primary">
-              Inicio
-            </Link>
-            <span>/</span>
-            <Link to="/resources" className="hover:text-text-primary">
-              Recursos
-            </Link>
-            <span>/</span>
-            <span className="text-text-primary">{resource.title}</span>
-          </div>
+          <FadeIn>
+            <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+              <Link to="/" className="hover:text-text-primary">
+                Inicio
+              </Link>
+              <span>/</span>
+              <Link to="/resources" className="hover:text-text-primary">
+                Recursos
+              </Link>
+              <span>/</span>
+              <span className="text-text-primary">{resource.title}</span>
+            </div>
+          </FadeIn>
 
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-bg-soft">
-                {resource.thumbnail_url ? (
-                  <img
-                    src={resource.thumbnail_url}
-                    alt={resource.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-primary/15 to-brand-accent/10 text-6xl">
-                    📚
-                  </div>
-                )}
+            <FadeIn>
+              <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-bg-soft">
+                  {resource.thumbnail_url ? (
+                    <img
+                      src={resource.thumbnail_url}
+                      alt={resource.title}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-primary/15 to-brand-accent/10">
+                      <Layers3 className="h-16 w-16 text-text-secondary" />
+                    </div>
+                  )}
 
-                <div className="absolute left-4 top-4 rounded-full border border-surface-border bg-surface px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
-                  {formatTypeLabel(resource.resource_type)}
+                  <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                    <StatusBadge
+                      label={formatTypeLabel(resource.resource_type)}
+                      tone="default"
+                    />
+                    {resource.category ? (
+                      <StatusBadge label={resource.category.name} tone="info" />
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
+            </FadeIn>
 
-            <div className="rounded-3xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-surface-border bg-bg-soft px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
-                  {formatTypeLabel(resource.resource_type)}
-                </span>
+            <FadeIn delay={0.06}>
+              <div className="space-y-6">
+                <SectionCard className="p-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge
+                      label={formatTypeLabel(resource.resource_type)}
+                      tone="default"
+                    />
+                    {resource.category ? (
+                      <StatusBadge label={resource.category.name} tone="info" />
+                    ) : null}
+                  </div>
 
-                {resource.category ? (
-                  <span className="rounded-full border border-surface-border bg-bg-soft px-3 py-1 text-xs text-text-secondary">
-                    {resource.category.name}
-                  </span>
-                ) : null}
-              </div>
+                  <h1 className="mt-5 font-heading text-3xl leading-tight md:text-4xl">
+                    {resource.title}
+                  </h1>
 
-              <h1 className="mt-5 font-heading text-3xl leading-tight md:text-4xl">
-                {resource.title}
-              </h1>
-
-              <p className="mt-5 text-base leading-7 text-text-secondary">
-                {description}
-              </p>
-
-              {resource.contributor ? (
-                <div className="mt-6 rounded-3xl border border-surface-border bg-bg-soft p-4">
-                  <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                    Colaborador
+                  <p className="mt-5 text-base leading-7 text-text-secondary">
+                    {description}
                   </p>
 
-                  <div className="mt-3">
-                    <Link
-                      to={`/contributors/${resource.contributor.slug}`}
-                      className="font-heading text-xl text-text-primary hover:text-brand-accent"
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                    <AppButton
+                      onClick={handleOpenResource}
+                      disabled={isOpening}
+                      className="w-full"
                     >
-                      {resource.contributor.name}
-                    </Link>
+                      {resource.file_url ? (
+                        <Download className="h-4 w-4" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4" />
+                      )}
+                      {isOpening
+                        ? 'Abriendo...'
+                        : resource.file_url
+                        ? 'Descargar / abrir'
+                        : 'Abrir enlace'}
+                    </AppButton>
 
-                    {resource.contributor.short_bio ? (
-                      <p className="mt-2 text-sm text-text-secondary">
-                        {resource.contributor.short_bio}
-                      </p>
-                    ) : null}
+                    <AppButton
+                      variant={saved ? 'primary' : 'secondary'}
+                      onClick={handleToggleSaved}
+                      disabled={loadingState === 'saved'}
+                      className="w-full"
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      {loadingState === 'saved'
+                        ? 'Guardando...'
+                        : saved
+                        ? 'Guardado'
+                        : 'Guardar'}
+                    </AppButton>
 
-                    {resource.contributor.website_url ? (
-                      <a
-                        href={resource.contributor.website_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-flex text-sm font-medium text-brand-accent hover:underline"
-                      >
-                        Visitar sitio web
-                      </a>
-                    ) : null}
+                    <AppButton
+                      variant={favorite ? 'primary' : 'secondary'}
+                      onClick={handleToggleFavorite}
+                      disabled={loadingState === 'favorite'}
+                      className="w-full sm:col-span-2"
+                    >
+                      <Heart className="h-4 w-4" />
+                      {loadingState === 'favorite'
+                        ? 'Actualizando...'
+                        : favorite
+                        ? 'En favoritos'
+                        : 'Agregar a favoritos'}
+                    </AppButton>
                   </div>
-                </div>
-              ) : null}
+                </SectionCard>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={handleOpenResource}
-                  disabled={isOpening}
-                  className="inline-flex items-center justify-center rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90 disabled:opacity-60"
-                >
-                  {isOpening
-                    ? 'Abriendo...'
-                    : resource.file_url
-                    ? 'Descargar / abrir'
-                    : 'Abrir enlace'}
-                </button>
+                {resource.contributor ? (
+                  <SectionCard className="p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                        <UserRound className="h-5 w-5" />
+                      </div>
 
-                <button
-                  type="button"
-                  onClick={handleToggleSaved}
-                  disabled={loadingState === 'saved'}
-                  className={`inline-flex items-center justify-center rounded-2xl border px-5 py-3 font-medium transition disabled:opacity-60 ${
-                    saved
-                      ? 'border-brand-primary bg-brand-primary text-white'
-                      : 'border-surface-border bg-bg-soft text-text-primary hover:bg-surface-hover'
-                  }`}
-                >
-                  {loadingState === 'saved'
-                    ? 'Guardando...'
-                    : saved
-                    ? 'Guardado'
-                    : 'Guardar'}
-                </button>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                          Colaborador
+                        </p>
 
-                <button
-                  type="button"
-                  onClick={handleToggleFavorite}
-                  disabled={loadingState === 'favorite'}
-                  className={`inline-flex items-center justify-center rounded-2xl border px-5 py-3 font-medium transition disabled:opacity-60 sm:col-span-2 ${
-                    favorite
-                      ? 'border-brand-accent bg-brand-accent text-brand-ink'
-                      : 'border-surface-border bg-bg-soft text-text-primary hover:bg-surface-hover'
-                  }`}
-                >
-                  {loadingState === 'favorite'
-                    ? 'Actualizando...'
-                    : favorite
-                    ? 'En favoritos'
-                    : 'Agregar a favoritos'}
-                </button>
+                        <Link
+                          to={`/contributors/${resource.contributor.slug}`}
+                          className="mt-2 inline-flex font-heading text-xl text-text-primary hover:text-brand-accent"
+                        >
+                          {resource.contributor.name}
+                        </Link>
+
+                        {resource.contributor.short_bio ? (
+                          <p className="mt-2 text-sm text-text-secondary">
+                            {resource.contributor.short_bio}
+                          </p>
+                        ) : null}
+
+                        {resource.contributor.website_url ? (
+                          <a
+                            href={resource.contributor.website_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-brand-accent hover:underline"
+                          >
+                            Visitar sitio web
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  </SectionCard>
+                ) : null}
               </div>
-            </div>
+            </FadeIn>
           </div>
 
-          <div className="mt-8 rounded-3xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-            <h2 className="font-heading text-2xl text-text-primary">
-              Sobre este recurso
-            </h2>
-
-            <div className="mt-5 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-surface-border bg-bg-soft p-4">
+          <FadeIn delay={0.1}>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <SectionCard className="p-5">
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
                   Tipo
                 </p>
                 <p className="mt-2 text-text-primary">
                   {formatTypeLabel(resource.resource_type)}
                 </p>
-              </div>
+              </SectionCard>
 
-              <div className="rounded-2xl border border-surface-border bg-bg-soft p-4">
+              <SectionCard className="p-5">
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
                   Disponibilidad
                 </p>
@@ -416,18 +438,50 @@ export default function ResourceDetailPage() {
                     ? 'Disponible'
                     : 'Pendiente'}
                 </p>
-              </div>
+              </SectionCard>
 
-              <div className="rounded-2xl border border-surface-border bg-bg-soft p-4">
+              <SectionCard className="p-5">
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
                   Colaborador
                 </p>
                 <p className="mt-2 text-text-primary">
                   {resource.contributor?.name || 'No especificado'}
                 </p>
-              </div>
+              </SectionCard>
             </div>
-          </div>
+          </FadeIn>
+
+          <FadeIn delay={0.14}>
+            <SectionCard className="mt-8 p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
+                  <Layers3 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-2xl text-text-primary">
+                    Sobre este recurso
+                  </h2>
+                  <p className="text-sm text-text-secondary">
+                    Descripción y contexto del material.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 max-w-4xl text-base leading-8 text-text-secondary">
+                {description}
+              </div>
+
+              <div className="mt-6">
+                <Link
+                  to="/resources"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-brand-accent hover:underline"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Volver a recursos
+                </Link>
+              </div>
+            </SectionCard>
+          </FadeIn>
         </div>
       </section>
     </div>

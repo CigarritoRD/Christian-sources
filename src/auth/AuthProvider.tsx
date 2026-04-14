@@ -29,8 +29,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .eq('id', userId)
       .single()
 
-    console.log('fetchProfile result', { userId, data, error })
-
     if (error) {
       console.error('Error loading profile:', error)
       return null
@@ -119,6 +117,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [hydrateAuth])
 
+  const signIn = useCallback(async (email: string, password: string) => {
+    const normalizedEmail = email.trim().toLowerCase()
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    })
+
+    if (error) {
+      console.error('Error signing in:', error)
+      throw error
+    }
+  }, [])
+
+  const signUp = useCallback(
+    async (email: string, password: string, fullName: string) => {
+      const normalizedEmail = email.trim().toLowerCase()
+      const normalizedName = fullName.trim()
+
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          data: {
+            full_name: normalizedName,
+          },
+        },
+      })
+
+      if (error) {
+        console.error('Error signing up:', error)
+        throw error
+      }
+
+      return data
+    },
+    [],
+  )
+
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()
     if (error) {
@@ -135,10 +172,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       profile,
       loading,
+      signIn,
+      signUp,
       signOut,
       refreshProfile,
     }),
-    [user, profile, loading, signOut, refreshProfile],
+    [user, profile, loading, signIn, signUp, signOut, refreshProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -1,5 +1,19 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import {
+  Bookmark,
+  Star,
+  FileText,
+  Video,
+  Music,
+  Image as ImageIcon,
+  File,
+  Link as LinkIcon,
+  Download,
+} from 'lucide-react'
+
 import { useAuth } from '@/auth/useAuth'
 import { useResourceActions } from '@/hooks/useResourceActions'
 
@@ -41,21 +55,21 @@ function getTypeIcon(type?: string | null) {
 
   switch (normalized) {
     case 'pdf':
-      return '📄'
+      return <FileText className="h-5 w-5" />
     case 'video':
-      return '🎬'
+      return <Video className="h-5 w-5" />
     case 'audio':
-      return '🎧'
+      return <Music className="h-5 w-5" />
     case 'image':
-      return '🖼️'
+      return <ImageIcon className="h-5 w-5" />
     case 'document':
-      return '📝'
+      return <File className="h-5 w-5" />
     case 'link':
-      return '🔗'
+      return <LinkIcon className="h-5 w-5" />
     case 'download':
-      return '⬇️'
+      return <Download className="h-5 w-5" />
     default:
-      return '📚'
+      return <FileText className="h-5 w-5" />
   }
 }
 
@@ -93,6 +107,7 @@ export default function ResourceCard({
 }: ResourceCardProps) {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [imgLoaded, setImgLoaded] = useState(false)
 
   const { saved, favorite, loadingState, toggleSaved, toggleFavorite } =
     useResourceActions({
@@ -156,14 +171,38 @@ export default function ResourceCard({
   }
 
   const cardContent = (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-0.5 hover:bg-surface-hover hover:shadow-[var(--shadow-card)]">
-      <div className="relative h-44 w-full overflow-hidden bg-bg-soft">
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: 'easeOut' }}
+      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+    >
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-bg-soft">
         {thumbnailUrl ? (
-          <img
-            src={thumbnailUrl}
-            alt={title}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          />
+          <>
+            <div className="relative h-full w-full">
+              {!imgLoaded ? (
+                <div className="absolute inset-0 animate-pulse bg-bg-soft" />
+              ) : null}
+
+              <img
+                src={thumbnailUrl}
+                alt={title}
+                onLoad={() => setImgLoaded(true)}
+                className={`h-full w-full object-cover transition duration-500 group-hover:scale-105 ${
+                  imgLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'
+                }`}
+              />
+            </div>
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+
+            <div className="absolute left-3 top-3 z-10">
+              <span className="rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-medium tracking-wide text-white backdrop-blur">
+                {typeLabel}
+              </span>
+            </div>
+          </>
         ) : (
           <div
             className={`flex h-full w-full flex-col justify-between bg-gradient-to-br ${typeAccent} p-4`}
@@ -173,7 +212,7 @@ export default function ResourceCard({
                 {typeLabel}
               </div>
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-surface-border bg-surface text-lg shadow-[var(--shadow-soft)]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-surface-border bg-surface text-text-secondary shadow-[var(--shadow-soft)]">
                 {typeIcon}
               </div>
             </div>
@@ -192,36 +231,50 @@ export default function ResourceCard({
           </div>
         )}
 
-        <div className="absolute right-3 top-3 flex gap-2">
-          <button
+        <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+          <motion.button
             type="button"
             onClick={handleSaved}
             disabled={loadingState === 'saved'}
-            className={`rounded-full border px-2.5 py-2 text-xs transition ${
+            whileTap={{ scale: 0.92 }}
+            animate={
               saved
-                ? 'border-brand-primary bg-brand-primary text-white'
-                : 'border-surface-border bg-surface text-text-secondary hover:bg-surface-hover'
+                ? { scale: [1, 1.18, 1.08], rotate: [0, -6, 0] }
+                : { scale: 1, rotate: 0 }
+            }
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur transition ${
+              saved
+                ? 'border-brand-primary bg-brand-primary text-white shadow-[var(--shadow-soft)]'
+                : 'border-surface-border bg-surface/90 text-text-secondary hover:scale-105 hover:bg-surface-hover'
             }`}
             aria-label={saved ? 'Quitar de guardados' : 'Guardar recurso'}
             title={saved ? 'Quitar de guardados' : 'Guardar recurso'}
           >
-            {loadingState === 'saved' ? '…' : '💾'}
-          </button>
+            <Bookmark className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
             onClick={handleFavorite}
             disabled={loadingState === 'favorite'}
-            className={`rounded-full border px-2.5 py-2 text-xs transition ${
+            whileTap={{ scale: 0.92 }}
+            animate={
               favorite
-                ? 'border-brand-accent bg-brand-accent text-brand-ink'
-                : 'border-surface-border bg-surface text-text-secondary hover:bg-surface-hover'
+                ? { scale: [1, 1.2, 1.08], rotate: [0, 8, 0] }
+                : { scale: 1, rotate: 0 }
+            }
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur transition ${
+              favorite
+                ? 'border-brand-accent bg-brand-accent text-brand-ink shadow-[var(--shadow-soft)]'
+                : 'border-surface-border bg-surface/90 text-text-secondary hover:scale-105 hover:bg-surface-hover'
             }`}
             aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             title={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           >
-            {loadingState === 'favorite' ? '…' : '⭐'}
-          </button>
+            <Star className={`h-4 w-4 ${favorite ? 'fill-current' : ''}`} />
+          </motion.button>
         </div>
       </div>
 
@@ -235,7 +288,7 @@ export default function ResourceCard({
         </h3>
 
         {description ? (
-          <p className="mt-2 line-clamp-2 text-sm text-text-secondary">
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-text-secondary">
             {description}
           </p>
         ) : null}
@@ -254,7 +307,7 @@ export default function ResourceCard({
           ) : null}
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 
   if (!slug) {

@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import {
+  ArrowLeft,
+  ExternalLink,
+  Globe2,
+  UserRound,
+} from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
+import FadeIn from '@/components/ui/FadeIn'
+import EmptyState from '@/components/ui/EmptyState'
+import SectionCard from '@/components/ui/SectionCard'
+import StatusBadge from '@/components/ui/StatusBadge'
 import {
   getContributorBySlug,
   getContributorResources,
@@ -68,22 +78,22 @@ export default function ContributorDetailPage() {
 
   const links: ContributorLink[] = contributor
     ? [
-        contributor.website_url
-          ? { label: 'Sitio web', href: contributor.website_url }
-          : null,
-        contributor.instagram_url
-          ? { label: 'Instagram', href: contributor.instagram_url }
-          : null,
-        contributor.facebook_url
-          ? { label: 'Facebook', href: contributor.facebook_url }
-          : null,
-        contributor.linkedin_url
-          ? { label: 'LinkedIn', href: contributor.linkedin_url }
-          : null,
-        contributor.youtube_url
-          ? { label: 'YouTube', href: contributor.youtube_url }
-          : null,
-      ].filter(Boolean) as ContributorLink[]
+      contributor.website_url
+        ? { label: 'Sitio web', href: contributor.website_url }
+        : null,
+      contributor.instagram_url
+        ? { label: 'Instagram', href: contributor.instagram_url }
+        : null,
+      contributor.facebook_url
+        ? { label: 'Facebook', href: contributor.facebook_url }
+        : null,
+      contributor.linkedin_url
+        ? { label: 'LinkedIn', href: contributor.linkedin_url }
+        : null,
+      contributor.youtube_url
+        ? { label: 'YouTube', href: contributor.youtube_url }
+        : null,
+    ].filter(Boolean) as ContributorLink[]
     : []
 
   if (loading) {
@@ -104,9 +114,11 @@ export default function ContributorDetailPage() {
     return (
       <div className="bg-bg text-text-primary">
         <section className="px-6 py-14 md:px-10 lg:px-16">
-          <div className="mx-auto max-w-4xl rounded-3xl border border-red-500/20 bg-red-500/10 p-6">
-            <h1 className="font-heading text-2xl">No pudimos cargar el colaborador</h1>
-            <p className="mt-3 text-text-secondary">{error}</p>
+          <div className="mx-auto max-w-4xl">
+            <EmptyState
+              title="No pudimos cargar el colaborador"
+              description={error}
+            />
           </div>
         </section>
       </div>
@@ -117,17 +129,15 @@ export default function ContributorDetailPage() {
     return (
       <div className="bg-bg text-text-primary">
         <section className="px-6 py-14 md:px-10 lg:px-16">
-          <div className="mx-auto max-w-4xl rounded-3xl border border-surface-border bg-surface p-8 text-center">
-            <h1 className="font-heading text-3xl">Colaborador no encontrado</h1>
-            <p className="mt-3 text-text-secondary">
-              El perfil que buscas no está disponible.
-            </p>
-            <Link
-              to="/contributors"
-              className="mt-6 inline-flex rounded-2xl bg-brand-primary px-5 py-3 text-white"
-            >
-              Volver a colaboradores
-            </Link>
+          <div className="mx-auto max-w-4xl">
+            <EmptyState
+              title="Colaborador no encontrado"
+              description="El perfil que buscas no está disponible."
+              actionLabel="Volver a colaboradores"
+              onAction={() => {
+                window.location.href = '/contributors'
+              }}
+            />
           </div>
         </section>
       </div>
@@ -136,134 +146,143 @@ export default function ContributorDetailPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <section className="px-6 py-12 md:px-10 lg:px-16">
+      <section className="relative overflow-hidden px-6 py-10 md:px-10 lg:px-16">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.08),transparent_28%)]" />
         <div className="mx-auto max-w-6xl">
-          <Link
-            to="/contributors"
-            className="text-sm text-brand-accent transition hover:underline"
-          >
-            ← Volver a colaboradores
-          </Link>
+          <FadeIn>
+            <Link
+              to="/contributors"
+              className="inline-flex items-center gap-2 text-sm text-brand-accent transition hover:underline"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver a colaboradores
+            </Link>
+          </FadeIn>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="rounded-3xl border border-surface-border bg-surface p-8 shadow-soft">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-                <div className="h-28 w-28 overflow-hidden rounded-3xl bg-bg-soft">
-                  {contributor.avatar_url ? (
-                    <img
-                      src={contributor.avatar_url}
-                      alt={contributor.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center font-heading text-3xl text-text-secondary">
-                      {contributor.name.charAt(0)}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                    Colaborador
-                  </p>
-
-                  <h1 className="mt-2 font-heading text-4xl leading-tight md:text-5xl">
-                    {contributor.name}
-                  </h1>
-
-                  {contributor.specialty ? (
-                    <p className="mt-4 text-lg text-brand-accent">
-                      {contributor.specialty}
-                    </p>
-                  ) : null}
-
-                  {contributor.short_bio ? (
-                    <p className="mt-5 max-w-3xl font-body text-lg text-text-secondary">
-                      {contributor.short_bio}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-
-              {contributor.full_bio ? (
-                <div className="mt-8 border-t border-surface-border pt-8">
-                  <h2 className="font-heading text-2xl">Sobre este colaborador</h2>
-                  <p className="mt-4 leading-8 text-text-secondary">
-                    {contributor.full_bio}
-                  </p>
-                </div>
-              ) : null}
-            </div>
-
-            <aside className="space-y-6">
-              <div className="rounded-3xl border border-surface-border bg-surface p-6 shadow-soft">
-                <h2 className="font-heading text-xl">Conecta</h2>
-
-                {links.length > 0 ? (
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    {links.map((item) => (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
-                      >
-                        {item.label}
-                      </a>
-                    ))}
+            <FadeIn>
+              <SectionCard className="p-8">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+                  <div className="h-28 w-28 overflow-hidden rounded-3xl bg-bg-soft shadow-[var(--shadow-soft)]">
+                    {contributor.avatar_url ? (
+                      <img
+                        src={contributor.avatar_url}
+                        alt={contributor.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 font-heading text-3xl text-text-secondary">
+                        {contributor.name.charAt(0)}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <p className="mt-4 text-sm text-text-secondary">
-                    Este colaborador aún no tiene enlaces externos disponibles.
-                  </p>
-                )}
-              </div>
 
-              <div className="rounded-3xl border border-surface-border bg-surface p-6 shadow-soft">
-                <h2 className="font-heading text-xl">Recursos compartidos</h2>
-                <p className="mt-3 text-sm text-text-secondary">
-                  {resources.length}{' '}
-                  {resources.length === 1 ? 'recurso publicado' : 'recursos publicados'}
-                </p>
-              </div>
-            </aside>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge label="Colaborador" />
+                      {contributor.specialty ? (
+                        <StatusBadge label={contributor.specialty} tone="info" />
+                      ) : null}
+                    </div>
+
+                    <h1 className="mt-4 font-heading text-4xl md:text-5xl">
+                      {contributor.name}
+                    </h1>
+
+                    {contributor.short_bio ? (
+                      <p className="mt-5 text-lg text-text-secondary">
+                        {contributor.short_bio}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+
+                {contributor.full_bio ? (
+                  <div className="mt-8 border-t border-surface-border pt-8">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                        <UserRound className="h-5 w-5" />
+                      </div>
+                      <h2 className="font-heading text-2xl">
+                        Sobre este colaborador
+                      </h2>
+                    </div>
+
+                    <p className="mt-5 max-w-4xl leading-8 text-text-secondary">
+                      {contributor.full_bio}
+                    </p>
+                  </div>
+                ) : null}
+              </SectionCard>
+            </FadeIn>
+
+            <FadeIn delay={0.06}>
+              <aside className="space-y-6">
+                <SectionCard className="p-6">
+                  <h2 className="font-heading text-xl">Enlaces</h2>
+
+                  {links.length > 0 ? (
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      {links.map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        >
+                          <Globe2 className="h-4 w-4" />
+                          {item.label}
+                          <ExternalLink className="h-4 w-4 text-text-secondary" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-sm text-text-secondary">
+                      Este colaborador no tiene enlaces disponibles.
+                    </p>
+                  )}
+                </SectionCard>
+
+                <SectionCard className="p-6">
+                  <h2 className="font-heading text-xl">Recursos</h2>
+                  <p className="mt-2 text-3xl font-semibold">
+                    {resources.length}
+                  </p>
+                </SectionCard>
+              </aside>
+            </FadeIn>
           </div>
         </div>
       </section>
 
-      <section className="px-6 pb-16 md:px-10 lg:px-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6">
-            <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-              Biblioteca del colaborador
-            </p>
-            <h2 className="mt-2 font-heading text-3xl">Recursos disponibles</h2>
-          </div>
-
-          {resources.length === 0 ? (
-            <div className="rounded-3xl border border-surface-border bg-surface p-8 text-center">
-              <h3 className="font-heading text-2xl">Aún no hay recursos publicados</h3>
-              <p className="mt-3 text-text-secondary">
-                Este colaborador todavía no tiene recursos visibles en la plataforma.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <FadeIn delay={0.1}>
+        <section className="px-6 pb-16 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-6 font-heading text-3xl">
+              Recursos del colaborador
+            </h2>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {resources.map((resource) => (
-                <ResourceCard
+                <div
                   key={resource.id}
-                  title={resource.title}
-                  description={resource.short_description || resource.description}
-                  thumbnailUrl={resource.thumbnail_url}
-                  type={resource.resource_type}
-                  contributorName={resource.contributor?.name ?? null}
-                  slug={resource.slug} id={''}                />
+                  className="transition-transform duration-200 hover:-translate-y-1"
+                >
+                  <ResourceCard
+                    id={resource.id}
+                    title={resource.title}
+                    description={resource.short_description || resource.description}
+                    thumbnailUrl={resource.thumbnail_url}
+                    type={resource.resource_type}
+                    contributorName={resource.contributor?.name ?? contributor.name}
+                    slug={resource.slug}
+                  />
+                </div>
               ))}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      </FadeIn>
     </div>
   )
 }
