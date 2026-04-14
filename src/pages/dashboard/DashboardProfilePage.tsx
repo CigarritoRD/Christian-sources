@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Camera, Save, RotateCcw, } from 'lucide-react'
+import { Camera, RotateCcw, Save} from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
@@ -204,6 +204,10 @@ export default function DashboardProfilePage() {
                     fileName={avatarFile?.name ?? null}
                     hint="PNG, JPG o WEBP"
                     onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
+                    onClear={() => {
+                      setAvatarFile(null)
+                      setPreviewUrl(null)
+                    }}
                   />
 
                   <div className="flex flex-wrap gap-3">

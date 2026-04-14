@@ -39,10 +39,10 @@ export default function PublicNavbar() {
     profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Usuario'
 
   const initials = displayName.trim().slice(0, 1).toUpperCase()
+  const avatarUrl = profile?.avatar_url ?? ''
 
   const isAuthenticated = !!user
   const isAdmin = profile?.role === 'admin'
-  const isUser = profile?.role === 'user'
 
   const navItems = !isAuthenticated
     ? guestNavItems
@@ -153,8 +153,16 @@ export default function PublicNavbar() {
                 onClick={() => setMenuOpen((prev) => !prev)}
                 className="inline-flex items-center gap-3 rounded-2xl border border-surface-border bg-surface px-3 py-2 text-sm text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15 text-xs font-semibold text-brand-primary">
-                  {initials}
+                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-xs font-semibold text-brand-primary">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={displayName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    initials
+                  )}
                 </div>
 
                 <div className="hidden text-left lg:block">
@@ -176,8 +184,28 @@ export default function PublicNavbar() {
               {menuOpen ? (
                 <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
                   <div className="border-b border-surface-border px-4 py-4">
-                    <p className="font-medium text-text-primary">{displayName}</p>
-                    <p className="mt-1 text-sm text-text-secondary">{user?.email}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-sm font-semibold text-brand-primary">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={displayName}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          initials
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-text-primary">
+                          {displayName}
+                        </p>
+                        <p className="truncate text-sm text-text-secondary">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="p-2">
@@ -261,10 +289,31 @@ export default function PublicNavbar() {
               <>
                 {isAuthenticated ? (
                   <div className="mb-4 rounded-3xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]">
-                    <p className="font-medium text-text-primary">{displayName}</p>
-                    <p className="mt-1 text-sm text-text-secondary">{user?.email}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-sm font-semibold text-brand-primary">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={displayName}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          initials
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-text-primary">
+                          {displayName}
+                        </p>
+                        <p className="truncate text-sm text-text-secondary">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
+
                     {isAdmin ? (
-                      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-brand-primary">
+                      <p className="mt-3 text-xs uppercase tracking-[0.2em] text-brand-primary">
                         Admin
                       </p>
                     ) : null}
