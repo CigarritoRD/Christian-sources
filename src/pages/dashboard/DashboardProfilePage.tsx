@@ -204,10 +204,7 @@ export default function DashboardProfilePage() {
                     fileName={avatarFile?.name ?? null}
                     hint="PNG, JPG o WEBP"
                     onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-                    onClear={() => {
-                      setAvatarFile(null)
-                      setPreviewUrl(null)
-                    }}
+                    
                   />
 
                   <div className="flex flex-wrap gap-3">
