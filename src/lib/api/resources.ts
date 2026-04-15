@@ -215,6 +215,13 @@ export async function getFeaturedResources() {
         id,
         name,
         slug
+      ),
+      resource_tags (
+        tag:tags (
+          id,
+          name,
+          slug
+        )
       )
     `)
     .eq('is_featured', true)
@@ -225,6 +232,7 @@ export async function getFeaturedResources() {
   if (error) throw new Error(error.message)
   return data ?? []
 }
+
 export async function getPublishedResources() {
   const { data, error } = await supabase
     .from('resources')
@@ -252,6 +260,13 @@ export async function getPublishedResources() {
         id,
         name,
         slug
+      ),
+      resource_tags (
+        tag:tags (
+          id,
+          name,
+          slug
+        )
       )
     `)
     .eq('is_public', true)
@@ -261,6 +276,7 @@ export async function getPublishedResources() {
   if (error) throw new Error(error.message)
   return data ?? []
 }
+
 export async function getPublishedResourceBySlug(slug: string) {
   const { data, error } = await supabase
     .from('resources')
@@ -274,8 +290,6 @@ export async function getPublishedResourceBySlug(slug: string) {
       short_description,
       thumbnail_url,
       resource_type,
-      file_url,
-      external_url,
       contributor_id,
       category_id,
       is_featured,
@@ -293,6 +307,13 @@ export async function getPublishedResourceBySlug(slug: string) {
         id,
         name,
         slug
+      ),
+      resource_tags (
+        tag:tags (
+          id,
+          name,
+          slug
+        )
       )
     `)
     .eq('slug', slug)

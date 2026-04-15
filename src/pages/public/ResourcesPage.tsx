@@ -5,7 +5,9 @@ import {
   FolderKanban,
   Search,
   SlidersHorizontal,
+  Tag,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import ResourceCard from '@/components/resources/ResourceCard'
 import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
@@ -18,6 +20,7 @@ import {
   getPublishedResources,
   type ResourceCategory,
 } from '@/lib/api/resources'
+import { getActiveTags, type TagRecord } from '@/lib/api/tags'
 import type { ResourceListItem } from '@/types/resources'
 
 const typeOptions = [
@@ -31,9 +34,22 @@ const typeOptions = [
   { label: 'Descarga', value: 'download' },
 ]
 
+type ResourceWithTags = ResourceListItem & {
+  resource_tags?: Array<{
+    tag?: {
+      id: string
+      name: string
+      slug: string
+    } | null
+  }>
+}
+
 export default function ResourcesPage() {
-  const [resources, setResources] = useState<ResourceListItem[]>([])
+  const { t } = useTranslation()
+
+  const [resources, setResources] = useState<ResourceWithTags[]>([])
   const [categories, setCategories] = useState<ResourceCategory[]>([])
+  const [tags, setTags] = useState<TagRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -45,6 +61,7 @@ export default function ResourcesPage() {
   const [selectedType, setSelectedType] = useState(
     searchParams.get('type') ?? 'all',
   )
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   useEffect(() => {
     let active = true
@@ -54,14 +71,16 @@ export default function ResourcesPage() {
         setLoading(true)
         setError(null)
 
-        const [resourceData, categoryData] = await Promise.all([
+        const [resourceData, categoryData, tagsData] = await Promise.all([
           getPublishedResources(),
           getActiveResourceCategories(),
+          getActiveTags(),
         ])
 
         if (!active) return
-        setResources(resourceData as unknown as ResourceListItem[])
+        setResources(resourceData as unknown as ResourceWithTags[])
         setCategories(categoryData)
+        setTags(tagsData)
       } catch (err) {
         if (!active) return
 
@@ -104,6 +123,8 @@ export default function ResourcesPage() {
     const normalized = query.trim().toLowerCase()
 
     return resources.filter((resource) => {
+      const tagsForResource = resource.resource_tags ?? []
+
       const matchesQuery =
         !normalized ||
         resource.title.toLowerCase().includes(normalized) ||
@@ -111,7 +132,10 @@ export default function ResourcesPage() {
           .toLowerCase()
           .includes(normalized) ||
         (resource.contributor?.name || '').toLowerCase().includes(normalized) ||
-        (resource.category?.name || '').toLowerCase().includes(normalized)
+        (resource.category?.name || '').toLowerCase().includes(normalized) ||
+        tagsForResource.some((entry) =>
+          (entry.tag?.name || '').toLowerCase().includes(normalized),
+        )
 
       const matchesCategory =
         selectedCategory === 'all' || resource.category?.slug === selectedCategory
@@ -119,17 +143,35 @@ export default function ResourcesPage() {
       const matchesType =
         selectedType === 'all' || resource.resource_type === selectedType
 
-      return matchesQuery && matchesCategory && matchesType
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.every((tagId) =>
+          tagsForResource.some((entry) => entry.tag?.id === tagId),
+        )
+
+      return matchesQuery && matchesCategory && matchesType && matchesTags
     })
-  }, [query, resources, selectedCategory, selectedType])
+  }, [query, resources, selectedCategory, selectedType, selectedTags])
 
   const hasActiveFilters =
-    query.trim() !== '' || selectedCategory !== 'all' || selectedType !== 'all'
+    query.trim() !== '' ||
+    selectedCategory !== 'all' ||
+    selectedType !== 'all' ||
+    selectedTags.length > 0
 
   const clearFilters = () => {
     setQuery('')
     setSelectedCategory('all')
     setSelectedType('all')
+    setSelectedTags([])
+  }
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags((current) =>
+      current.includes(tagId)
+        ? current.filter((id) => id !== tagId)
+        : [...current, tagId],
+    )
   }
 
   return (
@@ -143,11 +185,10 @@ export default function ResourcesPage() {
                 Biblioteca
               </p>
               <h1 className="mt-2 font-heading text-4xl md:text-5xl">
-                Explora recursos
+                {t('resources.title')}
               </h1>
               <p className="mt-4 font-body text-lg text-text-secondary">
-                Encuentra materiales compartidos por colaboradores y accede a recursos
-                útiles para formación, bienestar, liderazgo y acompañamiento.
+                {t('resources.subtitle')}
               </p>
             </div>
 
@@ -195,9 +236,11 @@ export default function ResourcesPage() {
                   <SlidersHorizontal className="h-4 w-4" />
                 </div>
                 <div>
-                  <h2 className="font-heading text-lg text-text-primary">Filtros</h2>
+                  <h2 className="font-heading text-lg text-text-primary">
+                    {t('resources.filters')}
+                  </h2>
                   <p className="text-sm text-text-secondary">
-                    Ajusta tu búsqueda por nombre, categoría o tipo.
+                    {t('resources.filterSubtitle')}
                   </p>
                 </div>
               </div>
@@ -206,14 +249,14 @@ export default function ResourcesPage() {
                 <SearchInput
                   value={query}
                   onChange={setQuery}
-                  placeholder="Buscar por título, colaborador o categoría..."
+                  placeholder={t('resources.searchPlaceholder')}
                 />
 
                 <AppSelect
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
-                  <option value="all">Todas las categorías</option>
+                  <option value="all">{t('resources.allCategories')}</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.slug}>
                       {category.name}
@@ -237,9 +280,42 @@ export default function ResourcesPage() {
                   onClick={clearFilters}
                   disabled={!hasActiveFilters}
                 >
-                  Limpiar
+                  {t('resources.clear')}
                 </AppButton>
               </div>
+
+              {tags.length > 0 ? (
+                <div className="mt-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-text-secondary" />
+                    <p className="text-sm font-medium text-text-primary">
+                      {t('resources.tags')}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    {tags.map((tag) => {
+                      const active = selectedTags.includes(tag.id)
+
+                      return (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          onClick={() => toggleTag(tag.id)}
+                          className={[
+                            'rounded-full border px-4 py-2 text-sm font-medium transition',
+                            active
+                              ? 'border-brand-primary bg-brand-primary text-white'
+                              : 'border-surface-border bg-bg-soft text-text-primary hover:bg-surface-hover',
+                          ].join(' ')}
+                        >
+                          {tag.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ) : null}
             </SectionCard>
           </div>
         </section>
@@ -271,9 +347,9 @@ export default function ResourcesPage() {
             ) : filteredResources.length === 0 ? (
               <EmptyState
                 icon={<FolderKanban className="h-5 w-5" />}
-                title="No encontramos resultados"
-                description="Intenta ajustar tu búsqueda o limpiar los filtros aplicados."
-                actionLabel={hasActiveFilters ? 'Limpiar filtros' : undefined}
+                title={t('resources.noResultsTitle')}
+                description={t('resources.noResultsDescription')}
+                actionLabel={hasActiveFilters ? t('resources.clear') : undefined}
                 onAction={hasActiveFilters ? clearFilters : undefined}
               />
             ) : (
@@ -281,15 +357,12 @@ export default function ResourcesPage() {
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-text-secondary">
-                      {filteredResources.length}{' '}
-                      {filteredResources.length === 1
-                        ? 'recurso encontrado'
-                        : 'recursos encontrados'}
+                      {t('resources.resultsFound', { count: filteredResources.length })}
                     </p>
 
                     {hasActiveFilters ? (
                       <p className="mt-1 text-xs uppercase tracking-[0.2em] text-text-secondary">
-                        Filtros activos
+                        {t('resources.activeFilters')}
                       </p>
                     ) : null}
                   </div>

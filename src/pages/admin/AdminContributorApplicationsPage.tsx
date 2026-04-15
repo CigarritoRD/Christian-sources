@@ -1,0 +1,194 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { FileSearch, ShieldCheck, XCircle } from 'lucide-react'
+import FadeIn from '@/components/ui/FadeIn'
+import EmptyState from '@/components/ui/EmptyState'
+import SectionCard from '@/components/ui/SectionCard'
+import AppButton from '@/components/ui/AppButton'
+import SearchInput from '@/components/ui/SearchInput'
+import PageHeader from '@/components/ui/PageHeader'
+import {
+  getContributorApplications,
+  type ContributorApplicationRecord,
+} from '@/lib/api/contributor-applications-admin'
+
+type FilterStatus = 'all' | 'pending_review' | 'approved' | 'rejected'
+
+export default function AdminContributorApplicationsPage() {
+  const [items, setItems] = useState<ContributorApplicationRecord[]>([])
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState<FilterStatus>('pending_review')
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+
+    const load = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getContributorApplications(status)
+        if (!active) return
+        setItems(data)
+      } catch (err) {
+        if (!active) return
+        setError(err instanceof Error ? err.message : 'Failed to load applications.')
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    void load()
+
+    return () => {
+      active = false
+    }
+  }, [status])
+
+  const filtered = useMemo(() => {
+    const normalized = query.trim().toLowerCase()
+    if (!normalized) return items
+
+    return items.filter((item) => {
+      return (
+        item.full_name.toLowerCase().includes(normalized) ||
+        (item.email || '').toLowerCase().includes(normalized) ||
+        (item.specialty || '').toLowerCase().includes(normalized) ||
+        (item.country || '').toLowerCase().includes(normalized) ||
+        (item.organization || '').toLowerCase().includes(normalized)
+      )
+    })
+  }, [items, query])
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Contributor applications"
+        description="Review pending contributor requests and decide whether to approve them."
+      />
+
+      <SectionCard className="p-5">
+        <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name, email, specialty, country..."
+          />
+
+          <div className="flex flex-wrap gap-2">
+            <AppButton
+              type="button"
+              variant={status === 'pending_review' ? 'primary' : 'secondary'}
+              onClick={() => setStatus('pending_review')}
+            >
+              Pending
+            </AppButton>
+
+            <AppButton
+              type="button"
+              variant={status === 'approved' ? 'primary' : 'secondary'}
+              onClick={() => setStatus('approved')}
+            >
+              Approved
+            </AppButton>
+
+            <AppButton
+              type="button"
+              variant={status === 'rejected' ? 'primary' : 'secondary'}
+              onClick={() => setStatus('rejected')}
+            >
+              Rejected
+            </AppButton>
+
+            <AppButton
+              type="button"
+              variant={status === 'all' ? 'primary' : 'secondary'}
+              onClick={() => setStatus('all')}
+            >
+              All
+            </AppButton>
+          </div>
+        </div>
+      </SectionCard>
+
+      {loading ? (
+        <div className="grid gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <SectionCard key={index} className="animate-pulse p-5">
+              <div className="h-5 w-48 rounded bg-bg-soft" />
+              <div className="mt-3 h-4 w-72 rounded bg-bg-soft" />
+            </SectionCard>
+          ))}
+        </div>
+      ) : error ? (
+        <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
+          <h2 className="font-heading text-xl">Could not load applications</h2>
+          <p className="mt-2 text-sm text-text-secondary">{error}</p>
+        </SectionCard>
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icon={<FileSearch className="h-5 w-5" />}
+          title="No applications found"
+          description="There are no contributor applications matching this filter."
+        />
+      ) : (
+        <div className="grid gap-4">
+          {filtered.map((item, index) => (
+            <FadeIn key={item.id} delay={0.02 * (index % 6)}>
+              <SectionCard className="p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="font-heading text-xl text-text-primary">
+                        {item.full_name}
+                      </h2>
+
+                      {item.status === 'pending_review' ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                          <FileSearch className="h-3.5 w-3.5" />
+                          Pending
+                        </span>
+                      ) : null}
+
+                      {item.status === 'approved' ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                          <ShieldCheck className="h-3.5 w-3.5" />
+                          Approved
+                        </span>
+                      ) : null}
+
+                      {item.status === 'rejected' ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700">
+                          <XCircle className="h-3.5 w-3.5" />
+                          Rejected
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {item.email || 'No email'} {item.country ? `• ${item.country}` : ''}
+                      {item.organization ? ` • ${item.organization}` : ''}
+                    </p>
+
+                    {item.specialty ? (
+                      <p className="mt-2 text-sm text-text-secondary">
+                        {item.specialty}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Link to={`/admin/contributor-applications/${item.id}`}>
+                      <AppButton type="button">Review</AppButton>
+                    </Link>
+                  </div>
+                </div>
+              </SectionCard>
+            </FadeIn>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Filter, FolderKanban} from 'lucide-react'
+import { Filter, FolderKanban, Tag } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
 import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
@@ -11,6 +11,7 @@ import {
   getPublishedResources,
   type ResourceCategory,
 } from '@/lib/api/resources'
+import { getActiveTags, type TagRecord } from '@/lib/api/tags'
 import type { ResourceListItem } from '@/types/resources'
 
 const typeOptions = [
@@ -24,15 +25,27 @@ const typeOptions = [
   { label: 'Descarga', value: 'download' },
 ]
 
+type ResourceWithTags = ResourceListItem & {
+  resource_tags?: Array<{
+    tag?: {
+      id: string
+      name: string
+      slug: string
+    } | null
+  }>
+}
+
 export default function DashboardResourcesPage() {
-  const [resources, setResources] = useState<ResourceListItem[]>([])
+  const [resources, setResources] = useState<ResourceWithTags[]>([])
   const [categories, setCategories] = useState<ResourceCategory[]>([])
+  const [tags, setTags] = useState<TagRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const [query, setQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   useEffect(() => {
     let active = true
@@ -42,15 +55,17 @@ export default function DashboardResourcesPage() {
         setLoading(true)
         setError(null)
 
-        const [resourceData, categoryData] = await Promise.all([
+        const [resourceData, categoryData, tagsData] = await Promise.all([
           getPublishedResources(),
           getActiveResourceCategories(),
+          getActiveTags(),
         ])
 
         if (!active) return
 
-        setResources(resourceData as unknown as ResourceListItem[])
+        setResources(resourceData as unknown as ResourceWithTags[])
         setCategories(categoryData)
+        setTags(tagsData)
       } catch (err) {
         if (!active) return
 
@@ -74,6 +89,8 @@ export default function DashboardResourcesPage() {
     const normalized = query.trim().toLowerCase()
 
     return resources.filter((resource) => {
+      const tagsForResource = resource.resource_tags ?? []
+
       const matchesQuery =
         !normalized ||
         resource.title.toLowerCase().includes(normalized) ||
@@ -81,7 +98,10 @@ export default function DashboardResourcesPage() {
           .toLowerCase()
           .includes(normalized) ||
         (resource.contributor?.name || '').toLowerCase().includes(normalized) ||
-        (resource.category?.name || '').toLowerCase().includes(normalized)
+        (resource.category?.name || '').toLowerCase().includes(normalized) ||
+        tagsForResource.some((entry) =>
+          (entry.tag?.name || '').toLowerCase().includes(normalized),
+        )
 
       const matchesCategory =
         selectedCategory === 'all' || resource.category?.slug === selectedCategory
@@ -89,17 +109,35 @@ export default function DashboardResourcesPage() {
       const matchesType =
         selectedType === 'all' || resource.resource_type === selectedType
 
-      return matchesQuery && matchesCategory && matchesType
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.every((tagId) =>
+          tagsForResource.some((entry) => entry.tag?.id === tagId),
+        )
+
+      return matchesQuery && matchesCategory && matchesType && matchesTags
     })
-  }, [query, resources, selectedCategory, selectedType])
+  }, [query, resources, selectedCategory, selectedType, selectedTags])
 
   const hasActiveFilters =
-    query.trim() !== '' || selectedCategory !== 'all' || selectedType !== 'all'
+    query.trim() !== '' ||
+    selectedCategory !== 'all' ||
+    selectedType !== 'all' ||
+    selectedTags.length > 0
 
   const clearFilters = () => {
     setQuery('')
     setSelectedCategory('all')
     setSelectedType('all')
+    setSelectedTags([])
+  }
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags((current) =>
+      current.includes(tagId)
+        ? current.filter((id) => id !== tagId)
+        : [...current, tagId],
+    )
   }
 
   return (
@@ -116,7 +154,7 @@ export default function DashboardResourcesPage() {
               </h1>
               <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
                 Descubre materiales desde tu panel personal y encuentra recursos útiles
-                por tema, tipo o colaborador.
+                por tema, tipo, colaborador o tags.
               </p>
             </SectionCard>
           </div>
@@ -143,7 +181,7 @@ export default function DashboardResourcesPage() {
                 <SearchInput
                   value={query}
                   onChange={setQuery}
-                  placeholder="Buscar por título, colaborador o categoría..."
+                  placeholder="Buscar por título, colaborador, categoría o tag..."
                 />
 
                 <AppSelect
@@ -169,6 +207,37 @@ export default function DashboardResourcesPage() {
                   ))}
                 </AppSelect>
               </div>
+
+              {tags.length > 0 ? (
+                <div className="mt-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-text-secondary" />
+                    <p className="text-sm font-medium text-text-primary">Tags</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    {tags.map((tag) => {
+                      const active = selectedTags.includes(tag.id)
+
+                      return (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          onClick={() => toggleTag(tag.id)}
+                          className={[
+                            'rounded-full border px-4 py-2 text-sm font-medium transition',
+                            active
+                              ? 'border-brand-primary bg-brand-primary text-white'
+                              : 'border-surface-border bg-bg-soft text-text-primary hover:bg-surface-hover',
+                          ].join(' ')}
+                        >
+                          {tag.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ) : null}
 
               {hasActiveFilters ? (
                 <div className="mt-4">

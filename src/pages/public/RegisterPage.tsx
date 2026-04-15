@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
 import { UserPlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
@@ -10,6 +11,7 @@ import SectionCard from '@/components/ui/SectionCard'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { signUp } = useAuth()
 
   const [name, setName] = useState('')
@@ -25,18 +27,18 @@ export default function RegisterPage() {
 
       await signUp(email, password, name)
 
-      toast.success('Cuenta creada correctamente 🎉')
+      toast.success('Account created successfully 🎉')
       navigate('/dashboard')
     } catch (err) {
       console.error(err)
-      toast.error('No se pudo crear la cuenta.')
+      toast.error('Could not create account.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen bg-bg text-text-primary flex items-center justify-center px-6">
+    <div className="relative flex min-h-screen items-center justify-center bg-bg px-6 text-text-primary">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
 
       <FadeIn>
@@ -46,41 +48,41 @@ export default function RegisterPage() {
               <UserPlus className="h-5 w-5" />
             </div>
 
-            <h1 className="mt-4 font-heading text-2xl">Crear cuenta</h1>
+            <h1 className="mt-4 font-heading text-2xl">{t('auth.registerTitle')}</h1>
             <p className="mt-2 text-sm text-text-secondary">
-              Únete a Toolkit Box
+              {t('auth.registerSubtitle')}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <AppInput
-              label="Nombre"
+              label={t('auth.fullName')}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
 
             <AppInput
-              label="Correo"
+              label={t('auth.email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <AppInput
-              label="Contraseña"
+              label={t('auth.password')}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
 
             <AppButton type="submit" disabled={loading} className="w-full">
-              {loading ? 'Creando...' : 'Crear cuenta'}
+              {loading ? t('auth.signingUp') : t('auth.signUp')}
             </AppButton>
           </form>
 
           <p className="mt-6 text-center text-sm text-text-secondary">
-            ¿Ya tienes cuenta?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" className="text-brand-accent hover:underline">
-              Iniciar sesión
+              {t('nav.login')}
             </Link>
           </p>
         </SectionCard>

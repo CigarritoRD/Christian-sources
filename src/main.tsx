@@ -5,6 +5,8 @@ import { Toaster } from 'sonner'
 import { router } from '@/app/router/routes'
 import { AuthProvider } from '@/auth/AuthProvider'
 import './index.css'
+import '@/lib/i18n'
+import './index.css'
 
 const savedTheme = window.localStorage.getItem('toolkit-box-theme')
 const initialTheme = savedTheme === 'light' ? 'light' : 'dark'

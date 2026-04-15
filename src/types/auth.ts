@@ -5,6 +5,8 @@ export type Profile = {
   full_name: string | null
   email: string | null
   role: 'user' | 'admin'
+  country: string | null
+  organization: string | null
   avatar_url: string | null
   created_at: string
   updated_at: string

@@ -9,6 +9,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import ResourceCard from '@/components/resources/ResourceCard'
 import ContributorCard from '@/components/contributors/ContributorCard'
 import FadeIn from '@/components/ui/FadeIn'
@@ -22,6 +23,8 @@ import type { ResourceListItem } from '@/types/resources'
 import type { ContributorListItem } from '@/types/contributors'
 
 export default function Home() {
+  const { t } = useTranslation()
+
   const [categories, setCategories] = useState<ResourceCategory[]>([])
   const [resources, setResources] = useState<ResourceListItem[]>([])
   const [contributors, setContributors] = useState<ContributorListItem[]>([])
@@ -96,17 +99,15 @@ export default function Home() {
             <div className="max-w-3xl">
               <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-text-secondary shadow-[var(--shadow-soft)]">
                 <Sparkles className="h-4 w-4" />
-                Toolkit Box
+                {t('home.badge')}
               </span>
 
               <h1 className="font-heading text-4xl leading-tight md:text-5xl lg:text-6xl">
-                Recursos útiles para aprender, acompañar y crecer en comunidad.
+                {t('home.title')}
               </h1>
 
               <p className="mt-6 max-w-2xl font-body text-lg text-text-secondary md:text-xl">
-                Explora materiales compartidos por colaboradores, descubre nuevas
-                herramientas y encuentra recursos diseñados para apoyar procesos reales
-                de formación, bienestar y liderazgo.
+                {t('home.subtitle')}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -114,7 +115,7 @@ export default function Home() {
                   to="/resources"
                   className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-6 py-3 font-medium text-white shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:opacity-95"
                 >
-                  Explorar recursos
+                  {t('home.exploreResources')}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
@@ -122,7 +123,14 @@ export default function Home() {
                   to="/contributors"
                   className="rounded-2xl border border-surface-border bg-surface px-6 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
                 >
-                  Ver colaboradores
+                  {t('home.viewContributors')}
+                </Link>
+
+                <Link
+                  to="/become-a-contributor"
+                  className="rounded-2xl border border-brand-primary/20 bg-brand-primary/10 px-6 py-3 font-medium text-brand-primary transition hover:bg-brand-primary/15"
+                >
+                  {t('home.becomeContributor')}
                 </Link>
               </div>
 
@@ -319,7 +327,7 @@ export default function Home() {
                   type="submit"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-primary px-6 py-3 font-medium text-white transition hover:opacity-90"
                 >
-                  Buscar
+                  {t('common.search')}
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -350,7 +358,7 @@ export default function Home() {
                 </h2>
               </div>
               <Link to="/resources" className="text-sm text-brand-accent">
-                Ver todo
+                {t('common.viewAll')}
               </Link>
             </div>
 
@@ -410,7 +418,7 @@ export default function Home() {
                 </h2>
               </div>
               <Link to="/resources" className="text-sm text-brand-accent">
-                Ver biblioteca
+                {t('common.viewAll')}
               </Link>
             </div>
 
@@ -466,7 +474,7 @@ export default function Home() {
                 </h2>
               </div>
               <Link to="/contributors" className="text-sm text-brand-accent">
-                Ver todos
+                {t('common.viewAll')}
               </Link>
             </div>
 
@@ -513,6 +521,72 @@ export default function Home() {
       </FadeIn>
 
       <FadeIn delay={0.28}>
+        <section className="px-6 py-12 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-6xl rounded-3xl border border-brand-primary/15 bg-gradient-to-br from-brand-primary/10 via-surface to-brand-accent/10 p-8 shadow-[var(--shadow-card)] md:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-text-secondary shadow-[var(--shadow-soft)]">
+                  <Sparkles className="h-4 w-4 text-brand-primary" />
+                  {t('home.contributorCtaBadge')}
+                </div>
+
+                <h2 className="mt-4 font-heading text-3xl md:text-4xl">
+                  {t('home.contributorCtaTitle')}
+                </h2>
+
+                <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+                  {t('home.contributorCtaSubtitle')}
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-4">
+                  <Link
+                    to="/become-a-contributor"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-6 py-3 font-medium text-white transition hover:opacity-90"
+                  >
+                    {t('home.becomeContributor')}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+
+                  <Link
+                    to="/contributors"
+                    className="rounded-2xl border border-surface-border bg-surface px-6 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
+                  >
+                    {t('home.viewContributors')}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <div className="rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg text-text-primary">
+                    {t('home.contributorCtaPoint1Title')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {t('home.contributorCtaPoint1Body')}
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg text-text-primary">
+                    {t('home.contributorCtaPoint2Title')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {t('home.contributorCtaPoint2Body')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </FadeIn>
+
+      <FadeIn delay={0.32}>
         <section className="px-6 py-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-5xl rounded-3xl border border-surface-border bg-surface p-8 text-center shadow-[var(--shadow-card)] md:p-12">
             <h2 className="font-heading text-3xl md:text-4xl">
@@ -530,7 +604,7 @@ export default function Home() {
                 to="/resources"
                 className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-6 py-3 font-medium text-white transition hover:opacity-90"
               >
-                Explorar biblioteca
+                {t('home.exploreResources')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
 
@@ -538,7 +612,7 @@ export default function Home() {
                 to="/contributors"
                 className="rounded-2xl border border-surface-border bg-bg-soft px-6 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
               >
-                Conocer colaboradores
+                {t('home.viewContributors')}
               </Link>
             </div>
           </div>

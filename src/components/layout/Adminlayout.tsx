@@ -2,12 +2,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import {
   ArrowLeft,
+  FileSearch,
   FolderKanban,
   Grid2x2,
   LayoutDashboard,
   LogOut,
   Menu,
   Shapes,
+  Tag,
   Users,
   X,
 } from 'lucide-react'
@@ -25,8 +27,10 @@ type AdminNavItem = {
 const adminNavItems: AdminNavItem[] = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard, end: true },
   { label: 'Contributors', to: '/admin/contributors', icon: Users },
+  { label: 'Applications', to: '/admin/contributor-applications', icon: FileSearch },
   { label: 'Resources', to: '/admin/resources', icon: FolderKanban },
   { label: 'Categories', to: '/admin/categories', icon: Grid2x2 },
+  { label: 'Tags', to: '/admin/tags', icon: Tag }
 ]
 
 function navLinkClass(isActive: boolean) {

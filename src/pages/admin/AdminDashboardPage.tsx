@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  FileSearch,
   FolderKanban,
   Grid2x2,
+  ShieldCheck,
   TrendingUp,
   Users,
+  
 } from 'lucide-react'
 import {
   getAdminDashboardStats,
@@ -14,7 +17,12 @@ import {
   type AdminRecentContributor,
   type AdminRecentResource,
 } from '@/lib/api/admin'
+import {
+  getContributorApplications,
+  type ContributorApplicationRecord,
+} from '@/lib/api/contributor-applications-admin'
 import AppButton from '@/components/ui/AppButton'
+import EmptyState from '@/components/ui/EmptyState'
 import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
@@ -24,6 +32,9 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminDashboardStats | null>(null)
   const [recentContributors, setRecentContributors] = useState<AdminRecentContributor[]>([])
   const [recentResources, setRecentResources] = useState<AdminRecentResource[]>([])
+  const [pendingApplications, setPendingApplications] = useState<
+    ContributorApplicationRecord[]
+  >([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,15 +44,18 @@ export default function AdminDashboardPage() {
         setLoading(true)
         setError(null)
 
-        const [statsData, contributorsData, resourcesData] = await Promise.all([
-          getAdminDashboardStats(),
-          getRecentContributors(5),
-          getRecentResources(5),
-        ])
+        const [statsData, contributorsData, resourcesData, applicationsData] =
+          await Promise.all([
+            getAdminDashboardStats(),
+            getRecentContributors(5),
+            getRecentResources(5),
+            getContributorApplications('pending_review'),
+          ])
 
         setStats(statsData)
         setRecentContributors(contributorsData)
         setRecentResources(resourcesData)
+        setPendingApplications(applicationsData.slice(0, 5))
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load admin dashboard.')
       } finally {
@@ -81,11 +95,11 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="Admin dashboard"
-        description="Manage contributors, resources, categories, and platform activity."
+        description="Manage contributors, applications, resources, categories, and platform activity."
         actions={
           <>
-            <Link to="/admin/contributors/new">
-              <AppButton variant="secondary">New contributor</AppButton>
+            <Link to="/admin/contributor-applications">
+              <AppButton variant="secondary">Review applications</AppButton>
             </Link>
             <Link to="/admin/resources/new">
               <AppButton>New resource</AppButton>
@@ -122,11 +136,19 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <QuickActionCard
+          icon={<FileSearch className="h-5 w-5" />}
+          title="Review applications"
+          description="Check pending contributor requests and approve legitimate profiles."
+          to="/admin/contributor-applications"
+          actionLabel="Open applications"
+        />
+
         <QuickActionCard
           icon={<Users className="h-5 w-5" />}
           title="Create contributor"
-          description="Add a new public contributor profile."
+          description="Add a new public contributor profile manually."
           to="/admin/contributors/new"
           actionLabel="New contributor"
         />
@@ -148,8 +170,65 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <SectionCard className="overflow-hidden">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <SectionCard className="overflow-hidden xl:col-span-1">
+          <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
+            <div>
+              <h2 className="font-heading text-lg text-text-primary">
+                Pending applications
+              </h2>
+              <p className="text-sm text-text-secondary">
+                Contributor requests waiting for review.
+              </p>
+            </div>
+
+            <Link to="/admin/contributor-applications">
+              <AppButton variant="ghost">View all</AppButton>
+            </Link>
+          </div>
+
+          <div className="divide-y divide-surface-border">
+            {pendingApplications.length === 0 ? (
+              <div className="p-5">
+                <EmptyState
+                  icon={<ShieldCheck className="h-5 w-5" />}
+                  title="No pending applications"
+                  description="Everything is reviewed for now."
+                />
+              </div>
+            ) : (
+              pendingApplications.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-text-primary">
+                      {item.full_name}
+                    </p>
+                    <p className="truncate text-sm text-text-secondary">
+                      {item.email || 'No email'}
+                    </p>
+                    <p className="mt-1 text-xs text-text-secondary">
+                      {item.country || 'No country'}
+                      {item.organization ? ` · ${item.organization}` : ''}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <StatusBadge label="Pending" tone="warning" />
+
+                    <Link to={`/admin/contributor-applications/${item.id}`}>
+                      <AppButton variant="secondary">Review</AppButton>
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard className="overflow-hidden xl:col-span-1">
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
             <div>
               <h2 className="font-heading text-lg text-text-primary">
@@ -215,7 +294,7 @@ export default function AdminDashboardPage() {
           </div>
         </SectionCard>
 
-        <SectionCard className="overflow-hidden">
+        <SectionCard className="overflow-hidden xl:col-span-1">
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
             <div>
               <h2 className="font-heading text-lg text-text-primary">
@@ -297,7 +376,7 @@ function QuickActionCard({
   to,
   actionLabel,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   description: string
   to: string

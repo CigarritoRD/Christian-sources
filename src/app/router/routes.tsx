@@ -1,49 +1,42 @@
-// src/app/router/routes.tsx
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
-// Layouts
 import GuestRoute from '@/app/router/GuestRoute'
-import PublicLayout from '@/components/layout/PublicLayout'
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import AdminLayout from '@/components/layout/Adminlayout'
-
-// Guards
 import ProtectedRoute from '@/app/router/ProtectedRoute'
 import AdminRoute from '@/app/router/AdminRoute'
 
-// Public pages
+import PublicLayout from '@/components/layout/PublicLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import AdminLayout from '@/components/layout/AdminLayout'
+
 import HomePage from '@/pages/public/Home'
 import ResourcesPage from '@/pages/public/ResourcesPage'
 import ResourceDetailPage from '@/pages/public/ResourceDetailPage'
 import ContributorsPage from '@/pages/public/ContributorsPage'
 import ContributorDetailPage from '@/pages/public/ContributorDetailPage'
+import BecomeContributorPage from '@/pages/public/BecomeContributorPage'
 import LoginPage from '@/pages/public/LoginPage'
 import RegisterPage from '@/pages/public/RegisterPage'
 import NotFoundPage from '@/pages/public/NotFoundPage'
 
-// User pages
 import DashboardHomePage from '@/pages/dashboard/DashboardHomePage'
 import DashboardResourcesPage from '@/pages/dashboard/DashboardResourcesPage'
 import DashboardLibraryPage from '@/pages/dashboard/DashboardLibraryPage'
 import DashboardDownloadsPage from '@/pages/dashboard/DashboardDownloadsPage'
 import DashboardProfilePage from '@/pages/dashboard/DashboardProfilePage'
 
-// Admin pages
-
-
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
-
 import AdminResourcesPage from '@/pages/admin/AdminResourcesPage'
 import AdminResourceCreatePage from '@/pages/admin/AdminResourceCreatePage'
 import AdminResourceEditPage from '@/pages/admin/AdminResourceEditPage'
-
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage'
 import AdminCategoryCreatePage from '@/pages/admin/AdminCreateCategoryPage'
 import AdminCategoryEditPage from '@/pages/admin/AdminCategoryEditPage'
-
 import AdminContributorsPage from '@/pages/admin/AdminContributorsPage'
 import AdminContributorEditPage from '@/pages/admin/AdminContributorEditPage'
 import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage'
+import AdminContributorApplicationsPage from '@/pages/admin/AdminContributorApplicationsPage'
+import AdminContributorApplicationDetailPage from '@/pages/admin/AdminContributorApplicationDetailPage'
+import AdminTagsPage from '@/pages/admin/AdminTagsPage'
 
 export const router = createBrowserRouter([
   {
@@ -57,22 +50,13 @@ export const router = createBrowserRouter([
 
       { path: 'contributors', element: <ContributorsPage /> },
       { path: 'contributors/:slug', element: <ContributorDetailPage /> },
+      { path: 'become-a-contributor', element: <BecomeContributorPage /> },
 
       {
         element: <GuestRoute />,
         children: [
-          {
-            children: [
-              {
-                path: '/login',
-                element: <LoginPage />,
-              },
-              {
-                path: '/register',
-                element: <RegisterPage />,
-              },
-            ],
-          },
+          { path: 'login', element: <LoginPage /> },
+          { path: 'register', element: <RegisterPage /> },
         ],
       },
     ],
@@ -91,7 +75,6 @@ export const router = createBrowserRouter([
       { path: 'library', element: <DashboardLibraryPage /> },
       { path: 'downloads', element: <DashboardDownloadsPage /> },
       { path: 'profile', element: <DashboardProfilePage /> },
-
     ],
   },
 
@@ -110,13 +93,17 @@ export const router = createBrowserRouter([
       { path: 'resources/:id/edit', element: <AdminResourceEditPage /> },
 
       { path: 'contributors', element: <AdminContributorsPage /> },
-      { path: 'contributors/new', element:<AdminContributorCreatePage/>},
+      { path: 'contributors/new', element: <AdminContributorCreatePage /> },
       { path: 'contributors/:id/edit', element: <AdminContributorEditPage /> },
-
 
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'categories/new', element: <AdminCategoryCreatePage /> },
       { path: 'categories/:id/edit', element: <AdminCategoryEditPage /> },
+
+      { path: 'contributor-applications', element: <AdminContributorApplicationsPage /> },
+      { path: 'contributor-applications/:id', element: <AdminContributorApplicationDetailPage /> },
+
+      { path: 'tags', element: <AdminTagsPage /> },
     ],
   },
 

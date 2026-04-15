@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   ChevronDown,
@@ -6,29 +6,18 @@ import {
   Library,
   LogOut,
   Shield,
+  Sparkles,
   User,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import ThemeToggle from '@/components/layout/ThemeToggle'
 import { useAuth } from '@/auth/useAuth'
 
-const guestNavItems = [
-  { label: 'Recursos', to: '/resources' },
-  { label: 'Colaboradores', to: '/contributors' },
-]
-
-const userNavItems = [
-  { label: 'Recursos', to: '/resources' },
-  { label: 'Colaboradores', to: '/contributors' },
-]
-
-const adminNavItems = [
-  { label: 'Recursos', to: '/resources' },
-  { label: 'Colaboradores', to: '/contributors' },
-]
-
 export default function PublicNavbar() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { user, profile, signOut, loading } = useAuth()
 
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -44,11 +33,13 @@ export default function PublicNavbar() {
   const isAuthenticated = !!user
   const isAdmin = profile?.role === 'admin'
 
-  const navItems = !isAuthenticated
-    ? guestNavItems
-    : isAdmin
-      ? adminNavItems
-      : userNavItems
+  const navItems = useMemo(
+    () => [
+      { label: t('nav.resources'), to: '/resources' },
+      { label: t('nav.contributors'), to: '/contributors' },
+    ],
+    [t],
+  )
 
   const closeMobileMenu = () => {
     setMobileOpen(false)
@@ -57,7 +48,7 @@ export default function PublicNavbar() {
   const handleSignOut = async () => {
     try {
       await signOut()
-      toast.success('Sesión cerrada correctamente.')
+      toast.success(t('nav.logout'))
       setMenuOpen(false)
       closeMobileMenu()
       navigate('/')
@@ -124,11 +115,22 @@ export default function PublicNavbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          {!isAdmin ? (
+            <Link
+              to="/become-a-contributor"
+              className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+            >
+              <Sparkles className="h-4 w-4 text-brand-primary" />
+              {t('nav.becomeContributor')}
+            </Link>
+          ) : null}
+
+          <LanguageSwitcher />
           <ThemeToggle />
 
           {loading ? (
             <div className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm text-text-secondary">
-              Cargando...
+              {t('common.loading')}
             </div>
           ) : !isAuthenticated ? (
             <>
@@ -136,14 +138,14 @@ export default function PublicNavbar() {
                 to="/login"
                 className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
               >
-                Iniciar sesión
+                {t('nav.login')}
               </Link>
 
               <Link
                 to="/register"
                 className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
               >
-                Crear cuenta
+                {t('nav.register')}
               </Link>
             </>
           ) : (
@@ -170,7 +172,7 @@ export default function PublicNavbar() {
                     {displayName}
                   </p>
                   <p className="text-xs text-text-secondary">
-                    {isAdmin ? 'Admin' : 'Usuario'}
+                    {isAdmin ? t('nav.admin') : t('nav.profile')}
                   </p>
                 </div>
 
@@ -216,7 +218,7 @@ export default function PublicNavbar() {
                         className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
                         <Shield className="h-4 w-4 text-text-secondary" />
-                        Admin
+                        {t('nav.admin')}
                       </Link>
                     ) : (
                       <>
@@ -226,7 +228,7 @@ export default function PublicNavbar() {
                           className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
                           <LayoutDashboard className="h-4 w-4 text-text-secondary" />
-                          Dashboard
+                          {t('nav.dashboard')}
                         </Link>
 
                         <Link
@@ -235,7 +237,7 @@ export default function PublicNavbar() {
                           className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
                           <Library className="h-4 w-4 text-text-secondary" />
-                          Mi librería
+                          {t('nav.library')}
                         </Link>
 
                         <Link
@@ -244,7 +246,7 @@ export default function PublicNavbar() {
                           className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
                           <User className="h-4 w-4 text-text-secondary" />
-                          Perfil
+                          {t('nav.profile')}
                         </Link>
                       </>
                     )}
@@ -255,7 +257,7 @@ export default function PublicNavbar() {
                       className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
                       <LogOut className="h-4 w-4 text-text-secondary" />
-                      Salir
+                      {t('nav.logout')}
                     </button>
                   </div>
                 </div>
@@ -265,6 +267,7 @@ export default function PublicNavbar() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
           <ThemeToggle />
 
           <button
@@ -283,10 +286,21 @@ export default function PublicNavbar() {
           <div className="mx-auto max-w-6xl">
             {loading ? (
               <div className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm text-text-secondary">
-                Cargando...
+                {t('common.loading')}
               </div>
             ) : (
               <>
+                {!isAdmin ? (
+                  <Link
+                    to="/become-a-contributor"
+                    onClick={closeMobileMenu}
+                    className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                  >
+                    <Sparkles className="h-4 w-4 text-brand-primary" />
+                    {t('nav.becomeContributor')}
+                  </Link>
+                ) : null}
+
                 {isAuthenticated ? (
                   <div className="mb-4 rounded-3xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]">
                     <div className="flex items-center gap-3">
@@ -314,7 +328,7 @@ export default function PublicNavbar() {
 
                     {isAdmin ? (
                       <p className="mt-3 text-xs uppercase tracking-[0.2em] text-brand-primary">
-                        Admin
+                        {t('nav.admin')}
                       </p>
                     ) : null}
                   </div>
@@ -348,7 +362,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Iniciar sesión
+                        {t('nav.login')}
                       </Link>
 
                       <Link
@@ -356,7 +370,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
                       >
-                        Crear cuenta
+                        {t('nav.register')}
                       </Link>
                     </>
                   ) : isAdmin ? (
@@ -366,7 +380,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Ir al panel admin
+                        {t('nav.openAdmin')}
                       </Link>
 
                       <button
@@ -374,7 +388,7 @@ export default function PublicNavbar() {
                         onClick={handleSignOut}
                         className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
                       >
-                        Salir
+                        {t('nav.logout')}
                       </button>
                     </>
                   ) : (
@@ -384,7 +398,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Ir al dashboard
+                        {t('nav.openDashboard')}
                       </Link>
 
                       <Link
@@ -392,7 +406,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Mi librería
+                        {t('nav.library')}
                       </Link>
 
                       <Link
@@ -400,7 +414,7 @@ export default function PublicNavbar() {
                         onClick={closeMobileMenu}
                         className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Perfil
+                        {t('nav.profile')}
                       </Link>
 
                       <button
@@ -408,7 +422,7 @@ export default function PublicNavbar() {
                         onClick={handleSignOut}
                         className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
                       >
-                        Salir
+                        {t('nav.logout')}
                       </button>
                     </>
                   )}

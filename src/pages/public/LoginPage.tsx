@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
 import { LogIn } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
@@ -10,6 +11,7 @@ import SectionCard from '@/components/ui/SectionCard'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { signIn } = useAuth()
 
   const [email, setEmail] = useState('')
@@ -24,18 +26,18 @@ export default function LoginPage() {
 
       await signIn(email, password)
 
-      toast.success('Bienvenido de nuevo 👋')
+      toast.success('Welcome back 👋')
       navigate('/dashboard')
     } catch (err) {
       console.error(err)
-      toast.error('Credenciales incorrectas.')
+      toast.error('Incorrect credentials.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen bg-bg text-text-primary flex items-center justify-center px-6">
+    <div className="relative flex min-h-screen items-center justify-center bg-bg px-6 text-text-primary">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
 
       <FadeIn>
@@ -45,22 +47,22 @@ export default function LoginPage() {
               <LogIn className="h-5 w-5" />
             </div>
 
-            <h1 className="mt-4 font-heading text-2xl">Iniciar sesión</h1>
+            <h1 className="mt-4 font-heading text-2xl">{t('auth.loginTitle')}</h1>
             <p className="mt-2 text-sm text-text-secondary">
-              Accede a tu cuenta para continuar
+              {t('auth.loginSubtitle')}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <AppInput
-              label="Correo"
+              label={t('auth.email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="correo@email.com"
             />
 
             <AppInput
-              label="Contraseña"
+              label={t('auth.password')}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -68,14 +70,14 @@ export default function LoginPage() {
             />
 
             <AppButton type="submit" disabled={loading} className="w-full">
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </AppButton>
           </form>
 
           <p className="mt-6 text-center text-sm text-text-secondary">
-            ¿No tienes cuenta?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/register" className="text-brand-accent hover:underline">
-              Crear cuenta
+              {t('nav.register')}
             </Link>
           </p>
         </SectionCard>

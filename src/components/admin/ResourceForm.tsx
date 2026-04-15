@@ -2,10 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import type { AdminResourceInput } from '@/lib/api/resources'
 import { getActiveContributors } from '@/lib/api/contributors'
 import { getActiveCategories } from '@/lib/api/categories'
+import {
+  getActiveTags,
+  getResourceTagIds,
+  type TagRecord,
+} from '@/lib/api/tags'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppSelect from '@/components/ui/AppSelect'
 import AppTextarea from '@/components/ui/AppTextarea'
+import FileInput from '@/components/ui/FileInput'
 import SectionCard from '@/components/ui/SectionCard'
 
 type ContributorOption = {
@@ -21,6 +27,7 @@ type CategoryOption = {
 }
 
 type ResourceFormValues = AdminResourceInput & {
+  id?: string
   file_url?: string | null
   external_url?: string | null
 }
@@ -33,6 +40,7 @@ type ResourceFormProps = {
       thumbnailFile: File | null
       resourceFile: File | null
     },
+    selectedTagIds: string[],
   ) => Promise<void>
   submitLabel?: string
 }
@@ -55,6 +63,7 @@ export default function ResourceForm({
 }: ResourceFormProps) {
   const defaults = useMemo(
     () => ({
+      id: initialValues?.id,
       title: initialValues?.title ?? '',
       slug: initialValues?.slug ?? '',
       description: initialValues?.description ?? '',
@@ -77,21 +86,31 @@ export default function ResourceForm({
   const [resourceFile, setResourceFile] = useState<File | null>(null)
   const [contributors, setContributors] = useState<ContributorOption[]>([])
   const [categories, setCategories] = useState<CategoryOption[]>([])
+  const [tags, setTags] = useState<TagRecord[]>([])
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
   const [loadingOptions, setLoadingOptions] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setValues(defaults)
+  }, [defaults])
+
+  useEffect(() => {
     async function loadOptions() {
       try {
         setLoadingOptions(true)
-        const [contributorsData, categoriesData] = await Promise.all([
+        setError(null)
+
+        const [contributorsData, categoriesData, tagsData] = await Promise.all([
           getActiveContributors(),
           getActiveCategories(),
+          getActiveTags(),
         ])
 
         setContributors((contributorsData ?? []) as ContributorOption[])
         setCategories((categoriesData ?? []) as CategoryOption[])
+        setTags((tagsData ?? []) as TagRecord[])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load form options.')
       } finally {
@@ -102,11 +121,37 @@ export default function ResourceForm({
     void loadOptions()
   }, [])
 
+  useEffect(() => {
+    async function loadExistingTags() {
+      if (!initialValues?.id) {
+        setSelectedTagIds([])
+        return
+      }
+
+      try {
+        const ids = await getResourceTagIds(initialValues.id)
+        setSelectedTagIds(ids)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    void loadExistingTags()
+  }, [initialValues?.id])
+
   function updateField<K extends keyof typeof values>(
     key: K,
     value: (typeof values)[K],
   ) {
     setValues((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function toggleTag(tagId: string) {
+    setSelectedTagIds((current) =>
+      current.includes(tagId)
+        ? current.filter((id) => id !== tagId)
+        : [...current, tagId],
+    )
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -154,6 +199,7 @@ export default function ResourceForm({
           thumbnailFile,
           resourceFile,
         },
+        selectedTagIds,
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
@@ -293,6 +339,45 @@ export default function ResourceForm({
       <SectionCard className="p-5">
         <div className="space-y-4">
           <div>
+            <h2 className="font-heading text-lg text-text-primary">Tags</h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              Assign tags to improve search and discovery.
+            </p>
+          </div>
+
+          {loadingOptions ? (
+            <p className="text-sm text-text-secondary">Loading tags...</p>
+          ) : tags.length === 0 ? (
+            <p className="text-sm text-text-secondary">No active tags available.</p>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {tags.map((tag) => {
+                const selected = selectedTagIds.includes(tag.id)
+
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => toggleTag(tag.id)}
+                    className={[
+                      'rounded-full border px-4 py-2 text-sm font-medium transition',
+                      selected
+                        ? 'border-brand-primary bg-brand-primary text-white'
+                        : 'border-surface-border bg-bg-soft text-text-primary hover:bg-surface-hover',
+                    ].join(' ')}
+                  >
+                    {tag.name}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </SectionCard>
+
+      <SectionCard className="p-5">
+        <div className="space-y-4">
+          <div>
             <h2 className="font-heading text-lg text-text-primary">
               Thumbnail
             </h2>
@@ -301,17 +386,14 @@ export default function ResourceForm({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
-              Thumbnail image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-text-secondary file:mr-4 file:rounded-xl file:border-0 file:bg-bg-soft file:px-4 file:py-2 file:text-sm file:font-medium file:text-text-primary"
-            />
-          </div>
+          <FileInput
+            label="Thumbnail image"
+            accept="image/*"
+            fileName={thumbnailFile?.name ?? null}
+            hint="PNG, JPG or WEBP"
+            onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
+            onClear={() => setThumbnailFile(null)}
+          />
 
           {values.thumbnail_url ? (
             <div>
@@ -325,12 +407,6 @@ export default function ResourceForm({
               />
             </div>
           ) : null}
-
-          {thumbnailFile ? (
-            <p className="text-sm text-text-secondary">
-              Selected file: {thumbnailFile.name}
-            </p>
-          ) : null}
         </div>
       </SectionCard>
 
@@ -343,21 +419,13 @@ export default function ResourceForm({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
-              Resource file
-            </label>
-            <input
-              type="file"
-              onChange={(e) => setResourceFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-text-secondary file:mr-4 file:rounded-xl file:border-0 file:bg-bg-soft file:px-4 file:py-2 file:text-sm file:font-medium file:text-text-primary"
-            />
-            {resourceFile ? (
-              <p className="text-sm text-text-secondary">
-                Selected file: {resourceFile.name}
-              </p>
-            ) : null}
-          </div>
+          <FileInput
+            label="Resource file"
+            fileName={resourceFile?.name ?? null}
+            hint="PDF, DOC, ZIP, etc."
+            onChange={(e) => setResourceFile(e.target.files?.[0] ?? null)}
+            onClear={() => setResourceFile(null)}
+          />
 
           <AppInput
             label="External URL"
