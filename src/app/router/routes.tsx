@@ -37,7 +37,7 @@ import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage
 import AdminContributorApplicationsPage from '@/pages/admin/AdminContributorApplicationsPage'
 import AdminContributorApplicationDetailPage from '@/pages/admin/AdminContributorApplicationDetailPage'
 import AdminTagsPage from '@/pages/admin/AdminTagsPage'
-import AdminLayout from '@/components/layout/AdminLayout'
+import AdminLayout from '../../components/layout/AdminLayout'
 
 export const router = createBrowserRouter([
   {
