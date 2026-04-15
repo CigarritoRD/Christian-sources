@@ -6,6 +6,7 @@ type FileInputProps = {
   fileName?: string | null
   hint?: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onClear?: () => void
 }
 
 export default function FileInput({
