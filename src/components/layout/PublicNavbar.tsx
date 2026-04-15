@@ -126,7 +126,7 @@ export default function PublicNavbar() {
           ) : null}
 
           <LanguageSwitcher />
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
 
           {loading ? (
             <div className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm text-text-secondary">
