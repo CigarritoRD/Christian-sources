@@ -6,7 +6,7 @@ import AdminRoute from '@/app/router/AdminRoute'
 
 import PublicLayout from '@/components/layout/PublicLayout'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-
+import AdminLayout from '@/components/layout/AdminLayout'
 
 import HomePage from '@/pages/public/Home'
 import ResourcesPage from '@/pages/public/ResourcesPage'
@@ -37,8 +37,6 @@ import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage
 import AdminContributorApplicationsPage from '@/pages/admin/AdminContributorApplicationsPage'
 import AdminContributorApplicationDetailPage from '@/pages/admin/AdminContributorApplicationDetailPage'
 import AdminTagsPage from '@/pages/admin/AdminTagsPage'
-import AdminLayout from '@/components/layout/AdminLayout.tsx'
-
 
 export const router = createBrowserRouter([
   {
@@ -84,7 +82,7 @@ export const router = createBrowserRouter([
     path: '/admin',
     element: (
       <AdminRoute>
-        <AdminLayout/>
+        <AdminLayout />
       </AdminRoute>
     ),
     children: [
