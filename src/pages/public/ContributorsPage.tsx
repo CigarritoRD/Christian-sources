@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, Sparkles, Users, Globe2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import ContributorCard from '@/components/contributors/ContributorCard'
 import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
@@ -9,6 +10,8 @@ import { getActiveContributors } from '@/lib/api/contributors'
 import type { ContributorListItem } from '@/types/contributors'
 
 export default function ContributorsPage() {
+  const { t } = useTranslation()
+
   const [contributors, setContributors] = useState<ContributorListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +33,7 @@ export default function ContributorsPage() {
         if (!active) return
 
         const message =
-          err instanceof Error ? err.message : 'No se pudieron cargar los colaboradores.'
+          err instanceof Error ? err.message : t('contributors.errorTitle')
 
         setError(message)
       } finally {
@@ -43,7 +46,7 @@ export default function ContributorsPage() {
     return () => {
       active = false
     }
-  }, [])
+  }, [t])
 
   const filteredContributors = useMemo(() => {
     const normalized = query.trim().toLowerCase()
@@ -71,15 +74,13 @@ export default function ContributorsPage() {
           <div className="mx-auto max-w-6xl">
             <div className="max-w-3xl">
               <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                Comunidad
+                {t('contributors.badge')}
               </p>
               <h1 className="mt-2 font-heading text-4xl md:text-5xl">
-                Colaboradores
+                {t('contributors.title')}
               </h1>
               <p className="mt-4 font-body text-lg text-text-secondary">
-                Conoce a las personas y proyectos que comparten recursos dentro de
-                Toolkit Box. Explora sus perfiles, descubre su enfoque y visita sus
-                plataformas.
+                {t('contributors.subtitle')}
               </p>
             </div>
 
@@ -88,9 +89,11 @@ export default function ContributorsPage() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                   <Users className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Red de colaboradores</h3>
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('contributors.feature1Title')}
+                </h3>
                 <p className="mt-2 text-sm text-text-secondary">
-                  Descubre perfiles que comparten recursos, experiencia y visión.
+                  {t('contributors.feature1Body')}
                 </p>
               </SectionCard>
 
@@ -98,9 +101,11 @@ export default function ContributorsPage() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
                   <Sparkles className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Enfoques diversos</h3>
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('contributors.feature2Title')}
+                </h3>
                 <p className="mt-2 text-sm text-text-secondary">
-                  Explora especialidades y materiales desde distintas perspectivas.
+                  {t('contributors.feature2Body')}
                 </p>
               </SectionCard>
 
@@ -108,9 +113,11 @@ export default function ContributorsPage() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                   <Globe2 className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Conexión real</h3>
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('contributors.feature3Title')}
+                </h3>
                 <p className="mt-2 text-sm text-text-secondary">
-                  Accede a perfiles, enlaces y recursos publicados por cada autor.
+                  {t('contributors.feature3Body')}
                 </p>
               </SectionCard>
             </div>
@@ -124,10 +131,10 @@ export default function ContributorsPage() {
             <SectionCard className="p-5">
               <div className="mb-4">
                 <h2 className="font-heading text-lg text-text-primary">
-                  Buscar colaboradores
+                  {t('contributors.searchTitle')}
                 </h2>
                 <p className="mt-1 text-sm text-text-secondary">
-                  Busca por nombre, especialidad o descripción.
+                  {t('contributors.searchHelp')}
                 </p>
               </div>
 
@@ -135,7 +142,7 @@ export default function ContributorsPage() {
                 <SearchInput
                   value={query}
                   onChange={setQuery}
-                  placeholder="Buscar por nombre, especialidad o descripción..."
+                  placeholder={t('contributors.searchPlaceholder')}
                 />
               </div>
             </SectionCard>
@@ -168,24 +175,23 @@ export default function ContributorsPage() {
             ) : error ? (
               <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
                 <h2 className="font-heading text-xl">
-                  No pudimos cargar los colaboradores
+                  {t('contributors.errorTitle')}
                 </h2>
                 <p className="mt-2 text-sm text-text-secondary">{error}</p>
               </SectionCard>
             ) : filteredContributors.length === 0 ? (
               <EmptyState
                 icon={<Search className="h-5 w-5" />}
-                title="No encontramos resultados"
-                description="Intenta buscar con otros términos o revisa más tarde."
+                title={t('contributors.emptyTitle')}
+                description={t('contributors.emptyBody')}
               />
             ) : (
               <>
                 <div className="mb-6 flex items-center justify-between gap-4">
                   <p className="text-sm text-text-secondary">
-                    {filteredContributors.length}{' '}
-                    {filteredContributors.length === 1
-                      ? 'colaborador encontrado'
-                      : 'colaboradores encontrados'}
+                    {t('contributors.resultsFound', {
+                      count: filteredContributors.length,
+                    })}
                   </p>
                 </div>
 

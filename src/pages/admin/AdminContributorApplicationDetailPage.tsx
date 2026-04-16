@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { CheckCircle2, XCircle } from 'lucide-react'
+import { CheckCircle2, Mail, Phone, UserSquare2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
@@ -110,33 +110,35 @@ export default function AdminContributorApplicationDetailPage() {
     )
   }
 
+  const displayName =
+    item.organization_name || item.full_name || 'Unnamed organization'
+
   return (
     <div className="space-y-5">
       <PageHeader
         title="Review contributor application"
-        description="Check the applicant profile and decide whether to approve or reject it."
+        description="Check the contact person and ministry profile before approving or rejecting."
       />
 
       <FadeIn>
-        <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
+        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionCard className="p-6">
             <div className="flex flex-col items-center text-center">
               <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl bg-bg-soft shadow-[var(--shadow-soft)]">
                 {item.avatar_url ? (
                   <img
                     src={item.avatar_url}
-                    alt={item.full_name}
+                    alt={displayName}
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   <span className="font-heading text-3xl text-text-primary">
-                    {item.full_name.charAt(0).toUpperCase()}
+                    {displayName.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
 
-              <h2 className="mt-4 font-heading text-2xl">{item.full_name}</h2>
-              <p className="mt-1 text-sm text-text-secondary">{item.email}</p>
+              <h2 className="mt-4 font-heading text-2xl">{displayName}</h2>
 
               {item.country ? (
                 <p className="mt-2 text-sm text-text-secondary">{item.country}</p>
@@ -146,6 +148,36 @@ export default function AdminContributorApplicationDetailPage() {
                 <p className="mt-1 text-sm text-text-secondary">
                   {item.organization}
                 </p>
+              ) : null}
+            </div>
+
+            <div className="mt-6 space-y-4 rounded-3xl border border-surface-border bg-bg-soft p-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
+                  Contact person
+                </p>
+                <p className="mt-2 font-medium text-text-primary">
+                  {item.contact_name || 'No contact name'}
+                </p>
+                {item.contact_role ? (
+                  <p className="mt-1 text-sm text-text-secondary">
+                    {item.contact_role}
+                  </p>
+                ) : null}
+              </div>
+
+              {item.contact_email ? (
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Mail className="h-4 w-4" />
+                  {item.contact_email}
+                </div>
+              ) : null}
+
+              {item.contact_phone ? (
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Phone className="h-4 w-4" />
+                  {item.contact_phone}
+                </div>
               ) : null}
             </div>
           </SectionCard>
@@ -233,6 +265,22 @@ export default function AdminContributorApplicationDetailPage() {
                     </a>
                   ) : null}
                 </div>
+              </div>
+
+              <div className="rounded-3xl border border-surface-border bg-bg-soft p-4">
+                <div className="flex items-center gap-2">
+                  <UserSquare2 className="h-4 w-4 text-text-secondary" />
+                  <p className="text-sm font-medium text-text-primary">
+                    Approval behavior
+                  </p>
+                </div>
+                <p className="mt-2 text-sm text-text-secondary">
+                  When approved, the public contributor profile will be created using{' '}
+                  <span className="font-medium text-text-primary">
+                    {displayName}
+                  </span>{' '}
+                  as the contributor name.
+                </p>
               </div>
 
               <AppTextarea

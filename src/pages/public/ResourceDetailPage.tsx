@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Bookmark,
-  Download,
+
   ExternalLink,
   Heart,
   Layers3,
@@ -19,6 +19,8 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import AppButton from '@/components/ui/AppButton'
 import { getPublishedResourceBySlug } from '@/lib/api/resources'
 import { openTrackedResource } from '@/lib/resourceAccess'
+import { useTranslation } from 'react-i18next'
+
 
 type ResourceDetail = {
   id: string
@@ -85,7 +87,7 @@ export default function ResourceDetailPage() {
     userId: user?.id ?? null,
     resourceId: resource?.id ?? null,
   })
-
+  const { t } = useTranslation()
   useEffect(() => {
     let active = true
 
@@ -332,16 +334,9 @@ export default function ResourceDetailPage() {
                       disabled={isOpening}
                       className="w-full"
                     >
-                      {resource.file_url ? (
-                        <Download className="h-4 w-4" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4" />
-                      )}
-                      {isOpening
-                        ? 'Abriendo...'
-                        : resource.file_url
-                        ? 'Descargar / abrir'
-                        : 'Abrir enlace'}
+                      <ExternalLink className="h-4 w-4" />
+
+                      {isOpening ? t('common.opening') : t('common.open')}
                     </AppButton>
 
                     <AppButton
@@ -354,8 +349,8 @@ export default function ResourceDetailPage() {
                       {loadingState === 'saved'
                         ? 'Guardando...'
                         : saved
-                        ? 'Guardado'
-                        : 'Guardar'}
+                          ? 'Guardado'
+                          : 'Guardar'}
                     </AppButton>
 
                     <AppButton
@@ -368,8 +363,8 @@ export default function ResourceDetailPage() {
                       {loadingState === 'favorite'
                         ? 'Actualizando...'
                         : favorite
-                        ? 'En favoritos'
-                        : 'Agregar a favoritos'}
+                          ? 'En favoritos'
+                          : 'Agregar a favoritos'}
                     </AppButton>
                   </div>
                 </SectionCard>

@@ -8,11 +8,9 @@ function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark'
 
   const savedTheme = window.localStorage.getItem(THEME_KEY)
-  if (savedTheme === 'light' || savedTheme === 'dark') {
-    return savedTheme
-  }
+  if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
 
-  return 'dark'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function useTheme() {
@@ -36,7 +34,6 @@ export function useTheme() {
 
   return {
     theme,
-    setTheme,
     toggleTheme,
     isDark: theme === 'dark',
   }

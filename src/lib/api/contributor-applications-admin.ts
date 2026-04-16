@@ -3,8 +3,17 @@ import { supabase } from '@/lib/supabaseClient'
 export type ContributorApplicationRecord = {
   id: string
   user_id: string | null
-  full_name: string
+
+  contact_name: string | null
+  contact_role: string | null
+  contact_email: string | null
+  contact_phone: string | null
+
+  organization_name: string | null
+
+  full_name: string | null
   email: string | null
+
   avatar_url: string | null
   country: string | null
   organization: string | null
@@ -16,6 +25,7 @@ export type ContributorApplicationRecord = {
   facebook_url: string | null
   linkedin_url: string | null
   youtube_url: string | null
+
   status: 'pending_review' | 'approved' | 'rejected'
   admin_notes: string | null
   reviewed_by: string | null
@@ -64,10 +74,14 @@ async function ensureUniqueContributorSlug(baseName: string) {
 export async function getContributorApplications(status?: string) {
   let query = supabase
     .from('contributor_applications')
-    .select(
-      `
+    .select(`
       id,
       user_id,
+      contact_name,
+      contact_role,
+      contact_email,
+      contact_phone,
+      organization_name,
       full_name,
       email,
       avatar_url,
@@ -87,8 +101,7 @@ export async function getContributorApplications(status?: string) {
       reviewed_at,
       created_at,
       updated_at
-    `,
-    )
+    `)
     .order('created_at', { ascending: false })
 
   if (status && status !== 'all') {
@@ -107,10 +120,14 @@ export async function getContributorApplications(status?: string) {
 export async function getContributorApplicationById(id: string) {
   const { data, error } = await supabase
     .from('contributor_applications')
-    .select(
-      `
+    .select(`
       id,
       user_id,
+      contact_name,
+      contact_role,
+      contact_email,
+      contact_phone,
+      organization_name,
       full_name,
       email,
       avatar_url,
@@ -130,8 +147,7 @@ export async function getContributorApplicationById(id: string) {
       reviewed_at,
       created_at,
       updated_at
-    `,
-    )
+    `)
     .eq('id', id)
     .single()
 
@@ -149,11 +165,17 @@ export async function approveContributorApplication(
 ) {
   const application = await getContributorApplicationById(applicationId)
 
-  const slug = await ensureUniqueContributorSlug(application.full_name)
+  const contributorName =
+    application.organization_name?.trim() ||
+    application.full_name?.trim() ||
+    application.contact_name?.trim() ||
+    'Contributor'
+
+  const slug = await ensureUniqueContributorSlug(contributorName)
 
   const { error: contributorError } = await supabase.from('contributors').insert({
     user_id: application.user_id,
-    name: application.full_name,
+    name: contributorName,
     slug,
     short_bio: application.short_bio,
     full_bio: application.full_bio,
@@ -209,4 +231,17 @@ export async function rejectContributorApplication(
   if (error) {
     throw error
   }
+}
+
+export async function getPendingContributorApplicationsCount() {
+  const { count, error } = await supabase
+    .from('contributor_applications')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending_review')
+
+  if (error) {
+    throw error
+  }
+
+  return count ?? 0
 }

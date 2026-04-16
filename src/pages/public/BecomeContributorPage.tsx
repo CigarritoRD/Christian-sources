@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Sparkles, Send } from 'lucide-react'
+import { CheckCircle2, Send, Sparkles, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
@@ -16,18 +17,25 @@ import {
 
 export default function BecomeContributorPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { user, profile } = useAuth()
 
-  const initialName = useMemo(
+  const initialContactName = useMemo(
     () => profile?.full_name?.trim() || '',
     [profile?.full_name],
   )
 
-  const initialEmail = useMemo(() => user?.email || '', [user?.email])
+  const initialContactEmail = useMemo(() => user?.email || '', [user?.email])
 
-  const [fullName, setFullName] = useState(initialName)
-  const [email, setEmail] = useState(initialEmail)
-  const [country, setCountry] = useState(profile?.country  ?? '')
+  const [contactName, setContactName] = useState(initialContactName)
+  const [contactRole, setContactRole] = useState('')
+  const [contactEmail, setContactEmail] = useState(initialContactEmail)
+  const [contactPhone, setContactPhone] = useState('')
+
+  const [organizationName, setOrganizationName] = useState(
+    profile?.organization ?? '',
+  )
+  const [country, setCountry] = useState(profile?.country ?? '')
   const [organization, setOrganization] = useState(profile?.organization ?? '')
   const [specialty, setSpecialty] = useState('')
   const [shortBio, setShortBio] = useState('')
@@ -43,16 +51,22 @@ export default function BecomeContributorPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const normalizedName = fullName.trim()
-    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedContactName = contactName.trim()
+    const normalizedContactEmail = contactEmail.trim().toLowerCase()
+    const normalizedOrganizationName = organizationName.trim()
 
-    if (!normalizedName) {
-      toast.error('Escribe tu nombre completo.')
+    if (!normalizedContactName) {
+      toast.error(t('contributorApply.validation.contactName'))
       return
     }
 
-    if (!normalizedEmail) {
-      toast.error('Escribe tu correo electrónico.')
+    if (!normalizedContactEmail) {
+      toast.error(t('contributorApply.validation.contactEmail'))
+      return
+    }
+
+    if (!normalizedOrganizationName) {
+      toast.error(t('contributorApply.validation.organizationName'))
       return
     }
 
@@ -64,14 +78,19 @@ export default function BecomeContributorPage() {
       if (avatarFile) {
         avatarUrl = await uploadContributorApplicationAvatar(
           avatarFile,
-          user?.id || normalizedEmail,
+          user?.id || normalizedContactEmail,
         )
       }
 
       await createContributorApplication({
         user_id: user?.id ?? null,
-        full_name: normalizedName,
-        email: normalizedEmail,
+
+        contact_name: normalizedContactName,
+        contact_role: contactRole.trim() || null,
+        contact_email: normalizedContactEmail,
+        contact_phone: contactPhone.trim() || null,
+
+        organization_name: normalizedOrganizationName,
         avatar_url: avatarUrl,
         country: country.trim() || null,
         organization: organization.trim() || null,
@@ -85,11 +104,11 @@ export default function BecomeContributorPage() {
         youtube_url: youtubeUrl.trim() || null,
       })
 
-      toast.success('Tu solicitud fue enviada correctamente.')
+      toast.success(t('contributorApply.success'))
       navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error('No se pudo enviar tu solicitud.')
+      toast.error(t('contributorApply.error'))
     } finally {
       setLoading(false)
     }
@@ -98,26 +117,51 @@ export default function BecomeContributorPage() {
   return (
     <div className="bg-bg text-text-primary">
       <FadeIn>
-        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.08),transparent_28%)]" />
-          <div className="mx-auto max-w-5xl">
-            <SectionCard className="p-8 md:p-10">
-              <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-bg-soft px-4 py-1 text-sm text-text-secondary">
-                  <Sparkles className="h-4 w-4" />
-                  Colaboradores
+        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-text-secondary shadow-[var(--shadow-soft)]">
+                  <Sparkles className="h-4 w-4 text-brand-primary" />
+                  {t('contributorApply.badge')}
                 </div>
 
                 <h1 className="mt-4 font-heading text-4xl md:text-5xl">
-                  Aplica para ser colaborador
+                  {t('contributorApply.title')}
                 </h1>
 
-                <p className="mt-4 text-lg text-text-secondary">
-                  Completa este formulario para que revisemos tu perfil. Si tu
-                  solicitud es aprobada, tu perfil podrá formar parte de Toolkit Box.
+                <p className="mt-4 max-w-2xl text-lg text-text-secondary">
+                  {t('contributorApply.subtitle')}
                 </p>
               </div>
-            </SectionCard>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <SectionCard className="p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg text-text-primary">
+                    {t('contributorApply.point1Title')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {t('contributorApply.point1Body')}
+                  </p>
+                </SectionCard>
+
+                <SectionCard className="p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg text-text-primary">
+                    {t('contributorApply.point2Title')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {t('contributorApply.point2Body')}
+                  </p>
+                </SectionCard>
+              </div>
+            </div>
           </div>
         </section>
       </FadeIn>
@@ -129,86 +173,115 @@ export default function BecomeContributorPage() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-4">
                   <div>
-                    <h2 className="font-heading text-xl">Información básica</h2>
+                    <h2 className="font-heading text-xl">
+                      {t('contributorApply.contactSection')}
+                    </h2>
                     <p className="mt-1 text-sm text-text-secondary">
-                      Cuéntanos quién eres y desde dónde colaboras.
+                      {t('contributorApply.contactHelp')}
                     </p>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <AppInput
-                      label="Nombre completo"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Tu nombre"
+                      label={t('contributorApply.contactName')}
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      placeholder={t('contributorApply.contactNamePlaceholder')}
                     />
 
                     <AppInput
-                      label="Correo electrónico"
+                      label={t('contributorApply.contactRole')}
+                      value={contactRole}
+                      onChange={(e) => setContactRole(e.target.value)}
+                      placeholder={t('contributorApply.contactRolePlaceholder')}
+                    />
+
+                    <AppInput
+                      label={t('contributorApply.contactEmail')}
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="tu@email.com"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      placeholder="you@email.com"
                     />
 
                     <AppInput
-                      label="País"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      placeholder="República Dominicana"
-                    />
-
-                    <AppInput
-                      label="Organización"
-                      value={organization}
-                      onChange={(e) => setOrganization(e.target.value)}
-                      placeholder="Nombre de tu organización"
+                      label={t('contributorApply.contactPhone')}
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      placeholder={t('contributorApply.contactPhonePlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <h2 className="font-heading text-xl">Perfil</h2>
+                    <h2 className="font-heading text-xl">
+                      {t('contributorApply.ministrySection')}
+                    </h2>
                     <p className="mt-1 text-sm text-text-secondary">
-                      Comparte tu enfoque, experiencia y tipo de contribución.
+                      {t('contributorApply.ministryHelp')}
                     </p>
                   </div>
 
-                  <AppInput
-                    label="Especialidad"
-                    value={specialty}
-                    onChange={(e) => setSpecialty(e.target.value)}
-                    placeholder="Formación, liderazgo, bienestar, discipulado..."
-                  />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <AppInput
+                      label={t('contributorApply.organizationName')}
+                      value={organizationName}
+                      onChange={(e) => setOrganizationName(e.target.value)}
+                      placeholder={t('contributorApply.organizationNamePlaceholder')}
+                    />
+
+                    <AppInput
+                      label={t('contributorApply.country')}
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      placeholder={t('contributorApply.countryPlaceholder')}
+                    />
+
+                    <AppInput
+                      label={t('contributorApply.organization')}
+                      value={organization}
+                      onChange={(e) => setOrganization(e.target.value)}
+                      placeholder={t('contributorApply.organizationPlaceholder')}
+                    />
+
+                    <AppInput
+                      label={t('contributorApply.specialty')}
+                      value={specialty}
+                      onChange={(e) => setSpecialty(e.target.value)}
+                      placeholder={t('contributorApply.specialtyPlaceholder')}
+                    />
+                  </div>
 
                   <AppTextarea
-                    label="Biografía corta"
+                    label={t('contributorApply.shortBio')}
                     rows={3}
                     value={shortBio}
                     onChange={(e) => setShortBio(e.target.value)}
-                    placeholder="Resumen breve para presentar tu perfil."
+                    placeholder={t('contributorApply.shortBioPlaceholder')}
                   />
 
                   <AppTextarea
-                    label="Biografía completa"
+                    label={t('contributorApply.fullBio')}
                     rows={6}
                     value={fullBio}
                     onChange={(e) => setFullBio(e.target.value)}
-                    placeholder="Describe tu trabajo, experiencia y enfoque."
+                    placeholder={t('contributorApply.fullBioPlaceholder')}
                   />
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <h2 className="font-heading text-xl">Avatar</h2>
+                    <h2 className="font-heading text-xl">
+                      {t('contributorApply.avatarSection')}
+                    </h2>
                     <p className="mt-1 text-sm text-text-secondary">
-                      Puedes subir una foto o imagen representativa de tu perfil.
+                      {t('contributorApply.avatarHelp')}
                     </p>
                   </div>
 
                   <FileInput
-                    label="Imagen de perfil"
+                    label={t('contributorApply.avatar')}
                     accept="image/*"
                     fileName={avatarFile?.name ?? null}
                     hint="PNG, JPG o WEBP"
@@ -219,15 +292,17 @@ export default function BecomeContributorPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <h2 className="font-heading text-xl">Enlaces</h2>
+                    <h2 className="font-heading text-xl">
+                      {t('contributorApply.linksSection')}
+                    </h2>
                     <p className="mt-1 text-sm text-text-secondary">
-                      Agrega tus enlaces relevantes para revisión.
+                      {t('contributorApply.linksHelp')}
                     </p>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <AppInput
-                      label="Sitio web"
+                      label={t('contributorApply.website')}
                       value={websiteUrl}
                       onChange={(e) => setWebsiteUrl(e.target.value)}
                       placeholder="https://..."
@@ -268,7 +343,9 @@ export default function BecomeContributorPage() {
                 <div className="flex flex-wrap gap-3">
                   <AppButton type="submit" disabled={loading}>
                     <Send className="h-4 w-4" />
-                    {loading ? 'Enviando...' : 'Enviar solicitud'}
+                    {loading
+                      ? t('contributorApply.submitting')
+                      : t('contributorApply.submit')}
                   </AppButton>
                 </div>
               </form>

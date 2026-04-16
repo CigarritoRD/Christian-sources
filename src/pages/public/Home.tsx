@@ -139,9 +139,11 @@ export default function Home() {
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                     <Library className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 font-heading text-lg">Biblioteca viva</h3>
+                  <h3 className="mt-4 font-heading text-lg">
+                    {t('home.feature1Title')}
+                  </h3>
                   <p className="mt-2 text-sm text-text-secondary">
-                    Recursos organizados para uso real y exploración continua.
+                    {t('home.feature1Body')}
                   </p>
                 </div>
 
@@ -149,9 +151,11 @@ export default function Home() {
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
                     <Users className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 font-heading text-lg">Red de autores</h3>
+                  <h3 className="mt-4 font-heading text-lg">
+                    {t('home.feature2Title')}
+                  </h3>
                   <p className="mt-2 text-sm text-text-secondary">
-                    Conoce a los colaboradores detrás de cada material.
+                    {t('home.feature2Body')}
                   </p>
                 </div>
 
@@ -159,9 +163,11 @@ export default function Home() {
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                     <BookOpen className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 font-heading text-lg">Aprendizaje útil</h3>
+                  <h3 className="mt-4 font-heading text-lg">
+                    {t('home.feature3Title')}
+                  </h3>
                   <p className="mt-2 text-sm text-text-secondary">
-                    Materiales pensados para procesos reales de acompañamiento.
+                    {t('home.feature3Body')}
                   </p>
                 </div>
               </div>
@@ -190,7 +196,7 @@ export default function Home() {
                     ) : (
                       <div className="flex h-28 items-center justify-between bg-gradient-to-br from-brand-primary/15 to-brand-accent/10 px-5">
                         <span className="rounded-full border border-surface-border bg-surface px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
-                          {resources[0]?.resource_type ?? 'recurso'}
+                          {resources[0]?.resource_type ?? t('home.resourceFallback')}
                         </span>
                         <BookOpen className="h-6 w-6 text-text-secondary" />
                       </div>
@@ -198,19 +204,19 @@ export default function Home() {
 
                     <div className="p-5">
                       <h3 className="font-heading text-lg text-text-primary">
-                        {resources[0]?.title ?? 'Recurso destacado'}
+                        {resources[0]?.title ?? t('home.highlightedResource')}
                       </h3>
 
                       <p className="mt-2 text-sm text-text-secondary">
                         {resources[0]?.short_description ||
                           resources[0]?.description ||
-                          'Explora materiales útiles compartidos por colaboradores.'}
+                          t('home.highlightedResourceBody')}
                       </p>
 
                       <p className="mt-4 text-xs text-neutral-muted">
-                        Por{' '}
+                        {t('home.by')}{' '}
                         <span className="text-text-primary">
-                          {resources[0]?.contributor?.name ?? 'Colaborador'}
+                          {resources[0]?.contributor?.name ?? t('home.contributorFallback')}
                         </span>
                       </p>
                     </div>
@@ -226,7 +232,7 @@ export default function Home() {
                     ) : (
                       <div className="flex h-28 items-center justify-between bg-gradient-to-br from-cyan-500/15 to-sky-500/10 px-5">
                         <span className="rounded-full border border-surface-border bg-surface px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
-                          {resources[1]?.resource_type ?? 'biblioteca'}
+                          {resources[1]?.resource_type ?? t('home.libraryFallback')}
                         </span>
                         <Sparkles className="h-6 w-6 text-text-secondary" />
                       </div>
@@ -234,17 +240,17 @@ export default function Home() {
 
                     <div className="p-5">
                       <h3 className="font-heading text-lg text-text-primary">
-                        {resources[1]?.title ?? 'Descubre nuevos recursos'}
+                        {resources[1]?.title ?? t('home.discoverResources')}
                       </h3>
 
                       <p className="mt-2 text-sm text-text-secondary">
                         {resources[1]?.short_description ||
                           resources[1]?.description ||
-                          'Encuentra herramientas, guías y materiales para distintos contextos.'}
+                          t('home.discoverResourcesBody')}
                       </p>
 
                       <p className="mt-4 text-xs text-neutral-muted">
-                        Por{' '}
+                        {t('home.by')}{' '}
                         <span className="text-text-primary">
                           {resources[1]?.contributor?.name ?? 'Toolkit Box'}
                         </span>
@@ -256,14 +262,13 @@ export default function Home() {
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                          Comunidad
+                          {t('home.communityLabel')}
                         </p>
                         <h3 className="mt-2 font-heading text-2xl text-text-primary">
-                          Colaboradores y recursos conectados
+                          {t('home.communityTitle')}
                         </h3>
                         <p className="mt-2 max-w-xl text-sm text-text-secondary">
-                          Explora una biblioteca construida con materiales reales y conoce
-                          a quienes los comparten.
+                          {t('home.communityBody')}
                         </p>
                       </div>
 
@@ -273,7 +278,7 @@ export default function Home() {
                             {resources.length}
                           </p>
                           <p className="mt-1 text-xs whitespace-nowrap text-text-secondary">
-                            Recursos
+                            {t('home.resourcesCount')}
                           </p>
                         </div>
 
@@ -282,7 +287,7 @@ export default function Home() {
                             {contributors.length}
                           </p>
                           <p className="mt-1 text-xs whitespace-nowrap text-text-secondary">
-                            Autores
+                            {t('home.authorsCount')}
                           </p>
                         </div>
 
@@ -291,7 +296,7 @@ export default function Home() {
                             {categories.length}
                           </p>
                           <p className="mt-1 text-xs whitespace-nowrap text-text-secondary">
-                            Temas
+                            {t('home.topicsCount')}
                           </p>
                         </div>
                       </div>
@@ -318,7 +323,7 @@ export default function Home() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Buscar recursos, temas o colaboradores..."
+                    placeholder={t('home.searchPlaceholder')}
                     className="w-full rounded-2xl border border-surface-border bg-bg-soft px-11 py-3 text-text-primary outline-none placeholder:text-text-secondary focus:border-brand-accent"
                   />
                 </div>
@@ -339,7 +344,7 @@ export default function Home() {
       {error ? (
         <section className="px-6 py-10 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl rounded-3xl border border-red-500/20 bg-red-500/10 p-6">
-            <h2 className="font-heading text-xl">No pudimos cargar el inicio</h2>
+            <h2 className="font-heading text-xl">{t('home.errorTitle')}</h2>
             <p className="mt-2 text-sm text-text-secondary">{error}</p>
           </div>
         </section>
@@ -351,10 +356,10 @@ export default function Home() {
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Explora por tema
+                  {t('home.exploreByTopic')}
                 </p>
                 <h2 className="mt-2 font-heading text-2xl md:text-3xl">
-                  Categorías destacadas
+                  {t('home.featuredCategories')}
                 </h2>
               </div>
               <Link to="/resources" className="text-sm text-brand-accent">
@@ -390,11 +395,11 @@ export default function Home() {
                       {category.name}
                     </h3>
                     <p className="mt-2 text-sm text-text-secondary">
-                      Explora recursos de {category.name.toLowerCase()}.
+                      {t('home.exploreCategory', { category: category.name.toLowerCase() })}
                     </p>
 
                     <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-accent">
-                      Explorar
+                      {t('home.explore')}
                       <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                     </div>
                   </Link>
@@ -411,10 +416,10 @@ export default function Home() {
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Selección destacada
+                  {t('home.featuredSelection')}
                 </p>
                 <h2 className="mt-2 font-heading text-2xl md:text-3xl">
-                  Recursos recomendados
+                  {t('home.recommendedResources')}
                 </h2>
               </div>
               <Link to="/resources" className="text-sm text-brand-accent">
@@ -467,10 +472,10 @@ export default function Home() {
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
-                  Comunidad
+                  {t('home.communityLabel')}
                 </p>
                 <h2 className="mt-2 font-heading text-2xl md:text-3xl">
-                  Colaboradores destacados
+                  {t('home.featuredContributors')}
                 </h2>
               </div>
               <Link to="/contributors" className="text-sm text-brand-accent">
@@ -590,13 +595,11 @@ export default function Home() {
         <section className="px-6 py-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-5xl rounded-3xl border border-surface-border bg-surface p-8 text-center shadow-[var(--shadow-card)] md:p-12">
             <h2 className="font-heading text-3xl md:text-4xl">
-              Encuentra recursos y descubre a quienes los comparten
+              {t('home.finalCtaTitle')}
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl font-body text-lg text-text-secondary">
-              Toolkit Box no solo reúne materiales útiles. También te conecta con
-              colaboradores, ideas y plataformas que amplían el aprendizaje y el
-              acompañamiento.
+              {t('home.finalCtaBody')}
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-4">

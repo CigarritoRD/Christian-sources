@@ -2,8 +2,13 @@ import { supabase } from '@/lib/supabaseClient'
 
 export type ContributorApplicationInput = {
   user_id?: string | null
-  full_name: string
-  email: string
+
+  contact_name: string
+  contact_role?: string | null
+  contact_email: string
+  contact_phone?: string | null
+
+  organization_name: string
   avatar_url?: string | null
   country?: string | null
   organization?: string | null
@@ -22,6 +27,11 @@ export async function createContributorApplication(
 ) {
   const payload = {
     ...values,
+
+    // compatibilidad temporal con columnas viejas
+    full_name: values.organization_name,
+    email: values.contact_email,
+
     status: 'pending_review',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

@@ -1,103 +1,18 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { toast } from 'sonner'
-import {
-  Bookmark,
-  Star,
-  FileText,
-  Video,
-  Music,
-  Image as ImageIcon,
-  File,
-  Link as LinkIcon,
-  Download,
-} from 'lucide-react'
-
-import { useAuth } from '@/auth/useAuth'
-import { useResourceActions } from '@/hooks/useResourceActions'
+import { Link } from 'react-router-dom'
+import { ArrowUpRight, BookOpen, UserRound } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ResourceCardProps = {
   id: string
   title: string
   description?: string | null
   thumbnailUrl?: string | null
-  type: string
+  type?: string | null
   contributorName?: string | null
-  slug?: string
-}
-
-function getTypeLabel(type?: string | null) {
-  const normalized = (type ?? '').toLowerCase()
-
-  switch (normalized) {
-    case 'pdf':
-      return 'PDF'
-    case 'video':
-      return 'VIDEO'
-    case 'audio':
-      return 'AUDIO'
-    case 'image':
-      return 'IMAGEN'
-    case 'document':
-      return 'DOCUMENTO'
-    case 'link':
-      return 'ENLACE'
-    case 'download':
-      return 'DESCARGA'
-    default:
-      return type?.toUpperCase?.() || 'RECURSO'
-  }
-}
-
-function getTypeIcon(type?: string | null) {
-  const normalized = (type ?? '').toLowerCase()
-
-  switch (normalized) {
-    case 'pdf':
-      return <FileText className="h-5 w-5" />
-    case 'video':
-      return <Video className="h-5 w-5" />
-    case 'audio':
-      return <Music className="h-5 w-5" />
-    case 'image':
-      return <ImageIcon className="h-5 w-5" />
-    case 'document':
-      return <File className="h-5 w-5" />
-    case 'link':
-      return <LinkIcon className="h-5 w-5" />
-    case 'download':
-      return <Download className="h-5 w-5" />
-    default:
-      return <FileText className="h-5 w-5" />
-  }
-}
-
-function getTypeAccent(type?: string | null) {
-  const normalized = (type ?? '').toLowerCase()
-
-  switch (normalized) {
-    case 'pdf':
-      return 'from-red-500/15 to-rose-500/10'
-    case 'video':
-      return 'from-cyan-500/15 to-sky-500/10'
-    case 'audio':
-      return 'from-violet-500/15 to-fuchsia-500/10'
-    case 'image':
-      return 'from-emerald-500/15 to-teal-500/10'
-    case 'document':
-      return 'from-amber-500/15 to-orange-500/10'
-    case 'link':
-      return 'from-blue-500/15 to-indigo-500/10'
-    case 'download':
-      return 'from-brand-primary/20 to-brand-accent/10'
-    default:
-      return 'from-brand-primary/15 to-brand-accent/10'
-  }
+  slug: string
 }
 
 export default function ResourceCard({
-  id,
   title,
   description,
   thumbnailUrl,
@@ -105,214 +20,70 @@ export default function ResourceCard({
   contributorName,
   slug,
 }: ResourceCardProps) {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const [imgLoaded, setImgLoaded] = useState(false)
+  const { t } = useTranslation()
 
-  const { saved, favorite, loadingState, toggleSaved, toggleFavorite } =
-    useResourceActions({
-      userId: user?.id ?? null,
-      resourceId: id,
-    })
-
-  const typeLabel = getTypeLabel(type)
-  const typeIcon = getTypeIcon(type)
-  const typeAccent = getTypeAccent(type)
-
-  const requireAuth = () => {
-    toast.info('Debes iniciar sesión para usar esta acción.')
-    navigate('/login')
-  }
-
-  const handleSaved = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    try {
-      if (!user) {
-        requireAuth()
-        return
-      }
-
-      const next = await toggleSaved()
-
-      toast.success(
-        next
-          ? 'Recurso guardado en tu librería.'
-          : 'Recurso eliminado de tu librería.',
-      )
-    } catch (error) {
-      console.error(error)
-      toast.error('No se pudo actualizar tu librería.')
-    }
-  }
-
-  const handleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    try {
-      if (!user) {
-        requireAuth()
-        return
-      }
-
-      const next = await toggleFavorite()
-
-      toast.success(
-        next
-          ? 'Recurso agregado a favoritos.'
-          : 'Recurso eliminado de favoritos.',
-      )
-    } catch (error) {
-      console.error(error)
-      toast.error('No se pudo actualizar favoritos.')
-    }
-  }
-
-  const cardContent = (
-    <motion.article
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: 'easeOut' }}
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
-    >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-bg-soft">
-        {thumbnailUrl ? (
-          <>
-            <div className="relative h-full w-full">
-              {!imgLoaded ? (
-                <div className="absolute inset-0 animate-pulse bg-bg-soft" />
-              ) : null}
-
-              <img
-                src={thumbnailUrl}
-                alt={title}
-                onLoad={() => setImgLoaded(true)}
-                className={`h-full w-full object-cover transition duration-500 group-hover:scale-105 ${
-                  imgLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'
-                }`}
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
-
-            <div className="absolute left-3 top-3 z-10">
-              <span className="rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-medium tracking-wide text-white backdrop-blur">
-                {typeLabel}
-              </span>
-            </div>
-          </>
-        ) : (
-          <div
-            className={`flex h-full w-full flex-col justify-between bg-gradient-to-br ${typeAccent} p-4`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="inline-flex rounded-full border border-surface-border bg-surface px-3 py-1 text-xs font-medium tracking-wide text-text-secondary">
-                {typeLabel}
-              </div>
-
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-surface-border bg-surface text-text-secondary shadow-[var(--shadow-soft)]">
-                {typeIcon}
+  return (
+    <article className="group overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]">
+      <Link to={`/resources/${slug}`} className="block">
+        <div className="relative aspect-[4/3] overflow-hidden bg-bg-soft">
+          {thumbnailUrl ? (
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-primary/10 via-brand-accent/10 to-bg-soft">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-surface-border bg-surface text-text-secondary shadow-[var(--shadow-soft)]">
+                <BookOpen className="h-6 w-6" />
               </div>
             </div>
+          )}
 
-            <div>
-              <p className="line-clamp-2 font-heading text-lg leading-snug text-text-primary">
-                {title}
-              </p>
-
-              {contributorName ? (
-                <p className="mt-2 text-sm text-text-secondary">
-                  {contributorName}
-                </p>
-              ) : null}
+          {type ? (
+            <div className="absolute left-4 top-4 rounded-full border border-surface-border bg-bg/90 px-3 py-1 text-xs font-medium uppercase tracking-wide text-text-primary backdrop-blur">
+              {type}
             </div>
-          </div>
-        )}
-
-        <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
-          <motion.button
-            type="button"
-            onClick={handleSaved}
-            disabled={loadingState === 'saved'}
-            whileTap={{ scale: 0.92 }}
-            animate={
-              saved
-                ? { scale: [1, 1.18, 1.08], rotate: [0, -6, 0] }
-                : { scale: 1, rotate: 0 }
-            }
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur transition ${
-              saved
-                ? 'border-brand-primary bg-brand-primary text-white shadow-[var(--shadow-soft)]'
-                : 'border-surface-border bg-surface/90 text-text-secondary hover:scale-105 hover:bg-surface-hover'
-            }`}
-            aria-label={saved ? 'Quitar de guardados' : 'Guardar recurso'}
-            title={saved ? 'Quitar de guardados' : 'Guardar recurso'}
-          >
-            <Bookmark className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
-          </motion.button>
-
-          <motion.button
-            type="button"
-            onClick={handleFavorite}
-            disabled={loadingState === 'favorite'}
-            whileTap={{ scale: 0.92 }}
-            animate={
-              favorite
-                ? { scale: [1, 1.2, 1.08], rotate: [0, 8, 0] }
-                : { scale: 1, rotate: 0 }
-            }
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur transition ${
-              favorite
-                ? 'border-brand-accent bg-brand-accent text-brand-ink shadow-[var(--shadow-soft)]'
-                : 'border-surface-border bg-surface/90 text-text-secondary hover:scale-105 hover:bg-surface-hover'
-            }`}
-            aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-            title={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-          >
-            <Star className={`h-4 w-4 ${favorite ? 'fill-current' : ''}`} />
-          </motion.button>
+          ) : null}
         </div>
-      </div>
+      </Link>
 
-      <div className="flex flex-1 flex-col p-5">
-        <div className="mb-3 inline-flex w-fit rounded-full border border-surface-border bg-bg-soft px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
-          {typeLabel}
-        </div>
+      <div className="p-5">
+        <div className="min-h-[84px]">
+          <Link to={`/resources/${slug}`} className="block">
+            <h3 className="line-clamp-2 font-heading text-xl text-text-primary transition group-hover:text-brand-primary">
+              {title}
+            </h3>
+          </Link>
 
-        <h3 className="font-heading text-lg leading-snug text-text-primary">
-          {title}
-        </h3>
-
-        {description ? (
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-text-secondary">
-            {description}
-          </p>
-        ) : null}
-
-        <div className="mt-auto pt-4">
-          {contributorName ? (
-            <p className="text-xs text-neutral-muted">
-              Por <span className="text-text-primary">{contributorName}</span>
+          {description ? (
+            <p className="mt-3 line-clamp-3 text-sm leading-6 text-text-secondary">
+              {description}
             </p>
           ) : null}
+        </div>
 
-          {slug ? (
-            <span className="mt-3 inline-flex text-sm font-medium text-brand-accent transition hover:underline">
-              Ver recurso →
-            </span>
-          ) : null}
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            {contributorName ? (
+              <div className="inline-flex min-w-0 items-center gap-2 text-sm text-text-secondary">
+                <UserRound className="h-4 w-4 shrink-0" />
+                <span className="truncate">{contributorName}</span>
+              </div>
+            ) : (
+              <span className="text-sm text-text-secondary"> </span>
+            )}
+          </div>
+
+          <Link
+            to={`/resources/${slug}`}
+            className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover hover:text-brand-primary"
+          >
+            {t('common.open')}
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
-    </motion.article>
+    </article>
   )
-
-  if (!slug) {
-    return cardContent
-  }
-
-  return <Link to={`/resources/${slug}`}>{cardContent}</Link>
 }

@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   TrendingUp,
   Users,
-  
 } from 'lucide-react'
 import {
   getAdminDashboardStats,
@@ -140,7 +139,7 @@ export default function AdminDashboardPage() {
         <QuickActionCard
           icon={<FileSearch className="h-5 w-5" />}
           title="Review applications"
-          description="Check pending contributor requests and approve legitimate profiles."
+          description="Check pending ministry and organization requests before approving them."
           to="/admin/contributor-applications"
           actionLabel="Open applications"
         />
@@ -178,7 +177,7 @@ export default function AdminDashboardPage() {
                 Pending applications
               </h2>
               <p className="text-sm text-text-secondary">
-                Contributor requests waiting for review.
+                Ministries and organizations waiting for review.
               </p>
             </div>
 
@@ -197,33 +196,41 @@ export default function AdminDashboardPage() {
                 />
               </div>
             ) : (
-              pendingApplications.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-text-primary">
-                      {item.full_name}
-                    </p>
-                    <p className="truncate text-sm text-text-secondary">
-                      {item.email || 'No email'}
-                    </p>
-                    <p className="mt-1 text-xs text-text-secondary">
-                      {item.country || 'No country'}
-                      {item.organization ? ` · ${item.organization}` : ''}
-                    </p>
-                  </div>
+              pendingApplications.map((item) => {
+                const displayName =
+                  item.organization_name || item.full_name || 'Unnamed organization'
 
-                  <div className="flex items-center gap-3">
-                    <StatusBadge label="Pending" tone="warning" />
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 px-5 py-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-text-primary">
+                        {displayName}
+                      </p>
 
-                    <Link to={`/admin/contributor-applications/${item.id}`}>
-                      <AppButton variant="secondary">Review</AppButton>
-                    </Link>
+                      <p className="truncate text-sm text-text-secondary">
+                        Contact: {item.contact_name || 'No contact'}
+                        {item.contact_role ? ` • ${item.contact_role}` : ''}
+                      </p>
+
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {item.contact_email || 'No email'}
+                        {item.country ? ` · ${item.country}` : ''}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <StatusBadge label="Pending" tone="warning" />
+
+                      <Link to={`/admin/contributor-applications/${item.id}`}>
+                        <AppButton variant="secondary">Review</AppButton>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </SectionCard>

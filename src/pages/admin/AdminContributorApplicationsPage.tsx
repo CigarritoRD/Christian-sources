@@ -52,8 +52,9 @@ export default function AdminContributorApplicationsPage() {
 
     return items.filter((item) => {
       return (
-        item.full_name.toLowerCase().includes(normalized) ||
-        (item.email || '').toLowerCase().includes(normalized) ||
+        (item.organization_name || '').toLowerCase().includes(normalized) ||
+        (item.contact_name || '').toLowerCase().includes(normalized) ||
+        (item.contact_email || '').toLowerCase().includes(normalized) ||
         (item.specialty || '').toLowerCase().includes(normalized) ||
         (item.country || '').toLowerCase().includes(normalized) ||
         (item.organization || '').toLowerCase().includes(normalized)
@@ -73,7 +74,7 @@ export default function AdminContributorApplicationsPage() {
           <SearchInput
             value={query}
             onChange={setQuery}
-            placeholder="Search by name, email, specialty, country..."
+            placeholder="Search by ministry, contact, email, specialty, country..."
           />
 
           <div className="flex flex-wrap gap-2">
@@ -141,7 +142,7 @@ export default function AdminContributorApplicationsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-heading text-xl text-text-primary">
-                        {item.full_name}
+                        {item.organization_name || item.full_name || 'Unnamed organization'}
                       </h2>
 
                       {item.status === 'pending_review' ? (
@@ -167,7 +168,13 @@ export default function AdminContributorApplicationsPage() {
                     </div>
 
                     <p className="mt-2 text-sm text-text-secondary">
-                      {item.email || 'No email'} {item.country ? `• ${item.country}` : ''}
+                      Contact: {item.contact_name || 'No contact'}
+                      {item.contact_role ? ` • ${item.contact_role}` : ''}
+                    </p>
+
+                    <p className="mt-1 text-sm text-text-secondary">
+                      {item.contact_email || 'No email'}
+                      {item.country ? ` • ${item.country}` : ''}
                       {item.organization ? ` • ${item.organization}` : ''}
                     </p>
 
