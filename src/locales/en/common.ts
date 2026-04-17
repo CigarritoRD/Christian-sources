@@ -37,6 +37,7 @@ const en = {
   },
 
   home: {
+    titleAccent: 'that matter',
     badge: 'Toolkit Box',
     title: 'Useful resources to learn, support, and grow in community.',
     subtitle:
@@ -141,6 +142,7 @@ const en = {
     open: 'Open',
   },
   contributors: {
+    viewProfile: 'Ver perfil',
     badge: 'Community',
     title: 'Contributors',
     subtitle:
@@ -232,20 +234,22 @@ const en = {
     },
   },
   footer: {
-    description:
-      'A resource library to discover useful materials and get to know the contributors who share them.',
-    navigation: 'Navigation',
-    home: 'Home',
-    resources: 'Resources',
-    contributors: 'Contributors',
-    becomeContributor: 'Become a contributor',
-    contribute: 'Contribute',
-    contributeTitle: 'Would you like to share your resources?',
-    contributeBody:
-      'Apply as a contributor and let us review your profile to become part of the platform.',
-    rights: '© 2026 Toolkit Box. All rights reserved.',
-    madeFor: 'Built to discover resources and connect contributors.',
-  },
+  description:
+    'A resource library to discover useful materials and get to know the contributors who share them.',
+  navigation: 'Navigation',
+  home: 'Home',
+  resources: 'Resources',
+  contributors: 'Contributors',
+  becomeContributor: 'Become a contributor',
+  contribute: 'Contribute',
+  contributeTitle: 'Would you like to share your resources?',
+  contributeBody:
+    'Apply as a contributor and let us review your profile to become part of the platform.',
+  poweredBy: 'Powered by',
+  poweredByBody: 'Toolbox developed as part of the GTP ecosystem.',
+  rights: '© 2026 Toolbox. All rights reserved.',
+  madeFor: 'Built to discover resources and connect contributors.',
+},
 } as const
 
 export default en

@@ -125,7 +125,7 @@ export default function AdminContributorApplicationsPage() {
       ) : error ? (
         <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
           <h2 className="font-heading text-xl">Could not load applications</h2>
-          <p className="mt-2 text-sm text-text-secondary">{error}</p>
+          <p className="mt-2 text-sm text-brand-primary">{error}</p>
         </SectionCard>
       ) : filtered.length === 0 ? (
         <EmptyState
@@ -167,19 +167,19 @@ export default function AdminContributorApplicationsPage() {
                       ) : null}
                     </div>
 
-                    <p className="mt-2 text-sm text-text-secondary">
+                    <p className="mt-2 text-sm text-brand-primary">
                       Contact: {item.contact_name || 'No contact'}
                       {item.contact_role ? ` • ${item.contact_role}` : ''}
                     </p>
 
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-brand-primary">
                       {item.contact_email || 'No email'}
                       {item.country ? ` • ${item.country}` : ''}
                       {item.organization ? ` • ${item.organization}` : ''}
                     </p>
 
                     {item.specialty ? (
-                      <p className="mt-2 text-sm text-text-secondary">
+                      <p className="mt-2 text-sm text-brand-primary">
                         {item.specialty}
                       </p>
                     ) : null}

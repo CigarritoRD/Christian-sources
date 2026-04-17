@@ -103,7 +103,7 @@ export default function AdminContributorApplicationDetailPage() {
     return (
       <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
         <h2 className="font-heading text-xl">Could not load application</h2>
-        <p className="mt-2 text-sm text-text-secondary">
+        <p className="mt-2 text-sm text-brand-primary">
           {error ?? 'Application not found.'}
         </p>
       </SectionCard>
@@ -141,11 +141,11 @@ export default function AdminContributorApplicationDetailPage() {
               <h2 className="mt-4 font-heading text-2xl">{displayName}</h2>
 
               {item.country ? (
-                <p className="mt-2 text-sm text-text-secondary">{item.country}</p>
+                <p className="mt-2 text-sm text-brand-primary">{item.country}</p>
               ) : null}
 
               {item.organization ? (
-                <p className="mt-1 text-sm text-text-secondary">
+                <p className="mt-1 text-sm text-brand-primary">
                   {item.organization}
                 </p>
               ) : null}
@@ -153,28 +153,28 @@ export default function AdminContributorApplicationDetailPage() {
 
             <div className="mt-6 space-y-4 rounded-3xl border border-surface-border bg-bg-soft p-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
+                <p className="text-xs uppercase tracking-[0.18em] text-brand-primary">
                   Contact person
                 </p>
                 <p className="mt-2 font-medium text-text-primary">
                   {item.contact_name || 'No contact name'}
                 </p>
                 {item.contact_role ? (
-                  <p className="mt-1 text-sm text-text-secondary">
+                  <p className="mt-1 text-sm text-brand-primary">
                     {item.contact_role}
                   </p>
                 ) : null}
               </div>
 
               {item.contact_email ? (
-                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <div className="flex items-center gap-2 text-sm text-brand-primary">
                   <Mail className="h-4 w-4" />
                   {item.contact_email}
                 </div>
               ) : null}
 
               {item.contact_phone ? (
-                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <div className="flex items-center gap-2 text-sm text-brand-primary">
                   <Phone className="h-4 w-4" />
                   {item.contact_phone}
                 </div>
@@ -187,21 +187,21 @@ export default function AdminContributorApplicationDetailPage() {
               {item.specialty ? (
                 <div>
                   <h3 className="font-heading text-lg">Specialty</h3>
-                  <p className="mt-2 text-sm text-text-secondary">{item.specialty}</p>
+                  <p className="mt-2 text-sm text-brand-primary">{item.specialty}</p>
                 </div>
               ) : null}
 
               {item.short_bio ? (
                 <div>
                   <h3 className="font-heading text-lg">Short bio</h3>
-                  <p className="mt-2 text-sm text-text-secondary">{item.short_bio}</p>
+                  <p className="mt-2 text-sm text-brand-primary">{item.short_bio}</p>
                 </div>
               ) : null}
 
               {item.full_bio ? (
                 <div>
                   <h3 className="font-heading text-lg">Full bio</h3>
-                  <p className="mt-2 text-sm leading-7 text-text-secondary">
+                  <p className="mt-2 text-sm leading-7 text-brand-primary">
                     {item.full_bio}
                   </p>
                 </div>
@@ -269,12 +269,12 @@ export default function AdminContributorApplicationDetailPage() {
 
               <div className="rounded-3xl border border-surface-border bg-bg-soft p-4">
                 <div className="flex items-center gap-2">
-                  <UserSquare2 className="h-4 w-4 text-text-secondary" />
+                  <UserSquare2 className="h-4 w-4 text-brand-primary" />
                   <p className="text-sm font-medium text-text-primary">
                     Approval behavior
                   </p>
                 </div>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   When approved, the public contributor profile will be created using{' '}
                   <span className="font-medium text-text-primary">
                     {displayName}
@@ -313,7 +313,7 @@ export default function AdminContributorApplicationDetailPage() {
                   </AppButton>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-secondary">
+                <div className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-brand-primary">
                   This application has already been reviewed.
                 </div>
               )}

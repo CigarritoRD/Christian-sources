@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="space-y-6">
         <SectionCard className="p-6">
-          <p className="text-sm text-text-secondary">Loading dashboard...</p>
+          <p className="text-sm text-brand-primary">Loading dashboard...</p>
         </SectionCard>
       </div>
     )
@@ -176,7 +176,7 @@ export default function AdminDashboardPage() {
               <h2 className="font-heading text-lg text-text-primary">
                 Pending applications
               </h2>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-brand-primary">
                 Ministries and organizations waiting for review.
               </p>
             </div>
@@ -210,12 +210,12 @@ export default function AdminDashboardPage() {
                         {displayName}
                       </p>
 
-                      <p className="truncate text-sm text-text-secondary">
+                      <p className="truncate text-sm text-brand-primary">
                         Contact: {item.contact_name || 'No contact'}
                         {item.contact_role ? ` • ${item.contact_role}` : ''}
                       </p>
 
-                      <p className="mt-1 text-xs text-text-secondary">
+                      <p className="mt-1 text-xs text-brand-primary">
                         {item.contact_email || 'No email'}
                         {item.country ? ` · ${item.country}` : ''}
                       </p>
@@ -241,7 +241,7 @@ export default function AdminDashboardPage() {
               <h2 className="font-heading text-lg text-text-primary">
                 Recent contributors
               </h2>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-brand-primary">
                 Latest contributor profiles created.
               </p>
             </div>
@@ -253,7 +253,7 @@ export default function AdminDashboardPage() {
 
           <div className="divide-y divide-surface-border">
             {recentContributors.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-text-secondary">
+              <div className="px-5 py-8 text-sm text-brand-primary">
                 No contributors yet.
               </div>
             ) : (
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
                         {item.name.slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
                       <p className="truncate font-medium text-text-primary">
                         {item.name}
                       </p>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-brand-primary">
                         {item.specialty ?? 'No specialty'}
                       </p>
                     </div>
@@ -307,7 +307,7 @@ export default function AdminDashboardPage() {
               <h2 className="font-heading text-lg text-text-primary">
                 Recent resources
               </h2>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-brand-primary">
                 Latest resources added to the platform.
               </p>
             </div>
@@ -319,7 +319,7 @@ export default function AdminDashboardPage() {
 
           <div className="divide-y divide-surface-border">
             {recentResources.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-text-secondary">
+              <div className="px-5 py-8 text-sm text-brand-primary">
                 No resources yet.
               </div>
             ) : (
@@ -336,7 +336,7 @@ export default function AdminDashboardPage() {
                         className="h-12 w-12 rounded-xl object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
                         {item.title.slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -345,7 +345,7 @@ export default function AdminDashboardPage() {
                       <p className="truncate font-medium text-text-primary">
                         {item.title}
                       </p>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-brand-primary">
                         {item.contributor?.name ?? 'No contributor'} ·{' '}
                         {item.resource_type ?? 'No type'}
                       </p>
@@ -396,7 +396,7 @@ function QuickActionCard({
       </div>
 
       <h2 className="mt-4 font-heading text-lg text-text-primary">{title}</h2>
-      <p className="mt-2 text-sm text-text-secondary">{description}</p>
+      <p className="mt-2 text-sm text-brand-primary">{description}</p>
 
       <div className="mt-4">
         <Link to={to}>

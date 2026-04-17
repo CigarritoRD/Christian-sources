@@ -118,7 +118,7 @@ export default function AdminTagsPage() {
 
       {loading ? (
         <SectionCard className="p-6">
-          <p className="text-sm text-text-secondary">Loading tags...</p>
+          <p className="text-sm text-brand-primary">Loading tags...</p>
         </SectionCard>
       ) : error ? (
         <SectionCard className="border-red-200 bg-red-50 p-6">
@@ -146,7 +146,7 @@ export default function AdminTagsPage() {
                       tone={item.is_active ? 'success' : 'muted'}
                     />
                   </div>
-                  <p className="mt-2 text-sm text-text-secondary">{item.slug}</p>
+                  <p className="mt-2 text-sm text-brand-primary">{item.slug}</p>
                 </div>
 
                 <div>

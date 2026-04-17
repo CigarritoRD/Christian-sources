@@ -20,7 +20,7 @@ export default function AppInput({
       <input
         className={[
           'w-full rounded-xl border border-surface-border bg-surface px-3 py-2 text-sm text-text-primary outline-none transition',
-          'placeholder:text-text-secondary/70 focus:border-brand-primary',
+          'placeholder:text-brand-primary/70 focus:border-brand-primary',
           error ? 'border-red-300 focus:border-red-400' : '',
           className,
         ].join(' ')}

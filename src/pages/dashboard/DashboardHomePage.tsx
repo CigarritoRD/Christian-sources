@@ -74,13 +74,13 @@ export default function DashboardHomePage() {
             <SectionCard className="p-8">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                  <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                     Dashboard
                   </p>
                   <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                     Bienvenida{profile?.full_name ? `, ${profile.full_name}` : ''}
                   </h1>
-                  <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
+                  <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
                     Revisa tu actividad, vuelve a tus recursos guardados y continúa
                     explorando desde tu espacio personal.
                   </p>
@@ -127,7 +127,7 @@ export default function DashboardHomePage() {
             ) : error ? (
               <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
                 <h2 className="font-heading text-xl">No pudimos cargar tu panel</h2>
-                <p className="mt-2 text-sm text-text-secondary">{error}</p>
+                <p className="mt-2 text-sm text-brand-primary">{error}</p>
               </SectionCard>
             ) : (
               <div className="grid gap-6 md:grid-cols-3">
@@ -157,7 +157,7 @@ export default function DashboardHomePage() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   Tu actividad
                 </p>
                 <h2 className="mt-2 font-heading text-3xl">Recursos recientes</h2>
@@ -201,7 +201,7 @@ export default function DashboardHomePage() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   Historial
                 </p>
                 <h2 className="mt-2 font-heading text-3xl">Últimas descargas</h2>

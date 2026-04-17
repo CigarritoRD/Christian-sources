@@ -49,7 +49,7 @@ export default function RegisterPage() {
             </div>
 
             <h1 className="mt-4 font-heading text-2xl">{t('auth.registerTitle')}</h1>
-            <p className="mt-2 text-sm text-text-secondary">
+            <p className="mt-2 text-sm text-brand-primary">
               {t('auth.registerSubtitle')}
             </p>
           </div>
@@ -79,7 +79,7 @@ export default function RegisterPage() {
             </AppButton>
           </form>
 
-          <p className="mt-6 text-center text-sm text-text-secondary">
+          <p className="mt-6 text-center text-sm text-brand-primary">
             {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" className="text-brand-accent hover:underline">
               {t('nav.login')}

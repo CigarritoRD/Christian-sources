@@ -52,13 +52,13 @@ export default function DashboardDownloadsPage() {
       <section className="px-0 py-2">
         <div className="mx-auto max-w-6xl">
           <div className="rounded-3xl border border-surface-border bg-surface p-8 shadow-[var(--shadow-soft)]">
-            <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+            <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
               Descargas
             </p>
             <h1 className="mt-3 font-heading text-4xl md:text-5xl">
               Mis descargas
             </h1>
-            <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
+            <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
               Aquí puedes encontrar los recursos que has descargado recientemente.
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function DashboardDownloadsPage() {
               <h2 className="font-heading text-2xl text-text-primary">
                 Aún no tienes descargas
               </h2>
-              <p className="mt-3 text-text-secondary">
+              <p className="mt-3 text-brand-primary">
                 Cuando descargues recursos, aparecerán aquí para que puedas
                 volver a encontrarlos fácilmente.
               </p>
@@ -117,12 +117,12 @@ export default function DashboardDownloadsPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-text-secondary">
+                      <div className="flex h-full items-center justify-center text-sm text-brand-primary">
                         Sin miniatura
                       </div>
                     )}
 
-                    <div className="absolute left-3 top-3 rounded-full border border-surface-border bg-surface px-3 py-1 text-xs uppercase tracking-wide text-text-secondary">
+                    <div className="absolute left-3 top-3 rounded-full border border-surface-border bg-surface px-3 py-1 text-xs uppercase tracking-wide text-brand-primary">
                       {resource.resource_type}
                     </div>
                   </div>
@@ -132,7 +132,7 @@ export default function DashboardDownloadsPage() {
                       {resource.title}
                     </h3>
 
-                    <p className="mt-2 line-clamp-2 text-sm text-text-secondary">
+                    <p className="mt-2 line-clamp-2 text-sm text-brand-primary">
                       {resource.short_description ||
                         resource.description ||
                         'Sin descripción.'}

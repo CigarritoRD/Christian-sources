@@ -181,13 +181,13 @@ export default function ResourcesPage() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_28%)]" />
           <div className="mx-auto max-w-6xl">
             <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                 Biblioteca
               </p>
               <h1 className="mt-2 font-heading text-4xl md:text-5xl">
                 {t('resources.title')}
               </h1>
-              <p className="mt-4 font-body text-lg text-text-secondary">
+              <p className="mt-4 font-body text-lg text-brand-primary">
                 {t('resources.subtitle')}
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function ResourcesPage() {
                   <FolderKanban className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">Biblioteca curada</h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   Recursos organizados para exploración clara y útil.
                 </p>
               </SectionCard>
@@ -208,7 +208,7 @@ export default function ResourcesPage() {
                   <Search className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">Búsqueda flexible</h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   Filtra por tema, tipo y encuentra materiales relevantes rápido.
                 </p>
               </SectionCard>
@@ -218,7 +218,7 @@ export default function ResourcesPage() {
                   <Filter className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">Exploración guiada</h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   Descubre recursos según tus intereses y necesidades reales.
                 </p>
               </SectionCard>
@@ -232,14 +232,14 @@ export default function ResourcesPage() {
           <div className="mx-auto max-w-6xl">
             <SectionCard className="p-5">
               <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-bg-soft text-text-secondary">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-bg-soft text-brand-primary">
                   <SlidersHorizontal className="h-4 w-4" />
                 </div>
                 <div>
                   <h2 className="font-heading text-lg text-text-primary">
                     {t('resources.filters')}
                   </h2>
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-brand-primary">
                     {t('resources.filterSubtitle')}
                   </p>
                 </div>
@@ -287,7 +287,7 @@ export default function ResourcesPage() {
               {tags.length > 0 ? (
                 <div className="mt-4">
                   <div className="mb-3 flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-text-secondary" />
+                    <Tag className="h-4 w-4 text-brand-primary" />
                     <p className="text-sm font-medium text-text-primary">
                       {t('resources.tags')}
                     </p>
@@ -342,7 +342,7 @@ export default function ResourcesPage() {
             ) : error ? (
               <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
                 <h2 className="font-heading text-xl">No pudimos cargar los recursos</h2>
-                <p className="mt-2 text-sm text-text-secondary">{error}</p>
+                <p className="mt-2 text-sm text-brand-primary">{error}</p>
               </SectionCard>
             ) : filteredResources.length === 0 ? (
               <EmptyState
@@ -356,12 +356,12 @@ export default function ResourcesPage() {
               <>
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-brand-primary">
                       {t('resources.resultsFound', { count: filteredResources.length })}
                     </p>
 
                     {hasActiveFilters ? (
-                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-text-secondary">
+                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-brand-primary">
                         {t('resources.activeFilters')}
                       </p>
                     ) : null}

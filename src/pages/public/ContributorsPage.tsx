@@ -73,13 +73,13 @@ export default function ContributorsPage() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.08),transparent_28%)]" />
           <div className="mx-auto max-w-6xl">
             <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                 {t('contributors.badge')}
               </p>
               <h1 className="mt-2 font-heading text-4xl md:text-5xl">
                 {t('contributors.title')}
               </h1>
-              <p className="mt-4 font-body text-lg text-text-secondary">
+              <p className="mt-4 font-body text-lg text-brand-primary">
                 {t('contributors.subtitle')}
               </p>
             </div>
@@ -92,7 +92,7 @@ export default function ContributorsPage() {
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature1Title')}
                 </h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   {t('contributors.feature1Body')}
                 </p>
               </SectionCard>
@@ -104,7 +104,7 @@ export default function ContributorsPage() {
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature2Title')}
                 </h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   {t('contributors.feature2Body')}
                 </p>
               </SectionCard>
@@ -116,7 +116,7 @@ export default function ContributorsPage() {
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature3Title')}
                 </h3>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   {t('contributors.feature3Body')}
                 </p>
               </SectionCard>
@@ -133,7 +133,7 @@ export default function ContributorsPage() {
                 <h2 className="font-heading text-lg text-text-primary">
                   {t('contributors.searchTitle')}
                 </h2>
-                <p className="mt-1 text-sm text-text-secondary">
+                <p className="mt-1 text-sm text-brand-primary">
                   {t('contributors.searchHelp')}
                 </p>
               </div>
@@ -177,7 +177,7 @@ export default function ContributorsPage() {
                 <h2 className="font-heading text-xl">
                   {t('contributors.errorTitle')}
                 </h2>
-                <p className="mt-2 text-sm text-text-secondary">{error}</p>
+                <p className="mt-2 text-sm text-brand-primary">{error}</p>
               </SectionCard>
             ) : filteredContributors.length === 0 ? (
               <EmptyState
@@ -188,7 +188,7 @@ export default function ContributorsPage() {
             ) : (
               <>
                 <div className="mb-6 flex items-center justify-between gap-4">
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-brand-primary">
                     {t('contributors.resultsFound', {
                       count: filteredContributors.length,
                     })}

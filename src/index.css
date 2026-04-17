@@ -21,8 +21,10 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
 
-  --font-heading: "Montserrat", system-ui, sans-serif;
-  --font-body: "EB Garamond", ui-serif, Georgia, serif;
+  /* --font-heading: "Montserrat", system-ui, sans-serif; */
+  /* --font-body: "EB Garamond", ui-serif, Georgia, serif; */
+  --font-heading: "Libre Baskerville", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
 
   --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.04);
   --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -31,16 +33,24 @@
 
 /* Light theme por defecto */
 :root {
-  --bg: #f7fbfb;
-  --bg-soft: #eef4f4;
+  /* --bg: #f7fbfb;
+  --bg-soft: #eef4f4; */
+  --bg: #f3f5f4;
+  --bg-soft: #edf1ef;
+
 
   --surface: #ffffff;
   --surface-hover: #f3f7f7;
   --surface-border: rgba(11, 31, 30, 0.08);
   --surface-strong: rgba(11, 31, 30, 0.12);
 
-  --brand-primary: #007473;
-  --brand-accent: #00ABC7;
+  /* --brand-primary: #007473;
+  --brand-accent: #00ABC7; */
+  --brand-primary: #0f7c77;
+  --brand-accent: #2a9d98;
+
+
+
   --brand-gray: #808080;
   --brand-ink: #0b1f1e;
   --brand-paper: #f7fbfb;
@@ -48,11 +58,24 @@
   --neutral-light: #E6F2F2;
   --neutral-muted: #6f8085;
 
-  --text-primary: #0b1f1e;
-  --text-secondary: #5f7276;
+  /* --text-primary: #0b1f1e;
+  --text-secondary: #5f7276; */
+  --text-primary: #1f2a2a;
+  --text-secondary: #5f6b6b;
 
-  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
+  /* --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08); */
+  --shadow-soft: 0 1px 2px rgba(22, 32, 32, 0.05);
+  --shadow-card: 0 6px 14px rgba(22, 32, 32, 0.08);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+.font-body {
+  font-family: var(--font-body);
 }
 
 /* Dark theme */

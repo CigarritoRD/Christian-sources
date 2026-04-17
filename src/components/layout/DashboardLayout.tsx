@@ -33,7 +33,7 @@ export default function DashboardLayout() {
                 <p className="font-heading text-base leading-none text-text-primary">
                   Toolkit Box
                 </p>
-                <p className="mt-1 text-xs leading-none text-text-secondary">
+                <p className="mt-1 text-xs leading-none text-brand-primary">
                   {displayName}
                 </p>
               </div>

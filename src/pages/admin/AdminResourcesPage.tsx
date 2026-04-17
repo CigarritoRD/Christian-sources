@@ -163,7 +163,7 @@ export default function AdminResourcesPage() {
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
+          <div className="px-4 py-6 text-sm text-brand-primary">
             Loading resources...
           </div>
         ) : error ? (
@@ -191,7 +191,7 @@ export default function AdminResourcesPage() {
                       className="h-11 w-11 rounded-xl object-cover"
                     />
                   ) : (
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
                       {item.title.slice(0, 1).toUpperCase()}
                     </div>
                   )}
@@ -216,16 +216,16 @@ export default function AdminResourcesPage() {
                       ) : null}
                     </div>
 
-                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-brand-primary">@{item.slug}</p>
 
-                    <p className="mt-0.5 text-sm text-text-secondary">
+                    <p className="mt-0.5 text-sm text-brand-primary">
                       {item.contributor?.name ?? 'No contributor'} ·{' '}
                       {item.category?.name ?? 'No category'} ·{' '}
                       {item.resource_type ?? 'No type'}
                     </p>
 
                     {item.short_description ? (
-                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-text-secondary">
+                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-brand-primary">
                         {item.short_description}
                       </p>
                     ) : null}

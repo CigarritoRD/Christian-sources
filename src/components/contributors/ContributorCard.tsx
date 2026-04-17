@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { ArrowUpRight, Globe, UserRound } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ContributorCardProps = {
   name: string
@@ -17,43 +19,51 @@ export default function ContributorCard({
   avatarUrl,
   websiteUrl,
 }: ContributorCardProps) {
+  const { t } = useTranslation()
+
   return (
-    <article className="group flex h-full shadow-soft hover:shadow-card hover:-translate-y-0.5 flex-col rounded-3xl border border-surface-border bg-surface p-6 shadow-soft transition duration-300 hover:bg-surface-hover hover:shadow-card">
+    <article className="group h-full rounded-xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]">
       <div className="flex items-start gap-4">
-        <div className="h-16 w-16 overflow-hidden rounded-2xl bg-bg-soft">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-bg-soft">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={name}
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-text-secondary">
-              {name.charAt(0)}
-            </div>
+            <UserRound className="h-7 w-7 text-brand-primary" />
           )}
         </div>
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-heading text-xl text-text-primary">{name}</h3>
+          <Link to={`/contributors/${slug}`} className="block">
+            <h3 className="font-heading text-2xl leading-tight text-text-primary transition group-hover:text-brand-primary">
+              {name}
+            </h3>
+          </Link>
+
           {specialty ? (
-            <p className="mt-1 text-sm text-brand-accent">{specialty}</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-[0.16em] text-brand-primary">
+              {specialty}
+            </p>
           ) : null}
         </div>
       </div>
 
       {shortBio ? (
-        <p className="mt-5 text-sm leading-6 text-text-secondary">
+        <p className="mt-5 line-clamp-4 text-sm leading-7 text-brand-primary">
           {shortBio}
         </p>
       ) : null}
 
-      <div className="mt-auto pt-6 flex flex-wrap gap-3">
+      <div className="mt-6 flex items-center justify-between gap-3">
         <Link
           to={`/contributors/${slug}`}
-          className="inline-flex rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-brand-accent transition hover:underline"
         >
-          Ver perfil
+          {t('contributors.viewProfile')}
+          <ArrowUpRight className="h-4 w-4" />
         </Link>
 
         {websiteUrl ? (
@@ -61,9 +71,10 @@ export default function ContributorCard({
             href={websiteUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-bg-soft px-3 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
           >
-            Visitar web
+            <Globe className="h-4 w-4 text-brand-primary" />
+            {t('contributors.website')}
           </a>
         ) : null}
       </div>

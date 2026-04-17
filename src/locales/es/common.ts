@@ -37,6 +37,7 @@ const es = {
   },
 
   home: {
+    titleAccent: 'real',
     badge: 'Toolkit Box',
     title: 'Recursos útiles para aprender, acompañar y crecer en comunidad.',
     subtitle:
@@ -142,6 +143,7 @@ const es = {
   },
   
   contributors: {
+    viewProfile: 'Ver perfil',
     badge: 'Comunidad',
     title: 'Colaboradores',
     subtitle:
@@ -246,6 +248,8 @@ const es = {
       'Aplica como colaborador y deja que revisemos tu perfil para formar parte de la plataforma.',
     rights: '© 2026 Toolkit Box. Todos los derechos reservados.',
     madeFor: 'Diseñado para descubrir recursos y conectar colaboradores.',
+    poweredBy: 'Powered by',
+poweredByBody: 'Toolkit desarrollado como parte del ecosistema de GTP.',
   },
 } as const
 

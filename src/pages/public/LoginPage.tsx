@@ -48,7 +48,7 @@ export default function LoginPage() {
             </div>
 
             <h1 className="mt-4 font-heading text-2xl">{t('auth.loginTitle')}</h1>
-            <p className="mt-2 text-sm text-text-secondary">
+            <p className="mt-2 text-sm text-brand-primary">
               {t('auth.loginSubtitle')}
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
             </AppButton>
           </form>
 
-          <p className="mt-6 text-center text-sm text-text-secondary">
+          <p className="mt-6 text-center text-sm text-brand-primary">
             {t('auth.noAccount')}{' '}
             <Link to="/register" className="text-brand-accent hover:underline">
               {t('nav.register')}

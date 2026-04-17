@@ -87,7 +87,7 @@ export default function AdminResourceEditPage() {
   if (loading) {
     return (
       <SectionCard className="p-6">
-        <p className="text-sm text-text-secondary">Loading resource...</p>
+        <p className="text-sm text-brand-primary">Loading resource...</p>
       </SectionCard>
     )
   }

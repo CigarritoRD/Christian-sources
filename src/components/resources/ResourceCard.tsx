@@ -23,7 +23,7 @@ export default function ResourceCard({
   const { t } = useTranslation()
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]">
+    <article className="group overflow-hidden rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]">
       <Link to={`/resources/${slug}`} className="block">
         <div className="relative aspect-[4/3] overflow-hidden bg-bg-soft">
           {thumbnailUrl ? (
@@ -34,7 +34,7 @@ export default function ResourceCard({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-primary/10 via-brand-accent/10 to-bg-soft">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-surface-border bg-surface text-text-secondary shadow-[var(--shadow-soft)]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-surface-border bg-surface text-brand-primary shadow-[var(--shadow-soft)]">
                 <BookOpen className="h-6 w-6" />
               </div>
             </div>
@@ -57,7 +57,7 @@ export default function ResourceCard({
           </Link>
 
           {description ? (
-            <p className="mt-3 line-clamp-3 text-sm leading-6 text-text-secondary">
+            <p className="mt-3 line-clamp-3 text-sm leading-6 text-brand-primary">
               {description}
             </p>
           ) : null}
@@ -66,18 +66,18 @@ export default function ResourceCard({
         <div className="mt-5 flex items-center justify-between gap-3">
           <div className="min-w-0">
             {contributorName ? (
-              <div className="inline-flex min-w-0 items-center gap-2 text-sm text-text-secondary">
+              <div className="inline-flex min-w-0 items-center gap-2 text-sm text-brand-primary">
                 <UserRound className="h-4 w-4 shrink-0" />
                 <span className="truncate">{contributorName}</span>
               </div>
             ) : (
-              <span className="text-sm text-text-secondary"> </span>
+              <span className="text-sm text-brand-primary"> </span>
             )}
           </div>
 
           <Link
             to={`/resources/${slug}`}
-            className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover hover:text-brand-primary"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover hover:text-brand-primary"
           >
             {t('common.open')}
             <ArrowUpRight className="h-4 w-4" />

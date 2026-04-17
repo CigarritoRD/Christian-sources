@@ -98,13 +98,13 @@ export default function DashboardLibraryPage() {
         <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-8">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                 Librería
               </p>
               <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                 Mis recursos
               </h1>
-              <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
+              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
                 Aquí encontrarás los recursos que has guardado o marcado como
                 favoritos para volver a ellos cuando los necesites.
               </p>

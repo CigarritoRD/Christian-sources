@@ -38,7 +38,7 @@ function navLinkClass(isActive: boolean) {
     'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
     isActive
       ? 'bg-brand-primary text-white shadow-[var(--shadow-soft)]'
-      : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary',
+      : 'text-brand-primary hover:bg-surface-hover hover:text-text-primary',
   ].join(' ')
 }
 
@@ -71,7 +71,7 @@ export default function AdminLayout() {
                   <p className="font-heading text-xl text-text-primary">
                     Flourish Admin
                   </p>
-                  <p className="text-sm text-text-secondary">Control panel</p>
+                  <p className="text-sm text-brand-primary">Control panel</p>
                 </div>
               </div>
             </NavLink>
@@ -97,13 +97,13 @@ export default function AdminLayout() {
             </nav>
 
             <div className="mt-8 rounded-2xl border border-surface-border bg-bg-soft p-4 shadow-[var(--shadow-soft)]">
-              <p className="text-xs uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">
                 Signed in as
               </p>
               <p className="mt-2 font-medium text-text-primary">
                 {profile?.full_name || profile?.email || 'Admin'}
               </p>
-              <p className="mt-1 text-sm capitalize text-text-secondary">
+              <p className="mt-1 text-sm capitalize text-brand-primary">
                 {profile?.role || 'admin'}
               </p>
             </div>
@@ -113,7 +113,7 @@ export default function AdminLayout() {
             <div className="space-y-2">
               <NavLink
                 to="/"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-surface-hover hover:text-text-primary"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-brand-primary transition hover:bg-surface-hover hover:text-text-primary"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to site
@@ -122,7 +122,7 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={() => void handleSignOut()}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-hover hover:text-text-primary"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-brand-primary transition hover:bg-surface-hover hover:text-text-primary"
               >
                 <LogOut className="h-4 w-4" />
                 Sign out
@@ -138,7 +138,7 @@ export default function AdminLayout() {
                 <NavLink to="/admin" className="font-heading text-xl text-text-primary">
                   Flourish Admin
                 </NavLink>
-                <p className="text-xs text-text-secondary">Admin panel</p>
+                <p className="text-xs text-brand-primary">Admin panel</p>
               </div>
 
               <AppButton
@@ -181,7 +181,7 @@ export default function AdminLayout() {
                     <NavLink
                       to="/"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-surface-hover hover:text-text-primary"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-brand-primary transition hover:bg-surface-hover hover:text-text-primary"
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back to site
@@ -190,7 +190,7 @@ export default function AdminLayout() {
                     <button
                       type="button"
                       onClick={() => void handleSignOut()}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-hover hover:text-text-primary"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-brand-primary transition hover:bg-surface-hover hover:text-text-primary"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign out
@@ -206,7 +206,7 @@ export default function AdminLayout() {
           </main>
 
           <footer className="border-t border-surface-border bg-surface">
-            <div className="flex flex-col gap-2 px-6 py-4 text-sm text-text-secondary md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-2 px-6 py-4 text-sm text-brand-primary md:flex-row md:items-center md:justify-between">
               <p>Flourish Admin Panel</p>
               <p>Manage contributors, resources, categories, and platform activity.</p>
             </div>

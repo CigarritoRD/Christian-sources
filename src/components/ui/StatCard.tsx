@@ -20,10 +20,10 @@ export default function StatCard({
       className="rounded-2xl border border-surface-border bg-surface p-3 shadow-[var(--shadow-soft)]"
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs text-text-secondary">{label}</p>
+        <p className="text-xs text-brand-primary">{label}</p>
 
         {icon ? (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-soft text-text-secondary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-soft text-brand-primary">
             {icon}
           </div>
         ) : null}

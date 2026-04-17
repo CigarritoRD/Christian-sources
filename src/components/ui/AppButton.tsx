@@ -16,7 +16,7 @@ function getVariantClasses(variant: AppButtonVariant) {
     case 'secondary':
       return 'border border-surface-border bg-surface text-text-primary hover:bg-surface-hover'
     case 'ghost':
-      return 'bg-transparent text-text-secondary hover:bg-bg-soft hover:text-text-primary'
+      return 'bg-transparent text-brand-primary hover:bg-bg-soft hover:text-text-primary'
     case 'danger':
       return 'border border-red-200 bg-surface text-red-700 hover:bg-red-50'
     case 'success':

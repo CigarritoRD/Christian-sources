@@ -222,7 +222,7 @@ export default function ResourceForm({
             <h2 className="font-heading text-lg text-text-primary">
               Basic information
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Main public information for this resource.
             </p>
           </div>
@@ -268,7 +268,7 @@ export default function ResourceForm({
             <h2 className="font-heading text-lg text-text-primary">
               Descriptions
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Short preview text and full description.
             </p>
           </div>
@@ -297,13 +297,13 @@ export default function ResourceForm({
             <h2 className="font-heading text-lg text-text-primary">
               Relationships
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Connect this resource to a contributor and a category.
             </p>
           </div>
 
           {loadingOptions ? (
-            <p className="text-sm text-text-secondary">Loading options...</p>
+            <p className="text-sm text-brand-primary">Loading options...</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               <AppSelect
@@ -340,15 +340,15 @@ export default function ResourceForm({
         <div className="space-y-4">
           <div>
             <h2 className="font-heading text-lg text-text-primary">Tags</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Assign tags to improve search and discovery.
             </p>
           </div>
 
           {loadingOptions ? (
-            <p className="text-sm text-text-secondary">Loading tags...</p>
+            <p className="text-sm text-brand-primary">Loading tags...</p>
           ) : tags.length === 0 ? (
-            <p className="text-sm text-text-secondary">No active tags available.</p>
+            <p className="text-sm text-brand-primary">No active tags available.</p>
           ) : (
             <div className="flex flex-wrap gap-3">
               {tags.map((tag) => {
@@ -381,7 +381,7 @@ export default function ResourceForm({
             <h2 className="font-heading text-lg text-text-primary">
               Thumbnail
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Upload the image used on public cards and previews.
             </p>
           </div>
@@ -414,7 +414,7 @@ export default function ResourceForm({
         <div className="space-y-4">
           <div>
             <h2 className="font-heading text-lg text-text-primary">Access</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               You can upload a file, use an external link, or both.
             </p>
           </div>
@@ -442,7 +442,7 @@ export default function ResourceForm({
             <h2 className="font-heading text-lg text-text-primary">
               Visibility
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Control how this resource appears in the platform.
             </p>
           </div>

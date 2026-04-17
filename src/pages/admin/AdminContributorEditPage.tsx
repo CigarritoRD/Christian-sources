@@ -82,7 +82,7 @@ export default function AdminContributorEditPage() {
     return (
       <div className="space-y-6 p-6">
         <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <p className="text-sm text-text-secondary">Loading contributor...</p>
+          <p className="text-sm text-brand-primary">Loading contributor...</p>
         </div>
       </div>
     )
@@ -109,7 +109,7 @@ export default function AdminContributorEditPage() {
         <h1 className="text-2xl font-semibold text-text-primary">
           Edit contributor
         </h1>
-        <p className="mt-1 text-sm text-text-secondary">
+        <p className="mt-1 text-sm text-brand-primary">
           Update this collaborator profile managed by Flourish.
         </p>
       </div>

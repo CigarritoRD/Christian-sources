@@ -33,7 +33,7 @@ export default function AdminContributorCreatePage() {
         <h1 className="text-2xl font-semibold text-text-primary">
           Create contributor
         </h1>
-        <p className="mt-1 text-sm text-text-secondary">
+        <p className="mt-1 text-sm text-brand-primary">
           Add a new collaborator profile managed by Flourish.
         </p>
       </div>

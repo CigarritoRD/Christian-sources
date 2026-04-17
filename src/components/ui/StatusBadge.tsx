@@ -18,7 +18,7 @@ function getToneClasses(tone: StatusBadgeTone) {
     case 'info':
       return 'bg-blue-100 text-blue-700'
     default:
-      return 'bg-bg-soft text-text-secondary'
+      return 'bg-bg-soft text-brand-primary'
   }
 }
 

@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import ThemeToggle from '@/components/layout/ThemeToggle'
 import { useAuth } from '@/auth/useAuth'
+import gtpLogo from '@/assets/gtp-logo.png'
 
 export default function PublicNavbar() {
   const navigate = useNavigate()
@@ -78,19 +79,23 @@ export default function PublicNavbar() {
   }, [menuOpen])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-surface-border/60 bg-bg/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-surface-border/70 bg-bg/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-10 lg:px-16">
         <Link to="/" className="flex items-center gap-3" onClick={closeMobileMenu}>
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/15 text-brand-accent shadow-[var(--shadow-soft)] transition hover:scale-[1.02]">
-            <span className="font-heading text-sm font-semibold">TB</span>
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
+            <img
+              src={gtpLogo}
+              alt="GTP"
+              className="h-12 w-12 object-contain"
+            />
           </div>
 
-          <div>
-            <p className="font-heading text-base leading-none text-text-primary">
-              Toolkit Box
+          <div className="min-w-0">
+            <p className="font-heading text-gl leading-none text-text-primary">
+              Toolbox
             </p>
-            <p className="mt-1 text-xs leading-none text-text-secondary">
-              Resource library
+            <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-brand-primary">
+              from GTP
             </p>
           </div>
         </Link>
@@ -105,7 +110,7 @@ export default function PublicNavbar() {
                   'text-sm font-medium transition',
                   isActive
                     ? 'text-text-primary'
-                    : 'text-text-secondary hover:text-text-primary',
+                    : 'text-brand-primary hover:text-text-primary',
                 ].join(' ')
               }
             >
@@ -118,7 +123,7 @@ export default function PublicNavbar() {
           {!isAdmin ? (
             <Link
               to="/become-a-contributor"
-              className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+              className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
             >
               <Sparkles className="h-4 w-4 text-brand-primary" />
               {t('nav.becomeContributor')}
@@ -129,21 +134,21 @@ export default function PublicNavbar() {
           {/* <ThemeToggle /> */}
 
           {loading ? (
-            <div className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm text-text-secondary">
+            <div className="rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm text-brand-primary">
               {t('common.loading')}
             </div>
           ) : !isAuthenticated ? (
             <>
               <Link
                 to="/login"
-                className="rounded-2xl border border-surface-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                className="rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
               >
                 {t('nav.login')}
               </Link>
 
               <Link
                 to="/register"
-                className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                className="inline-flex rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 {t('nav.register')}
               </Link>
@@ -153,7 +158,7 @@ export default function PublicNavbar() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((prev) => !prev)}
-                className="inline-flex items-center gap-3 rounded-2xl border border-surface-border bg-surface px-3 py-2 text-sm text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover"
+                className="inline-flex items-center gap-3 rounded-xl border border-surface-border bg-surface px-3 py-2 text-sm text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover"
               >
                 <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-xs font-semibold text-brand-primary">
                   {avatarUrl ? (
@@ -171,20 +176,19 @@ export default function PublicNavbar() {
                   <p className="max-w-[140px] truncate text-sm font-medium text-text-primary">
                     {displayName}
                   </p>
-                  <p className="text-xs text-text-secondary">
+                  <p className="text-xs text-brand-primary">
                     {isAdmin ? t('nav.admin') : t('nav.profile')}
                   </p>
                 </div>
 
                 <ChevronDown
-                  className={`h-4 w-4 text-text-secondary transition ${
-                    menuOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`h-4 w-4 text-brand-primary transition ${menuOpen ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
               {menuOpen ? (
-                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
+                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
                   <div className="border-b border-surface-border px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-sm font-semibold text-brand-primary">
@@ -203,7 +207,7 @@ export default function PublicNavbar() {
                         <p className="truncate font-medium text-text-primary">
                           {displayName}
                         </p>
-                        <p className="truncate text-sm text-text-secondary">
+                        <p className="truncate text-sm text-brand-primary">
                           {user?.email}
                         </p>
                       </div>
@@ -215,9 +219,9 @@ export default function PublicNavbar() {
                       <Link
                         to="/admin"
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        <Shield className="h-4 w-4 text-text-secondary" />
+                        <Shield className="h-4 w-4 text-brand-primary" />
                         {t('nav.admin')}
                       </Link>
                     ) : (
@@ -225,27 +229,27 @@ export default function PublicNavbar() {
                         <Link
                           to="/dashboard"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
-                          <LayoutDashboard className="h-4 w-4 text-text-secondary" />
+                          <LayoutDashboard className="h-4 w-4 text-brand-primary" />
                           {t('nav.dashboard')}
                         </Link>
 
                         <Link
                           to="/dashboard/library"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
-                          <Library className="h-4 w-4 text-text-secondary" />
+                          <Library className="h-4 w-4 text-brand-primary" />
                           {t('nav.library')}
                         </Link>
 
                         <Link
                           to="/dashboard/profile"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                         >
-                          <User className="h-4 w-4 text-text-secondary" />
+                          <User className="h-4 w-4 text-brand-primary" />
                           {t('nav.profile')}
                         </Link>
                       </>
@@ -254,9 +258,9 @@ export default function PublicNavbar() {
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
-                      <LogOut className="h-4 w-4 text-text-secondary" />
+                      <LogOut className="h-4 w-4 text-brand-primary" />
                       {t('nav.logout')}
                     </button>
                   </div>
@@ -274,7 +278,7 @@ export default function PublicNavbar() {
             type="button"
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-surface-border bg-surface text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-surface text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover"
           >
             <span className="text-lg">{mobileOpen ? '✕' : '☰'}</span>
           </button>
@@ -282,10 +286,10 @@ export default function PublicNavbar() {
       </div>
 
       {mobileOpen ? (
-        <div className="border-t border-surface-border/60 bg-bg/95 px-6 py-5 shadow-[var(--shadow-soft)] md:hidden">
+        <div className="border-t border-surface-border/70 bg-bg/95 px-6 py-5 shadow-[var(--shadow-soft)] md:hidden">
           <div className="mx-auto max-w-6xl">
             {loading ? (
-              <div className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm text-text-secondary">
+              <div className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm text-brand-primary">
                 {t('common.loading')}
               </div>
             ) : (
@@ -294,7 +298,7 @@ export default function PublicNavbar() {
                   <Link
                     to="/become-a-contributor"
                     onClick={closeMobileMenu}
-                    className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                    className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                   >
                     <Sparkles className="h-4 w-4 text-brand-primary" />
                     {t('nav.becomeContributor')}
@@ -302,7 +306,7 @@ export default function PublicNavbar() {
                 ) : null}
 
                 {isAuthenticated ? (
-                  <div className="mb-4 rounded-3xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]">
+                  <div className="mb-4 rounded-xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]">
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-sm font-semibold text-brand-primary">
                         {avatarUrl ? (
@@ -320,7 +324,7 @@ export default function PublicNavbar() {
                         <p className="truncate font-medium text-text-primary">
                           {displayName}
                         </p>
-                        <p className="truncate text-sm text-text-secondary">
+                        <p className="truncate text-sm text-brand-primary">
                           {user?.email}
                         </p>
                       </div>
@@ -342,7 +346,7 @@ export default function PublicNavbar() {
                       onClick={closeMobileMenu}
                       className={({ isActive }) =>
                         [
-                          'rounded-2xl px-4 py-3 text-sm font-medium transition',
+                          'rounded-xl px-4 py-3 text-sm font-medium transition',
                           isActive
                             ? 'bg-brand-primary text-white'
                             : 'border border-surface-border bg-surface text-text-primary hover:bg-surface-hover',
@@ -360,7 +364,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/login"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                       >
                         {t('nav.login')}
                       </Link>
@@ -368,7 +372,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/register"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                        className="rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
                       >
                         {t('nav.register')}
                       </Link>
@@ -378,7 +382,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/admin"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                       >
                         {t('nav.openAdmin')}
                       </Link>
@@ -386,7 +390,7 @@ export default function PublicNavbar() {
                       <button
                         type="button"
                         onClick={handleSignOut}
-                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                        className="rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
                       >
                         {t('nav.logout')}
                       </button>
@@ -396,7 +400,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/dashboard"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                       >
                         {t('nav.openDashboard')}
                       </Link>
@@ -404,7 +408,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/dashboard/library"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                       >
                         {t('nav.library')}
                       </Link>
@@ -412,7 +416,7 @@ export default function PublicNavbar() {
                       <Link
                         to="/dashboard/profile"
                         onClick={closeMobileMenu}
-                        className="rounded-2xl border border-surface-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                       >
                         {t('nav.profile')}
                       </Link>
@@ -420,7 +424,7 @@ export default function PublicNavbar() {
                       <button
                         type="button"
                         onClick={handleSignOut}
-                        className="rounded-2xl bg-brand-primary px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
+                        className="rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
                       >
                         {t('nav.logout')}
                       </button>

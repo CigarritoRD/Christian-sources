@@ -113,13 +113,13 @@ export default function DashboardProfilePage() {
         <section className="px-0 py-2">
           <div className="mx-auto max-w-5xl">
             <SectionCard className="p-8">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                 Perfil
               </p>
               <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                 Tu cuenta
               </h1>
-              <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
+              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
                 Administra tu información básica y tu imagen dentro de Toolkit Box.
               </p>
             </SectionCard>
@@ -150,11 +150,11 @@ export default function DashboardProfilePage() {
                   {fullName.trim() || 'Usuario'}
                 </p>
 
-                <p className="mt-1 break-all text-sm text-text-secondary">
+                <p className="mt-1 break-all text-sm text-brand-primary">
                   {user?.email}
                 </p>
 
-                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-3 py-2 text-xs text-text-secondary">
+                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-3 py-2 text-xs text-brand-primary">
                   <Camera className="h-4 w-4" />
                   Avatar de perfil
                 </div>
@@ -183,7 +183,7 @@ export default function DashboardProfilePage() {
                       <p className="mb-2 text-sm font-medium text-text-primary">
                         ID de usuario
                       </p>
-                      <div className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-secondary">
+                      <div className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-brand-primary">
                         <span className="break-all">{user?.id}</span>
                       </div>
                     </div>

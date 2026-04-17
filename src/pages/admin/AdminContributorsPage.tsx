@@ -144,7 +144,7 @@ export default function AdminContributorsPage() {
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
+          <div className="px-4 py-6 text-sm text-brand-primary">
             Loading contributors...
           </div>
         ) : error ? (
@@ -172,7 +172,7 @@ export default function AdminContributorsPage() {
                       className="h-11 w-11 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
                       {item.name.slice(0, 1).toUpperCase()}
                     </div>
                   )}
@@ -193,16 +193,16 @@ export default function AdminContributorsPage() {
                       />
                     </div>
 
-                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-brand-primary">@{item.slug}</p>
 
                     {item.specialty ? (
-                      <p className="mt-0.5 text-sm text-text-secondary">
+                      <p className="mt-0.5 text-sm text-brand-primary">
                         {item.specialty}
                       </p>
                     ) : null}
 
                     {item.short_bio ? (
-                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-text-secondary">
+                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-brand-primary">
                         {item.short_bio}
                       </p>
                     ) : null}

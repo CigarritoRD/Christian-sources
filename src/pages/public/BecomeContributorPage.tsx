@@ -122,7 +122,7 @@ export default function BecomeContributorPage() {
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-text-secondary shadow-[var(--shadow-soft)]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-brand-primary shadow-[var(--shadow-soft)]">
                   <Sparkles className="h-4 w-4 text-brand-primary" />
                   {t('contributorApply.badge')}
                 </div>
@@ -131,7 +131,7 @@ export default function BecomeContributorPage() {
                   {t('contributorApply.title')}
                 </h1>
 
-                <p className="mt-4 max-w-2xl text-lg text-text-secondary">
+                <p className="mt-4 max-w-2xl text-lg text-brand-primary">
                   {t('contributorApply.subtitle')}
                 </p>
               </div>
@@ -144,7 +144,7 @@ export default function BecomeContributorPage() {
                   <h3 className="mt-4 font-heading text-lg text-text-primary">
                     {t('contributorApply.point1Title')}
                   </h3>
-                  <p className="mt-2 text-sm text-text-secondary">
+                  <p className="mt-2 text-sm text-brand-primary">
                     {t('contributorApply.point1Body')}
                   </p>
                 </SectionCard>
@@ -156,7 +156,7 @@ export default function BecomeContributorPage() {
                   <h3 className="mt-4 font-heading text-lg text-text-primary">
                     {t('contributorApply.point2Title')}
                   </h3>
-                  <p className="mt-2 text-sm text-text-secondary">
+                  <p className="mt-2 text-sm text-brand-primary">
                     {t('contributorApply.point2Body')}
                   </p>
                 </SectionCard>
@@ -176,7 +176,7 @@ export default function BecomeContributorPage() {
                     <h2 className="font-heading text-xl">
                       {t('contributorApply.contactSection')}
                     </h2>
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-brand-primary">
                       {t('contributorApply.contactHelp')}
                     </p>
                   </div>
@@ -218,7 +218,7 @@ export default function BecomeContributorPage() {
                     <h2 className="font-heading text-xl">
                       {t('contributorApply.ministrySection')}
                     </h2>
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-brand-primary">
                       {t('contributorApply.ministryHelp')}
                     </p>
                   </div>
@@ -275,7 +275,7 @@ export default function BecomeContributorPage() {
                     <h2 className="font-heading text-xl">
                       {t('contributorApply.avatarSection')}
                     </h2>
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-brand-primary">
                       {t('contributorApply.avatarHelp')}
                     </p>
                   </div>
@@ -295,7 +295,7 @@ export default function BecomeContributorPage() {
                     <h2 className="font-heading text-xl">
                       {t('contributorApply.linksSection')}
                     </h2>
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-brand-primary">
                       {t('contributorApply.linksHelp')}
                     </p>
                   </div>

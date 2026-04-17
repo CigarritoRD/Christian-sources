@@ -94,7 +94,7 @@ export default function CategoryForm({
             <h2 className="font-heading text-lg text-text-primary">
               Basic information
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Define the public name and slug for this category.
             </p>
           </div>
@@ -139,7 +139,7 @@ export default function CategoryForm({
             <h2 className="font-heading text-lg text-text-primary">
               Visibility
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Control whether this category is available for resources.
             </p>
           </div>

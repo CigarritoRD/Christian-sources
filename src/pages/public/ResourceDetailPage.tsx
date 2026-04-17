@@ -265,7 +265,7 @@ export default function ResourceDetailPage() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
         <div className="mx-auto max-w-6xl">
           <FadeIn>
-            <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+            <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-brand-primary">
               <Link to="/" className="hover:text-text-primary">
                 Inicio
               </Link>
@@ -290,7 +290,7 @@ export default function ResourceDetailPage() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-primary/15 to-brand-accent/10">
-                      <Layers3 className="h-16 w-16 text-text-secondary" />
+                      <Layers3 className="h-16 w-16 text-brand-primary" />
                     </div>
                   )}
 
@@ -324,7 +324,7 @@ export default function ResourceDetailPage() {
                     {resource.title}
                   </h1>
 
-                  <p className="mt-5 text-base leading-7 text-text-secondary">
+                  <p className="mt-5 text-base leading-7 text-brand-primary">
                     {description}
                   </p>
 
@@ -377,7 +377,7 @@ export default function ResourceDetailPage() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                        <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                           Colaborador
                         </p>
 
@@ -389,7 +389,7 @@ export default function ResourceDetailPage() {
                         </Link>
 
                         {resource.contributor.short_bio ? (
-                          <p className="mt-2 text-sm text-text-secondary">
+                          <p className="mt-2 text-sm text-brand-primary">
                             {resource.contributor.short_bio}
                           </p>
                         ) : null}
@@ -416,7 +416,7 @@ export default function ResourceDetailPage() {
           <FadeIn delay={0.1}>
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   Tipo
                 </p>
                 <p className="mt-2 text-text-primary">
@@ -425,7 +425,7 @@ export default function ResourceDetailPage() {
               </SectionCard>
 
               <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   Disponibilidad
                 </p>
                 <p className="mt-2 text-text-primary">
@@ -436,7 +436,7 @@ export default function ResourceDetailPage() {
               </SectionCard>
 
               <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   Colaborador
                 </p>
                 <p className="mt-2 text-text-primary">
@@ -456,13 +456,13 @@ export default function ResourceDetailPage() {
                   <h2 className="font-heading text-2xl text-text-primary">
                     Sobre este recurso
                   </h2>
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-brand-primary">
                     Descripción y contexto del material.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-5 max-w-4xl text-base leading-8 text-text-secondary">
+              <div className="mt-5 max-w-4xl text-base leading-8 text-brand-primary">
                 {description}
               </div>
 

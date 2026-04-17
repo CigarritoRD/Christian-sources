@@ -58,7 +58,7 @@ export default function AdminCategoryEditPage() {
     return (
       <div className="space-y-6 p-6">
         <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <p className="text-sm text-text-secondary">Loading category...</p>
+          <p className="text-sm text-brand-primary">Loading category...</p>
         </div>
       </div>
     )
@@ -85,7 +85,7 @@ export default function AdminCategoryEditPage() {
         <h1 className="text-2xl font-semibold text-text-primary">
           Edit category
         </h1>
-        <p className="mt-1 text-sm text-text-secondary">
+        <p className="mt-1 text-sm text-brand-primary">
           Update this resource category.
         </p>
       </div>

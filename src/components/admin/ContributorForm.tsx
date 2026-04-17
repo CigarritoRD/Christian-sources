@@ -217,7 +217,7 @@ export default function ContributorForm({
             <h2 className="font-heading text-lg text-text-primary">
               Basic information
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Main public details for this contributor profile.
             </p>
           </div>
@@ -270,7 +270,7 @@ export default function ContributorForm({
         <div className="space-y-4">
           <div>
             <h2 className="font-heading text-lg text-text-primary">Bio</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Short and detailed public descriptions.
             </p>
           </div>
@@ -303,7 +303,7 @@ export default function ContributorForm({
         <div className="space-y-4">
           <div>
             <h2 className="font-heading text-lg text-text-primary">Avatar</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Upload the public profile image for this contributor.
             </p>
           </div>
@@ -316,7 +316,7 @@ export default function ContributorForm({
               type="file"
               accept="image/*"
               onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-text-secondary file:mr-4 file:rounded-xl file:border-0 file:bg-bg-soft file:px-4 file:py-2 file:text-sm file:font-medium file:text-text-primary"
+              className="block w-full text-sm text-brand-primary file:mr-4 file:rounded-xl file:border-0 file:bg-bg-soft file:px-4 file:py-2 file:text-sm file:font-medium file:text-text-primary"
             />
           </div>
 
@@ -334,7 +334,7 @@ export default function ContributorForm({
           ) : null}
 
           {avatarFile ? (
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-brand-primary">
               Selected file: {avatarFile.name}
             </p>
           ) : null}
@@ -345,7 +345,7 @@ export default function ContributorForm({
         <div className="space-y-4">
           <div>
             <h2 className="font-heading text-lg text-text-primary">Links</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Public website and social media links.
             </p>
           </div>
@@ -412,7 +412,7 @@ export default function ContributorForm({
             <h2 className="font-heading text-lg text-text-primary">
               Visibility
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-sm text-brand-primary">
               Control how this contributor appears in the platform.
             </p>
           </div>

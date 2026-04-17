@@ -6,7 +6,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="flex items-center gap-2 rounded-2xl border border-surface-border bg-surface px-3 py-2 shadow-[var(--shadow-soft)]">
-      <Languages className="h-4 w-4 text-text-secondary" />
+      <Languages className="h-4 w-4 text-brand-primary" />
 
       <select
         aria-label={t('language.label')}

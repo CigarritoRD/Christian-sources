@@ -171,7 +171,7 @@ export default function ContributorDetailPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                  <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                     {t('contributors.badge')}
                   </p>
 
@@ -180,13 +180,13 @@ export default function ContributorDetailPage() {
                   </h1>
 
                   {contributor.specialty ? (
-                    <p className="mt-4 text-lg text-text-secondary">
+                    <p className="mt-4 text-lg text-brand-primary">
                       {contributor.specialty}
                     </p>
                   ) : null}
 
                   {contributor.short_bio ? (
-                    <p className="mt-4 max-w-3xl text-base leading-7 text-text-secondary">
+                    <p className="mt-4 max-w-3xl text-base leading-7 text-brand-primary">
                       {contributor.short_bio}
                     </p>
                   ) : null}
@@ -200,7 +200,7 @@ export default function ContributorDetailPage() {
               </h2>
 
               {socialLinks.length === 0 ? (
-                <p className="mt-4 text-sm text-text-secondary">
+                <p className="mt-4 text-sm text-brand-primary">
                   {t('contributors.noLinks')}
                 </p>
               ) : (
@@ -215,9 +215,9 @@ export default function ContributorDetailPage() {
                         rel="noreferrer"
                         className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        <Icon className="h-4 w-4 text-text-secondary" />
+                        <Icon className="h-4 w-4 text-brand-primary" />
                         {item.label}
-                        <ExternalLink className="h-4 w-4 text-text-secondary" />
+                        <ExternalLink className="h-4 w-4 text-brand-primary" />
                       </a>
                     )
                   })}
@@ -226,12 +226,12 @@ export default function ContributorDetailPage() {
 
               <div className="mt-8 rounded-3xl border border-surface-border bg-bg-soft p-4">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-text-secondary" />
+                  <BookOpen className="h-4 w-4 text-brand-primary" />
                   <p className="text-sm font-medium text-text-primary">
                     {t('contributors.resourcesFrom', { name: contributor.name })}
                   </p>
                 </div>
-                <p className="mt-2 text-sm text-text-secondary">
+                <p className="mt-2 text-sm text-brand-primary">
                   {resources.length === 1
                     ? t('contributors.resourceCount_one', { count: resources.length })
                     : t('contributors.resourceCount_other', { count: resources.length })}
@@ -250,7 +250,7 @@ export default function ContributorDetailPage() {
                 <h2 className="font-heading text-2xl text-text-primary">
                   {t('contributors.aboutTitle')}
                 </h2>
-                <p className="mt-4 whitespace-pre-line text-base leading-8 text-text-secondary">
+                <p className="mt-4 whitespace-pre-line text-base leading-8 text-brand-primary">
                   {contributor.full_bio}
                 </p>
               </SectionCard>
@@ -264,7 +264,7 @@ export default function ContributorDetailPage() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                   {t('contributors.resourcesLabel')}
                 </p>
                 <h2 className="mt-2 font-heading text-2xl md:text-3xl">

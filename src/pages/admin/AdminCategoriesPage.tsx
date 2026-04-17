@@ -138,7 +138,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
+          <div className="px-4 py-6 text-sm text-brand-primary">
             Loading categories...
           </div>
         ) : error ? (
@@ -159,7 +159,7 @@ export default function AdminCategoriesPage() {
                 className="flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-text-secondary">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-brand-primary">
                     <Grid2x2 className="h-4 w-4" />
                   </div>
 
@@ -175,7 +175,7 @@ export default function AdminCategoriesPage() {
                       />
                     </div>
 
-                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-brand-primary">@{item.slug}</p>
                   </div>
                 </div>
 

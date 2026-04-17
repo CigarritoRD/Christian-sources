@@ -42,7 +42,7 @@ export default function FileInput({
           </p>
 
           {hint ? (
-            <p className="text-xs text-text-secondary">{hint}</p>
+            <p className="text-xs text-brand-primary">{hint}</p>
           ) : null}
         </div>
       </label>
@@ -51,7 +51,7 @@ export default function FileInput({
         <div className="mt-3 flex items-center justify-between rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm">
           <span className="truncate text-text-primary">{fileName}</span>
 
-          <span className="flex h-6 w-6 items-center justify-center rounded-md text-text-secondary">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md text-brand-primary">
             <X className="h-4 w-4" />
           </span>
         </div>

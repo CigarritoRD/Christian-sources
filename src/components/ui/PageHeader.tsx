@@ -18,7 +18,7 @@ export default function PageHeader({
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 text-sm text-text-secondary">{description}</p>
+          <p className="mt-1 text-sm text-brand-primary">{description}</p>
         ) : null}
       </div>
 

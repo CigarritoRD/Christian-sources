@@ -25,7 +25,7 @@ export default function EmptyState({
       className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-surface-border bg-surface p-8 text-center"
     >
       {icon ? (
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-soft text-text-secondary">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-soft text-brand-primary">
           {icon}
         </div>
       ) : null}
@@ -33,7 +33,7 @@ export default function EmptyState({
       <h3 className="font-heading text-lg text-text-primary">{title}</h3>
 
       {description ? (
-        <p className="mt-2 max-w-md text-sm text-text-secondary">
+        <p className="mt-2 max-w-md text-sm text-brand-primary">
           {description}
         </p>
       ) : null}

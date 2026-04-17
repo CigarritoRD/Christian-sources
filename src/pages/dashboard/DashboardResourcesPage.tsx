@@ -146,13 +146,13 @@ export default function DashboardResourcesPage() {
         <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-8">
-              <p className="text-sm uppercase tracking-[0.2em] text-text-secondary">
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
                 Dashboard
               </p>
               <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                 Explorar recursos
               </h1>
-              <p className="mt-4 max-w-2xl font-body text-lg text-text-secondary">
+              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
                 Descubre materiales desde tu panel personal y encuentra recursos útiles
                 por tema, tipo, colaborador o tags.
               </p>
@@ -171,7 +171,7 @@ export default function DashboardResourcesPage() {
                 </div>
                 <div>
                   <h2 className="font-heading text-lg text-text-primary">Filtros</h2>
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-brand-primary">
                     Ajusta tu búsqueda rápidamente.
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export default function DashboardResourcesPage() {
               {tags.length > 0 ? (
                 <div className="mt-4">
                   <div className="mb-3 flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-text-secondary" />
+                    <Tag className="h-4 w-4 text-brand-primary" />
                     <p className="text-sm font-medium text-text-primary">Tags</p>
                   </div>
 
@@ -276,7 +276,7 @@ export default function DashboardResourcesPage() {
             ) : error ? (
               <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
                 <h2 className="font-heading text-xl">No pudimos cargar los recursos</h2>
-                <p className="mt-2 text-sm text-text-secondary">{error}</p>
+                <p className="mt-2 text-sm text-brand-primary">{error}</p>
               </SectionCard>
             ) : filteredResources.length === 0 ? (
               <EmptyState
@@ -287,7 +287,7 @@ export default function DashboardResourcesPage() {
             ) : (
               <>
                 <div className="mb-6 flex items-center justify-between gap-4">
-                  <p className="text-sm text-text-secondary">
+                  <p className="text-sm text-brand-primary">
                     {filteredResources.length}{' '}
                     {filteredResources.length === 1
                       ? 'recurso encontrado'

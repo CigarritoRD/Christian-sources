@@ -16,7 +16,7 @@ export default function SectionCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className={[
-        'rounded-2xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]',
+        'rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]',
         className,
       ].join(' ')}
     >
