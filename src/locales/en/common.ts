@@ -74,6 +74,20 @@ const en = {
       draft: 'Draft',
       edit: 'Edit',
     },
+    analytics: {
+      topResourcesTitle: 'Most opened resources',
+      topResourcesSubtitle:
+        'Resources with the highest number of opens and downloads.',
+      topContributorsTitle: 'Most visited contributors',
+      topContributorsSubtitle:
+        'Profiles with the most visits across the platform.',
+      countriesTitle: 'Activity by country',
+      countriesSubtitle:
+        'Countries from which resources have been opened.',
+      noResourceData: 'No resource data yet.',
+      noContributorData: 'No contributor data yet.',
+      noCountryData: 'No country data yet.',
+    },
     applications: {
       badge: 'Applications',
       title: 'Contributor applications',

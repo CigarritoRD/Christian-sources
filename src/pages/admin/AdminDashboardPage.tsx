@@ -21,6 +21,14 @@ import {
   getContributorApplications,
   type ContributorApplicationRecord,
 } from '@/lib/api/contributor-applications-admin'
+import {
+  getResourceEventsByCountry,
+  getTopContributorsByViews,
+  getTopResources,
+  type CountryMetric,
+  type TopContributorMetric,
+  type TopResourceMetric,
+} from '@/lib/api/analytics'
 import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
@@ -35,6 +43,9 @@ export default function AdminDashboardPage() {
   const [pendingApplications, setPendingApplications] = useState<
     ContributorApplicationRecord[]
   >([])
+  const [topResources, setTopResources] = useState<TopResourceMetric[]>([])
+  const [topContributors, setTopContributors] = useState<TopContributorMetric[]>([])
+  const [countryMetrics, setCountryMetrics] = useState<CountryMetric[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,18 +55,31 @@ export default function AdminDashboardPage() {
         setLoading(true)
         setError(null)
 
-        const [statsData, contributorsData, resourcesData, applicationsData] =
-          await Promise.all([
-            getAdminDashboardStats(),
-            getRecentContributors(5),
-            getRecentResources(5),
-            getContributorApplications('pending_review'),
-          ])
+        const [
+          statsData,
+          contributorsData,
+          resourcesData,
+          applicationsData,
+          topResourcesData,
+          topContributorsData,
+          countryMetricsData,
+        ] = await Promise.all([
+          getAdminDashboardStats(),
+          getRecentContributors(5),
+          getRecentResources(5),
+          getContributorApplications('pending_review'),
+          getTopResources(5),
+          getTopContributorsByViews(5),
+          getResourceEventsByCountry(10),
+        ])
 
         setStats(statsData)
         setRecentContributors(contributorsData)
         setRecentResources(resourcesData)
         setPendingApplications(applicationsData.slice(0, 5))
+        setTopResources(topResourcesData)
+        setTopContributors(topContributorsData)
+        setCountryMetrics(countryMetricsData)
       } catch (err) {
         setError(err instanceof Error ? err.message : t('admin.dashboard.error'))
       } finally {
@@ -222,7 +246,8 @@ export default function AdminDashboardPage() {
                       </p>
 
                       <p className="truncate text-sm text-text-secondary">
-                        {t('admin.dashboard.contact')}: {item.contact_name || t('admin.dashboard.notAvailable')}
+                        {t('admin.dashboard.contact')}:{' '}
+                        {item.contact_name || t('admin.dashboard.notAvailable')}
                         {item.contact_role ? ` • ${item.contact_role}` : ''}
                       </p>
 
@@ -390,6 +415,116 @@ export default function AdminDashboardPage() {
                         {t('admin.dashboard.edit')}
                       </AppButton>
                     </Link>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </SectionCard>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <SectionCard className="overflow-hidden">
+          <div className="border-b border-surface-border px-5 py-4">
+            <h2 className="font-heading text-lg text-text-primary">
+              {t('admin.analytics.topResourcesTitle')}
+            </h2>
+            <p className="text-sm text-text-secondary">
+              {t('admin.analytics.topResourcesSubtitle')}
+            </p>
+          </div>
+
+          <div className="divide-y divide-surface-border">
+            {topResources.length === 0 ? (
+              <div className="px-5 py-8 text-sm text-text-secondary">
+                {t('admin.analytics.noResourceData')}
+              </div>
+            ) : (
+              topResources.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-text-primary">
+                      {index + 1}. {item.title}
+                    </p>
+                    <p className="text-sm text-text-secondary">@{item.slug}</p>
+                  </div>
+
+                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
+                    {item.total_opens}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard className="overflow-hidden">
+          <div className="border-b border-surface-border px-5 py-4">
+            <h2 className="font-heading text-lg text-text-primary">
+              {t('admin.analytics.topContributorsTitle')}
+            </h2>
+            <p className="text-sm text-text-secondary">
+              {t('admin.analytics.topContributorsSubtitle')}
+            </p>
+          </div>
+
+          <div className="divide-y divide-surface-border">
+            {topContributors.length === 0 ? (
+              <div className="px-5 py-8 text-sm text-text-secondary">
+                {t('admin.analytics.noContributorData')}
+              </div>
+            ) : (
+              topContributors.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-text-primary">
+                      {index + 1}. {item.name}
+                    </p>
+                    <p className="text-sm text-text-secondary">@{item.slug}</p>
+                  </div>
+
+                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
+                    {item.total_views}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard className="overflow-hidden">
+          <div className="border-b border-surface-border px-5 py-4">
+            <h2 className="font-heading text-lg text-text-primary">
+              {t('admin.analytics.countriesTitle')}
+            </h2>
+            <p className="text-sm text-text-secondary">
+              {t('admin.analytics.countriesSubtitle')}
+            </p>
+          </div>
+
+          <div className="divide-y divide-surface-border">
+            {countryMetrics.length === 0 ? (
+              <div className="px-5 py-8 text-sm text-text-secondary">
+                {t('admin.analytics.noCountryData')}
+              </div>
+            ) : (
+              countryMetrics.map((item, index) => (
+                <div
+                  key={`${item.country}-${index}`}
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                >
+                  <p className="truncate font-medium text-text-primary">
+                    {item.country}
+                  </p>
+
+                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
+                    {item.total}
                   </div>
                 </div>
               ))
