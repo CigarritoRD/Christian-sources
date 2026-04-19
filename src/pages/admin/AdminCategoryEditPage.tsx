@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import CategoryForm from '@/components/admin/CategoryForm'
+import SectionCard from '@/components/ui/SectionCard'
 import { getCategoryById, updateCategory } from '@/lib/api/categories'
 
 type CategoryRecord = {
@@ -13,6 +16,7 @@ type CategoryRecord = {
 export default function AdminCategoryEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [category, setCategory] = useState<CategoryRecord | null>(null)
   const [loading, setLoading] = useState(true)
@@ -21,7 +25,7 @@ export default function AdminCategoryEditPage() {
   useEffect(() => {
     async function loadCategory() {
       if (!id) {
-        setError('Category id is missing.')
+        setError(t('admin.categoryForm.missingId'))
         setLoading(false)
         return
       }
@@ -32,14 +36,18 @@ export default function AdminCategoryEditPage() {
         const data = await getCategoryById(id)
         setCategory(data as CategoryRecord)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load category.')
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('admin.categoryForm.loadError'),
+        )
       } finally {
         setLoading(false)
       }
     }
 
     void loadCategory()
-  }, [id])
+  }, [id, t])
 
   async function handleSubmit(values: {
     name: string
@@ -47,60 +55,66 @@ export default function AdminCategoryEditPage() {
     is_active: boolean
   }) {
     if (!id) {
-      throw new Error('Category id is missing.')
+      toast.error(t('admin.categoryForm.missingId'))
+      return
     }
 
-    await updateCategory(id, values)
-    navigate('/admin/categories')
+    try {
+      await updateCategory(id, values)
+      toast.success(t('admin.categoryForm.updateSuccess'))
+      navigate('/admin/categories')
+    } catch (error) {
+      console.error(error)
+      toast.error(t('admin.categoryForm.updateError'))
+    }
   }
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <p className="text-sm text-brand-primary">Loading category...</p>
-        </div>
-      </div>
+      <SectionCard className="p-6">
+        <p className="text-sm text-text-secondary">{t('common.loading')}</p>
+      </SectionCard>
     )
   }
 
   if (error || !category) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
-          <h1 className="text-lg font-semibold text-red-700">
-            Could not load category
-          </h1>
-          <p className="mt-2 text-sm text-red-600">
-            {error ?? 'Category not found.'}
-          </p>
-        </div>
-      </div>
+      <SectionCard className="border-red-200 bg-red-50 p-6">
+        <h1 className="text-lg font-semibold text-red-700">
+          {t('admin.categoryForm.loadErrorTitle')}
+        </h1>
+        <p className="mt-2 text-sm text-red-600">
+          {error ?? t('admin.categoryForm.notFound')}
+        </p>
+      </SectionCard>
     )
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-text-primary">
-          Edit category
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+          {t('admin.categoryForm.badge')}
+        </p>
+        <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+          {t('admin.categoryForm.editTitle')}
         </h1>
-        <p className="mt-1 text-sm text-brand-primary">
-          Update this resource category.
+        <p className="mt-3 text-sm text-text-secondary">
+          {t('admin.categoryForm.editSubtitle')}
         </p>
       </div>
 
-
-      <CategoryForm
-        initialValues={{
-          name: category.name,
-          slug: category.slug,
-          is_active: category.is_active,
-        }}
-        onSubmit={handleSubmit}
-        submitLabel="Save changes"
-      />
-
+      <SectionCard className="p-6">
+        <CategoryForm
+          initialValues={{
+            name: category.name,
+            slug: category.slug,
+            is_active: category.is_active,
+          }}
+          onSubmit={handleSubmit}
+          submitLabel={t('admin.categoryForm.editAction')}
+        />
+      </SectionCard>
     </div>
   )
 }

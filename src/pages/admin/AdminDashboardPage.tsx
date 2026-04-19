@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   getAdminDashboardStats,
   getRecentContributors,
@@ -22,12 +23,12 @@ import {
 } from '@/lib/api/contributor-applications-admin'
 import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
-import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
-import StatCard from '@/components/ui/StatCard'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default function AdminDashboardPage() {
+  const { t } = useTranslation()
+
   const [stats, setStats] = useState<AdminDashboardStats | null>(null)
   const [recentContributors, setRecentContributors] = useState<AdminRecentContributor[]>([])
   const [recentResources, setRecentResources] = useState<AdminRecentResource[]>([])
@@ -56,20 +57,20 @@ export default function AdminDashboardPage() {
         setRecentResources(resourcesData)
         setPendingApplications(applicationsData.slice(0, 5))
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load admin dashboard.')
+        setError(err instanceof Error ? err.message : t('admin.dashboard.error'))
       } finally {
         setLoading(false)
       }
     }
 
     void loadDashboard()
-  }, [])
+  }, [t])
 
   if (loading) {
     return (
       <div className="space-y-6">
         <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">Loading dashboard...</p>
+          <p className="text-sm text-text-secondary">{t('common.loading')}</p>
         </SectionCard>
       </div>
     )
@@ -80,10 +81,10 @@ export default function AdminDashboardPage() {
       <div className="space-y-6">
         <SectionCard className="border-red-200 bg-red-50 p-6">
           <h1 className="text-lg font-semibold text-red-700">
-            Could not load admin dashboard
+            {t('admin.dashboard.errorTitle')}
           </h1>
           <p className="mt-2 text-sm text-red-600">
-            {error ?? 'Unknown error.'}
+            {error ?? t('admin.dashboard.error')}
           </p>
         </SectionCard>
       </div>
@@ -91,45 +92,55 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Admin dashboard"
-        description="Manage contributors, applications, resources, categories, and platform activity."
-        actions={
-          <>
-            <Link to="/admin/contributor-applications">
-              <AppButton variant="secondary">Review applications</AppButton>
-            </Link>
-            <Link to="/admin/resources/new">
-              <AppButton>New resource</AppButton>
-            </Link>
-          </>
-        }
-      />
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+            {t('admin.dashboard.badge')}
+          </p>
+          <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+            {t('admin.dashboard.title')}
+          </h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            {t('admin.dashboard.subtitle')}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Link to="/admin/contributor-applications">
+            <AppButton variant="secondary">
+              {t('admin.dashboard.reviewApplications')}
+            </AppButton>
+          </Link>
+          <Link to="/admin/resources/new">
+            <AppButton>{t('admin.dashboard.newResource')}</AppButton>
+          </Link>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard
-          label="Contributors"
+          label={t('admin.dashboard.contributors')}
           value={stats.totalContributors}
           icon={<Users className="h-4 w-4" />}
         />
         <StatCard
-          label="Active contributors"
+          label={t('admin.dashboard.activeContributors')}
           value={stats.activeContributors}
           icon={<Users className="h-4 w-4" />}
         />
         <StatCard
-          label="Resources"
+          label={t('admin.dashboard.resources')}
           value={stats.totalResources}
           icon={<FolderKanban className="h-4 w-4" />}
         />
         <StatCard
-          label="Published"
+          label={t('admin.dashboard.published')}
           value={stats.publishedResources}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <StatCard
-          label="Downloads"
+          label={t('admin.dashboard.downloads')}
           value={stats.totalDownloads}
           icon={<TrendingUp className="h-4 w-4" />}
         />
@@ -138,34 +149,34 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <QuickActionCard
           icon={<FileSearch className="h-5 w-5" />}
-          title="Review applications"
-          description="Check pending ministry and organization requests before approving them."
+          title={t('admin.dashboard.qaApplicationsTitle')}
+          description={t('admin.dashboard.qaApplicationsBody')}
           to="/admin/contributor-applications"
-          actionLabel="Open applications"
+          actionLabel={t('admin.dashboard.qaApplicationsAction')}
         />
 
         <QuickActionCard
           icon={<Users className="h-5 w-5" />}
-          title="Create contributor"
-          description="Add a new public contributor profile manually."
+          title={t('admin.dashboard.qaContributorsTitle')}
+          description={t('admin.dashboard.qaContributorsBody')}
           to="/admin/contributors/new"
-          actionLabel="New contributor"
+          actionLabel={t('admin.dashboard.qaContributorsAction')}
         />
 
         <QuickActionCard
           icon={<FolderKanban className="h-5 w-5" />}
-          title="Create resource"
-          description="Publish a new resource and connect it to a contributor."
+          title={t('admin.dashboard.qaResourcesTitle')}
+          description={t('admin.dashboard.qaResourcesBody')}
           to="/admin/resources/new"
-          actionLabel="New resource"
+          actionLabel={t('admin.dashboard.qaResourcesAction')}
         />
 
         <QuickActionCard
           icon={<Grid2x2 className="h-5 w-5" />}
-          title="Manage categories"
-          description="Create and organize categories used across resources."
+          title={t('admin.dashboard.qaCategoriesTitle')}
+          description={t('admin.dashboard.qaCategoriesBody')}
           to="/admin/categories"
-          actionLabel="Go to categories"
+          actionLabel={t('admin.dashboard.qaCategoriesAction')}
         />
       </div>
 
@@ -174,15 +185,15 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
             <div>
               <h2 className="font-heading text-lg text-text-primary">
-                Pending applications
+                {t('admin.dashboard.pendingTitle')}
               </h2>
-              <p className="text-sm text-brand-primary">
-                Ministries and organizations waiting for review.
+              <p className="text-sm text-text-secondary">
+                {t('admin.dashboard.pendingSubtitle')}
               </p>
             </div>
 
             <Link to="/admin/contributor-applications">
-              <AppButton variant="ghost">View all</AppButton>
+              <AppButton variant="ghost">{t('common.viewAll')}</AppButton>
             </Link>
           </div>
 
@@ -191,14 +202,14 @@ export default function AdminDashboardPage() {
               <div className="p-5">
                 <EmptyState
                   icon={<ShieldCheck className="h-5 w-5" />}
-                  title="No pending applications"
-                  description="Everything is reviewed for now."
+                  title={t('admin.dashboard.noPendingTitle')}
+                  description={t('admin.dashboard.noPendingBody')}
                 />
               </div>
             ) : (
               pendingApplications.map((item) => {
                 const displayName =
-                  item.organization_name || item.full_name || 'Unnamed organization'
+                  item.organization_name || item.full_name || t('admin.dashboard.unnamed')
 
                 return (
                   <div
@@ -210,22 +221,24 @@ export default function AdminDashboardPage() {
                         {displayName}
                       </p>
 
-                      <p className="truncate text-sm text-brand-primary">
-                        Contact: {item.contact_name || 'No contact'}
+                      <p className="truncate text-sm text-text-secondary">
+                        {t('admin.dashboard.contact')}: {item.contact_name || t('admin.dashboard.notAvailable')}
                         {item.contact_role ? ` • ${item.contact_role}` : ''}
                       </p>
 
-                      <p className="mt-1 text-xs text-brand-primary">
-                        {item.contact_email || 'No email'}
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {item.contact_email || t('admin.dashboard.notAvailable')}
                         {item.country ? ` · ${item.country}` : ''}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <StatusBadge label="Pending" tone="warning" />
+                      <StatusBadge label={t('admin.dashboard.pending')} tone="warning" />
 
                       <Link to={`/admin/contributor-applications/${item.id}`}>
-                        <AppButton variant="secondary">Review</AppButton>
+                        <AppButton variant="secondary">
+                          {t('common.review')}
+                        </AppButton>
                       </Link>
                     </div>
                   </div>
@@ -239,22 +252,22 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
             <div>
               <h2 className="font-heading text-lg text-text-primary">
-                Recent contributors
+                {t('admin.dashboard.recentContributorsTitle')}
               </h2>
-              <p className="text-sm text-brand-primary">
-                Latest contributor profiles created.
+              <p className="text-sm text-text-secondary">
+                {t('admin.dashboard.recentContributorsSubtitle')}
               </p>
             </div>
 
             <Link to="/admin/contributors">
-              <AppButton variant="ghost">View all</AppButton>
+              <AppButton variant="ghost">{t('common.viewAll')}</AppButton>
             </Link>
           </div>
 
           <div className="divide-y divide-surface-border">
             {recentContributors.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-brand-primary">
-                No contributors yet.
+              <div className="px-5 py-8 text-sm text-text-secondary">
+                {t('admin.dashboard.noContributors')}
               </div>
             ) : (
               recentContributors.map((item) => (
@@ -270,7 +283,7 @@ export default function AdminDashboardPage() {
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
                         {item.name.slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -279,20 +292,26 @@ export default function AdminDashboardPage() {
                       <p className="truncate font-medium text-text-primary">
                         {item.name}
                       </p>
-                      <p className="text-sm text-brand-primary">
-                        {item.specialty ?? 'No specialty'}
+                      <p className="text-sm text-text-secondary">
+                        {item.specialty ?? t('admin.dashboard.noSpecialty')}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <StatusBadge
-                      label={item.is_active ? 'Active' : 'Inactive'}
+                      label={
+                        item.is_active
+                          ? t('admin.dashboard.active')
+                          : t('admin.dashboard.inactive')
+                      }
                       tone={item.is_active ? 'success' : 'muted'}
                     />
 
                     <Link to={`/admin/contributors/${item.id}/edit`}>
-                      <AppButton variant="secondary">Edit</AppButton>
+                      <AppButton variant="secondary">
+                        {t('admin.dashboard.edit')}
+                      </AppButton>
                     </Link>
                   </div>
                 </div>
@@ -305,22 +324,22 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
             <div>
               <h2 className="font-heading text-lg text-text-primary">
-                Recent resources
+                {t('admin.dashboard.recentResourcesTitle')}
               </h2>
-              <p className="text-sm text-brand-primary">
-                Latest resources added to the platform.
+              <p className="text-sm text-text-secondary">
+                {t('admin.dashboard.recentResourcesSubtitle')}
               </p>
             </div>
 
             <Link to="/admin/resources">
-              <AppButton variant="ghost">View all</AppButton>
+              <AppButton variant="ghost">{t('common.viewAll')}</AppButton>
             </Link>
           </div>
 
           <div className="divide-y divide-surface-border">
             {recentResources.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-brand-primary">
-                No resources yet.
+              <div className="px-5 py-8 text-sm text-text-secondary">
+                {t('admin.dashboard.noResources')}
               </div>
             ) : (
               recentResources.map((item) => (
@@ -336,7 +355,7 @@ export default function AdminDashboardPage() {
                         className="h-12 w-12 rounded-xl object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-brand-primary">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary">
                         {item.title.slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -345,25 +364,31 @@ export default function AdminDashboardPage() {
                       <p className="truncate font-medium text-text-primary">
                         {item.title}
                       </p>
-                      <p className="text-sm text-brand-primary">
-                        {item.contributor?.name ?? 'No contributor'} ·{' '}
-                        {item.resource_type ?? 'No type'}
+                      <p className="text-sm text-text-secondary">
+                        {item.contributor?.name ?? t('admin.dashboard.noContributor')} ·{' '}
+                        {item.resource_type ?? t('admin.dashboard.noType')}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     {item.is_featured ? (
-                      <StatusBadge label="Featured" tone="warning" />
+                      <StatusBadge label={t('admin.dashboard.featured')} tone="warning" />
                     ) : null}
 
                     <StatusBadge
-                      label={item.is_published ? 'Published' : 'Draft'}
+                      label={
+                        item.is_published
+                          ? t('admin.dashboard.publishedStatus')
+                          : t('admin.dashboard.draft')
+                      }
                       tone={item.is_published ? 'success' : 'muted'}
                     />
 
                     <Link to={`/admin/resources/${item.id}/edit`}>
-                      <AppButton variant="secondary">Edit</AppButton>
+                      <AppButton variant="secondary">
+                        {t('admin.dashboard.edit')}
+                      </AppButton>
                     </Link>
                   </div>
                 </div>
@@ -373,6 +398,31 @@ export default function AdminDashboardPage() {
         </SectionCard>
       </div>
     </div>
+  )
+}
+
+function StatCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string
+  value: string | number
+  icon: ReactNode
+}) {
+  return (
+    <SectionCard className="p-5">
+      <div className="flex items-center gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-sm text-text-secondary">{label}</p>
+          <p className="font-heading text-2xl text-text-primary">{value}</p>
+        </div>
+      </div>
+    </SectionCard>
   )
 }
 
@@ -391,12 +441,12 @@ function QuickActionCard({
 }) {
   return (
     <SectionCard className="p-5">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
         {icon}
       </div>
 
       <h2 className="mt-4 font-heading text-lg text-text-primary">{title}</h2>
-      <p className="mt-2 text-sm text-brand-primary">{description}</p>
+      <p className="mt-2 text-sm text-text-secondary">{description}</p>
 
       <div className="mt-4">
         <Link to={to}>

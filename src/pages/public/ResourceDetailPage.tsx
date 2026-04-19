@@ -3,13 +3,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Bookmark,
-
   ExternalLink,
   Heart,
   Layers3,
   UserRound,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import { useResourceActions } from '@/hooks/useResourceActions'
 import FadeIn from '@/components/ui/FadeIn'
@@ -19,8 +19,6 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import AppButton from '@/components/ui/AppButton'
 import { getPublishedResourceBySlug } from '@/lib/api/resources'
 import { openTrackedResource } from '@/lib/resourceAccess'
-import { useTranslation } from 'react-i18next'
-
 
 type ResourceDetail = {
   id: string
@@ -48,20 +46,24 @@ type ResourceDetail = {
   } | null
 }
 
-function formatTypeLabel(type: string) {
+function formatTypeLabel(type: string, t: (key: string) => string) {
   const normalized = type.toLowerCase()
 
   switch (normalized) {
     case 'pdf':
-      return 'PDF'
+      return t('resources.typePdf')
     case 'video':
-      return 'Video'
+      return t('resources.typeVideo')
     case 'audio':
-      return 'Audio'
+      return t('resources.typeAudio')
+    case 'image':
+      return t('resources.typeImage')
     case 'link':
-      return 'Enlace'
+      return t('resources.typeLink')
     case 'document':
-      return 'Documento'
+      return t('resources.typeDocument')
+    case 'download':
+      return t('resources.typeDownload')
     default:
       return type
   }
@@ -71,6 +73,7 @@ export default function ResourceDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { t } = useTranslation()
 
   const [resource, setResource] = useState<ResourceDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -87,14 +90,14 @@ export default function ResourceDetailPage() {
     userId: user?.id ?? null,
     resourceId: resource?.id ?? null,
   })
-  const { t } = useTranslation()
+
   useEffect(() => {
     let active = true
 
     const loadResource = async () => {
       if (!slug) {
         if (active) {
-          setError('No se encontró el recurso.')
+          setError(t('resourceDetail.errorDescription'))
           setLoading(false)
         }
         return
@@ -109,7 +112,7 @@ export default function ResourceDetailPage() {
         if (!active) return
 
         if (!data) {
-          setError('No encontramos este recurso.')
+          setError(t('resourceDetail.errorDescription'))
           setResource(null)
           return
         }
@@ -118,7 +121,7 @@ export default function ResourceDetailPage() {
       } catch (err) {
         console.error(err)
         if (active) {
-          setError('No se pudo cargar el recurso.')
+          setError(t('resourceDetail.errorDescription'))
         }
       } finally {
         if (active) {
@@ -132,19 +135,19 @@ export default function ResourceDetailPage() {
     return () => {
       active = false
     }
-  }, [slug])
+  }, [slug, t])
 
   const description = useMemo(() => {
     return (
       resource?.full_description ||
       resource?.description ||
       resource?.short_description ||
-      'Sin descripción disponible.'
+      t('resourceDetail.noDescription')
     )
-  }, [resource])
+  }, [resource, t])
 
   const requireAuth = () => {
-    toast.info('Debes iniciar sesión para usar esta acción.')
+    toast.info(t('resourceDetail.loginRequired'))
     navigate('/login')
   }
 
@@ -159,12 +162,12 @@ export default function ResourceDetailPage() {
 
       toast.success(
         next
-          ? 'Recurso guardado en tu librería.'
-          : 'Recurso eliminado de tu librería.',
+          ? t('resourceDetail.savedAdded')
+          : t('resourceDetail.savedRemoved'),
       )
     } catch (err) {
       console.error(err)
-      toast.error('No se pudo actualizar tu librería.')
+      toast.error(t('resourceDetail.savedError'))
     }
   }
 
@@ -179,12 +182,12 @@ export default function ResourceDetailPage() {
 
       toast.success(
         next
-          ? 'Recurso agregado a favoritos.'
-          : 'Recurso eliminado de favoritos.',
+          ? t('resourceDetail.favoriteAdded')
+          : t('resourceDetail.favoriteRemoved'),
       )
     } catch (err) {
       console.error(err)
-      toast.error('No se pudo actualizar favoritos.')
+      toast.error(t('resourceDetail.favoriteError'))
     }
   }
 
@@ -194,7 +197,7 @@ export default function ResourceDetailPage() {
     const targetUrl = resource.file_url || resource.external_url
 
     if (!targetUrl) {
-      toast.error('Este recurso no tiene un archivo disponible todavía.')
+      toast.error(t('resourceDetail.noFile'))
       return
     }
 
@@ -213,7 +216,7 @@ export default function ResourceDetailPage() {
       })
     } catch (err) {
       console.error(err)
-      toast.error('No se pudo abrir el recurso.')
+      toast.error(t('resourceDetail.openError'))
     } finally {
       setIsOpening(false)
     }
@@ -224,17 +227,17 @@ export default function ResourceDetailPage() {
       <div className="bg-bg text-text-primary">
         <section className="px-6 py-12 md:px-10 lg:px-16">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="animate-pulse rounded-3xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-              <div className="h-80 rounded-3xl bg-bg-soft" />
+            <div className="animate-pulse rounded-xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
+              <div className="h-80 rounded-xl bg-bg-soft" />
             </div>
 
-            <div className="animate-pulse space-y-4 rounded-3xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
+            <div className="animate-pulse space-y-4 rounded-xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
               <div className="h-5 w-24 rounded bg-bg-soft" />
               <div className="h-10 w-3/4 rounded bg-bg-soft" />
               <div className="h-4 w-full rounded bg-bg-soft" />
               <div className="h-4 w-5/6 rounded bg-bg-soft" />
-              <div className="h-12 w-full rounded-2xl bg-bg-soft" />
-              <div className="h-12 w-full rounded-2xl bg-bg-soft" />
+              <div className="h-12 w-full rounded-xl bg-bg-soft" />
+              <div className="h-12 w-full rounded-xl bg-bg-soft" />
             </div>
           </div>
         </section>
@@ -248,9 +251,10 @@ export default function ResourceDetailPage() {
         <section className="px-6 py-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-4xl">
             <EmptyState
-              title="No pudimos mostrar este recurso"
-              description={error || 'Este recurso no está disponible.'}
-              actionLabel="Volver a recursos"
+              icon={<Layers3 className="h-5 w-5" />}
+              title={t('resourceDetail.errorTitle')}
+              description={error || t('resourceDetail.errorDescription')}
+              actionLabel={t('resourceDetail.back')}
               onAction={() => navigate('/resources')}
             />
           </div>
@@ -261,224 +265,136 @@ export default function ResourceDetailPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <section className="relative overflow-hidden px-6 py-8 md:px-10 lg:px-16">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
-        <div className="mx-auto max-w-6xl">
-          <FadeIn>
-            <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-brand-primary">
-              <Link to="/" className="hover:text-text-primary">
-                Inicio
-              </Link>
-              <span>/</span>
-              <Link to="/resources" className="hover:text-text-primary">
-                Recursos
-              </Link>
-              <span>/</span>
-              <span className="text-text-primary">{resource.title}</span>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-            <FadeIn>
-              <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-bg-soft">
-                  {resource.thumbnail_url ? (
-                    <img
-                      src={resource.thumbnail_url}
-                      alt={resource.title}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-primary/15 to-brand-accent/10">
-                      <Layers3 className="h-16 w-16 text-brand-primary" />
-                    </div>
-                  )}
-
-                  <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                    <StatusBadge
-                      label={formatTypeLabel(resource.resource_type)}
-                      tone="default"
-                    />
-                    {resource.category ? (
-                      <StatusBadge label={resource.category.name} tone="info" />
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-
-            <FadeIn delay={0.06}>
-              <div className="space-y-6">
-                <SectionCard className="p-6">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge
-                      label={formatTypeLabel(resource.resource_type)}
-                      tone="default"
-                    />
-                    {resource.category ? (
-                      <StatusBadge label={resource.category.name} tone="info" />
-                    ) : null}
-                  </div>
-
-                  <h1 className="mt-5 font-heading text-3xl leading-tight md:text-4xl">
-                    {resource.title}
-                  </h1>
-
-                  <p className="mt-5 text-base leading-7 text-brand-primary">
-                    {description}
-                  </p>
-
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <AppButton
-                      onClick={handleOpenResource}
-                      disabled={isOpening}
-                      className="w-full"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-
-                      {isOpening ? t('common.opening') : t('common.open')}
-                    </AppButton>
-
-                    <AppButton
-                      variant={saved ? 'primary' : 'secondary'}
-                      onClick={handleToggleSaved}
-                      disabled={loadingState === 'saved'}
-                      className="w-full"
-                    >
-                      <Bookmark className="h-4 w-4" />
-                      {loadingState === 'saved'
-                        ? 'Guardando...'
-                        : saved
-                          ? 'Guardado'
-                          : 'Guardar'}
-                    </AppButton>
-
-                    <AppButton
-                      variant={favorite ? 'primary' : 'secondary'}
-                      onClick={handleToggleFavorite}
-                      disabled={loadingState === 'favorite'}
-                      className="w-full sm:col-span-2"
-                    >
-                      <Heart className="h-4 w-4" />
-                      {loadingState === 'favorite'
-                        ? 'Actualizando...'
-                        : favorite
-                          ? 'En favoritos'
-                          : 'Agregar a favoritos'}
-                    </AppButton>
-                  </div>
-                </SectionCard>
-
-                {resource.contributor ? (
-                  <SectionCard className="p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
-                        <UserRound className="h-5 w-5" />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                          Colaborador
-                        </p>
-
-                        <Link
-                          to={`/contributors/${resource.contributor.slug}`}
-                          className="mt-2 inline-flex font-heading text-xl text-text-primary hover:text-brand-accent"
-                        >
-                          {resource.contributor.name}
-                        </Link>
-
-                        {resource.contributor.short_bio ? (
-                          <p className="mt-2 text-sm text-brand-primary">
-                            {resource.contributor.short_bio}
-                          </p>
-                        ) : null}
-
-                        {resource.contributor.website_url ? (
-                          <a
-                            href={resource.contributor.website_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-brand-accent hover:underline"
-                          >
-                            Visitar sitio web
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        ) : null}
-                      </div>
-                    </div>
-                  </SectionCard>
-                ) : null}
-              </div>
-            </FadeIn>
+      <FadeIn>
+        <section className="px-6 py-8 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-6xl">
+            <Link
+              to="/resources"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary transition hover:underline"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t('resourceDetail.back')}
+            </Link>
           </div>
+        </section>
+      </FadeIn>
 
-          <FadeIn delay={0.1}>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                  Tipo
-                </p>
-                <p className="mt-2 text-text-primary">
-                  {formatTypeLabel(resource.resource_type)}
-                </p>
-              </SectionCard>
-
-              <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                  Disponibilidad
-                </p>
-                <p className="mt-2 text-text-primary">
-                  {resource.file_url || resource.external_url
-                    ? 'Disponible'
-                    : 'Pendiente'}
-                </p>
-              </SectionCard>
-
-              <SectionCard className="p-5">
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                  Colaborador
-                </p>
-                <p className="mt-2 text-text-primary">
-                  {resource.contributor?.name || 'No especificado'}
-                </p>
-              </SectionCard>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.14}>
-            <SectionCard className="mt-8 p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
-                  <Layers3 className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="font-heading text-2xl text-text-primary">
-                    Sobre este recurso
-                  </h2>
-                  <p className="text-sm text-brand-primary">
-                    Descripción y contexto del material.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 max-w-4xl text-base leading-8 text-brand-primary">
-                {description}
-              </div>
-
-              <div className="mt-6">
-                <Link
-                  to="/resources"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-brand-accent hover:underline"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Volver a recursos
-                </Link>
+      <FadeIn delay={0.04}>
+        <section className="px-6 pb-8 md:px-10 lg:px-16">
+          <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <SectionCard className="overflow-hidden p-0">
+              <div className="aspect-[4/3] bg-bg-soft">
+                {resource.thumbnail_url ? (
+                  <img
+                    src={resource.thumbnail_url}
+                    alt={resource.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-primary/6 via-transparent to-brand-accent/6">
+                    <Layers3 className="h-14 w-14 text-brand-primary/60" />
+                  </div>
+                )}
               </div>
             </SectionCard>
-          </FadeIn>
-        </div>
-      </section>
+
+            <SectionCard className="p-6 md:p-8">
+              <div className="flex items-center gap-3">
+                <StatusBadge
+                  label={formatTypeLabel(resource.resource_type, t)}
+                  tone="muted"
+                />
+                <StatusBadge
+                  label={
+                    resource.file_url || resource.external_url
+                      ? t('resourceDetail.available')
+                      : t('resourceDetail.pending')
+                  }
+                  tone={resource.file_url || resource.external_url ? 'success' : 'warning'}
+                />
+              </div>
+
+              <h1 className="mt-5 font-heading text-3xl md:text-4xl">
+                {resource.title}
+              </h1>
+
+              <p className="mt-4 text-base leading-8 text-text-secondary">
+                {description}
+              </p>
+
+              <div className="mt-6 space-y-3 rounded-xl border border-surface-border bg-bg-soft p-4">
+                <div className="flex items-start gap-3">
+                  <UserRound className="mt-0.5 h-4 w-4 text-brand-primary" />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
+                      {t('resourceDetail.contributor')}
+                    </p>
+                    {resource.contributor ? (
+                      <Link
+                        to={`/contributors/${resource.contributor.slug}`}
+                        className="mt-1 inline-flex text-sm font-semibold text-text-primary transition hover:text-brand-primary"
+                      >
+                        {resource.contributor.name}
+                      </Link>
+                    ) : (
+                      <p className="mt-1 text-sm text-text-secondary">
+                        {t('resourceDetail.notSpecified')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Layers3 className="mt-0.5 h-4 w-4 text-brand-primary" />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">
+                      {t('resourceDetail.category')}
+                    </p>
+                    <p className="mt-1 text-sm text-text-primary">
+                      {resource.category?.name || t('resourceDetail.notSpecified')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-col gap-3">
+                <AppButton
+                  onClick={handleOpenResource}
+                  disabled={isOpening}
+                  className="w-full"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {isOpening ? t('common.opening') : t('common.open')}
+                </AppButton>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <AppButton
+                    variant="secondary"
+                    onClick={handleToggleSaved}
+                    disabled={loadingState === 'saved'}
+                    className="w-full"
+                  >
+                    <Bookmark className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+                    {saved ? t('resourceDetail.saved') : t('resourceDetail.save')}
+                  </AppButton>
+
+                  <AppButton
+                    variant="secondary"
+                    onClick={handleToggleFavorite}
+                    disabled={loadingState === 'favorite'}
+                    className="w-full"
+                  >
+                    <Heart className={`h-4 w-4 ${favorite ? 'fill-current' : ''}`} />
+                    {favorite
+                      ? t('resourceDetail.favorited')
+                      : t('resourceDetail.favorite')}
+                  </AppButton>
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+        </section>
+      </FadeIn>
     </div>
   )
 }

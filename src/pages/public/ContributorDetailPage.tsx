@@ -22,6 +22,7 @@ import {
   type ContributorDetail,
 } from '@/lib/api/contributors'
 import type { ResourceListItem } from '@/types/resources'
+import { trackContributorEvent, type ContributorEventType } from '@/lib/api/analytics'
 
 export default function ContributorDetailPage() {
   const { t } = useTranslation()
@@ -58,6 +59,7 @@ export default function ContributorDetailPage() {
         }
 
         setContributor(contributorData)
+        void trackContributorEvent(contributorData.id, 'profile_view')
 
         const resourceData = await getContributorResources(contributorData.id)
 
@@ -107,33 +109,58 @@ export default function ContributorDetailPage() {
     )
   }
 
-  const socialLinks = [
-    {
-      href: contributor.website_url,
-      label: t('contributors.website'),
-      icon: Globe,
-    },
-    {
-      href: contributor.instagram_url,
-      label: 'Instagram',
-      icon: Camera,
-    },
-    {
-      href: contributor.facebook_url,
-      label: 'Facebook',
-      icon: MessagesSquare,
-    },
-    {
-      href: contributor.linkedin_url,
-      label: 'LinkedIn',
-      icon: BriefcaseBusiness,
-    },
-    {
-      href: contributor.youtube_url,
-      label: 'YouTube',
-      icon: PlaySquare,
-    },
-  ].filter((item) => !!item.href)
+  const socialLinks: Array<{
+    href: string
+    label: string
+    icon: React.ComponentType<{ className?: string }>
+    event: ContributorEventType
+  }> = [
+    contributor.website_url
+      ? {
+          href: contributor.website_url,
+          label: t('contributors.website'),
+          icon: Globe,
+          event: 'website_click',
+        }
+      : null,
+    contributor.instagram_url
+      ? {
+          href: contributor.instagram_url,
+          label: 'Instagram',
+          icon: Camera,
+          event: 'instagram_click',
+        }
+      : null,
+    contributor.facebook_url
+      ? {
+          href: contributor.facebook_url,
+          label: 'Facebook',
+          icon: MessagesSquare,
+          event: 'facebook_click',
+        }
+      : null,
+    contributor.linkedin_url
+      ? {
+          href: contributor.linkedin_url,
+          label: 'LinkedIn',
+          icon: BriefcaseBusiness,
+          event: 'linkedin_click',
+        }
+      : null,
+    contributor.youtube_url
+      ? {
+          href: contributor.youtube_url,
+          label: 'YouTube',
+          icon: PlaySquare,
+          event: 'youtube_click',
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    href: string
+    label: string
+    icon: React.ComponentType<{ className?: string }>
+    event: ContributorEventType
+  }>
 
   return (
     <div className="bg-bg text-text-primary">
@@ -142,7 +169,7 @@ export default function ContributorDetailPage() {
           <div className="mx-auto max-w-6xl">
             <Link
               to="/contributors"
-              className="inline-flex items-center gap-2 text-sm font-medium text-brand-accent transition hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary transition hover:underline"
             >
               <ArrowLeft className="h-4 w-4" />
               {t('contributors.back')}
@@ -156,7 +183,7 @@ export default function ContributorDetailPage() {
           <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <SectionCard className="p-6 md:p-8">
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
-                <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-bg-soft shadow-[var(--shadow-soft)]">
+                <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-bg-soft shadow-[var(--shadow-soft)]">
                   {contributor.avatar_url ? (
                     <img
                       src={contributor.avatar_url}
@@ -171,7 +198,7 @@ export default function ContributorDetailPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+                  <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
                     {t('contributors.badge')}
                   </p>
 
@@ -180,13 +207,13 @@ export default function ContributorDetailPage() {
                   </h1>
 
                   {contributor.specialty ? (
-                    <p className="mt-4 text-lg text-brand-primary">
+                    <p className="mt-4 text-lg text-text-secondary">
                       {contributor.specialty}
                     </p>
                   ) : null}
 
                   {contributor.short_bio ? (
-                    <p className="mt-4 max-w-3xl text-base leading-7 text-brand-primary">
+                    <p className="mt-4 max-w-3xl text-base leading-7 text-text-secondary">
                       {contributor.short_bio}
                     </p>
                   ) : null}
@@ -200,7 +227,7 @@ export default function ContributorDetailPage() {
               </h2>
 
               {socialLinks.length === 0 ? (
-                <p className="mt-4 text-sm text-brand-primary">
+                <p className="mt-4 text-sm text-text-secondary">
                   {t('contributors.noLinks')}
                 </p>
               ) : (
@@ -210,28 +237,31 @@ export default function ContributorDetailPage() {
                     return (
                       <a
                         key={item.label}
-                        href={item.href!}
+                        href={item.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                        onClick={() => {
+                          void trackContributorEvent(contributor.id, item.event)
+                        }}
+                        className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
                         <Icon className="h-4 w-4 text-brand-primary" />
                         {item.label}
-                        <ExternalLink className="h-4 w-4 text-brand-primary" />
+                        <ExternalLink className="h-4 w-4 text-text-secondary" />
                       </a>
                     )
                   })}
                 </div>
               )}
 
-              <div className="mt-8 rounded-3xl border border-surface-border bg-bg-soft p-4">
+              <div className="mt-8 rounded-xl border border-surface-border bg-bg-soft p-4">
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-brand-primary" />
                   <p className="text-sm font-medium text-text-primary">
                     {t('contributors.resourcesFrom', { name: contributor.name })}
                   </p>
                 </div>
-                <p className="mt-2 text-sm text-brand-primary">
+                <p className="mt-2 text-sm text-text-secondary">
                   {resources.length === 1
                     ? t('contributors.resourceCount_one', { count: resources.length })
                     : t('contributors.resourceCount_other', { count: resources.length })}
@@ -250,7 +280,7 @@ export default function ContributorDetailPage() {
                 <h2 className="font-heading text-2xl text-text-primary">
                   {t('contributors.aboutTitle')}
                 </h2>
-                <p className="mt-4 whitespace-pre-line text-base leading-8 text-brand-primary">
+                <p className="mt-4 whitespace-pre-line text-base leading-8 text-text-secondary">
                   {contributor.full_bio}
                 </p>
               </SectionCard>
@@ -264,7 +294,7 @@ export default function ContributorDetailPage() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+                <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
                   {t('contributors.resourcesLabel')}
                 </p>
                 <h2 className="mt-2 font-heading text-2xl md:text-3xl">

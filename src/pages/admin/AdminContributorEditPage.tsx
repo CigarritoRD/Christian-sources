@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import ContributorForm from '@/components/admin/ContributorForm'
+import SectionCard from '@/components/ui/SectionCard'
 import {
   getContributorById,
   updateContributor,
-  uploadContributorAvatar,
-  type AdminContributorInput,
 } from '@/lib/api/contributors'
 
 type ContributorRecord = {
@@ -14,20 +15,19 @@ type ContributorRecord = {
   slug: string
   short_bio?: string | null
   full_bio?: string | null
-  specialty?: string | null
-  avatar_url?: string | null
   website_url?: string | null
   instagram_url?: string | null
   facebook_url?: string | null
   linkedin_url?: string | null
   youtube_url?: string | null
-  is_featured: boolean
   is_active: boolean
+  is_featured: boolean
 }
 
 export default function AdminContributorEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [contributor, setContributor] = useState<ContributorRecord | null>(null)
   const [loading, setLoading] = useState(true)
@@ -36,7 +36,7 @@ export default function AdminContributorEditPage() {
   useEffect(() => {
     async function loadContributor() {
       if (!id) {
-        setError('Contributor id is missing.')
+        setError(t('admin.contributorForm.missingId'))
         setLoading(false)
         return
       }
@@ -44,97 +44,94 @@ export default function AdminContributorEditPage() {
       try {
         setLoading(true)
         setError(null)
+
         const data = await getContributorById(id)
         setContributor(data as ContributorRecord)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load contributor.')
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('admin.contributorForm.loadError'),
+        )
       } finally {
         setLoading(false)
       }
     }
 
     void loadContributor()
-  }, [id])
+  }, [id, t])
 
-  async function handleSubmit(
-    values: AdminContributorInput,
-    avatarFile: File | null,
-  ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function handleSubmit(values: any) {
     if (!id) {
-      throw new Error('Contributor id is missing.')
+      toast.error(t('admin.contributorForm.missingId'))
+      return
     }
 
-    let avatarUrl = values.avatar_url ?? contributor?.avatar_url ?? null
-
-    if (avatarFile) {
-      avatarUrl = await uploadContributorAvatar(avatarFile, values.slug)
+    try {
+      await updateContributor(id, values)
+      toast.success(t('admin.contributorForm.updateSuccess'))
+      navigate('/admin/contributors')
+    } catch (error) {
+      console.error(error)
+      toast.error(t('admin.contributorForm.updateError'))
     }
-
-    await updateContributor(id, {
-      ...values,
-      avatar_url: avatarUrl,
-    })
-
-    navigate('/admin/contributors')
   }
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <p className="text-sm text-brand-primary">Loading contributor...</p>
-        </div>
-      </div>
+      <SectionCard className="p-6">
+        <p className="text-sm text-text-secondary">{t('common.loading')}</p>
+      </SectionCard>
     )
   }
 
   if (error || !contributor) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
-          <h1 className="text-lg font-semibold text-red-700">
-            Could not load contributor
-          </h1>
-          <p className="mt-2 text-sm text-red-600">
-            {error ?? 'Contributor not found.'}
-          </p>
-        </div>
-      </div>
+      <SectionCard className="border-red-200 bg-red-50 p-6">
+        <h1 className="text-lg font-semibold text-red-700">
+          {t('admin.contributorForm.loadErrorTitle')}
+        </h1>
+        <p className="mt-2 text-sm text-red-600">
+          {error ?? t('admin.contributorForm.notFound')}
+        </p>
+      </SectionCard>
     )
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-text-primary">
-          Edit contributor
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+          {t('admin.contributorForm.badge')}
+        </p>
+        <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+          {t('admin.contributorForm.editTitle')}
         </h1>
-        <p className="mt-1 text-sm text-brand-primary">
-          Update this collaborator profile managed by Flourish.
+        <p className="mt-3 text-sm text-text-secondary">
+          {t('admin.contributorForm.editSubtitle')}
         </p>
       </div>
 
-
-      <ContributorForm
-        initialValues={{
-          name: contributor.name,
-          slug: contributor.slug,
-          short_bio: contributor.short_bio ?? '',
-          full_bio: contributor.full_bio ?? '',
-          specialty: contributor.specialty ?? '',
-          avatar_url: contributor.avatar_url ?? '',
-          website_url: contributor.website_url ?? '',
-          instagram_url: contributor.instagram_url ?? '',
-          facebook_url: contributor.facebook_url ?? '',
-          linkedin_url: contributor.linkedin_url ?? '',
-          youtube_url: contributor.youtube_url ?? '',
-          is_featured: contributor.is_featured,
-          is_active: contributor.is_active,
-        }}
-        onSubmit={handleSubmit}
-        submitLabel="Save changes"
-      />
-
+      <SectionCard className="p-6">
+        <ContributorForm
+          initialValues={{
+            name: contributor.name,
+            slug: contributor.slug,
+            short_bio: contributor.short_bio ?? '',
+            full_bio: contributor.full_bio ?? '',
+            website_url: contributor.website_url ?? '',
+            instagram_url: contributor.instagram_url ?? '',
+            facebook_url: contributor.facebook_url ?? '',
+            linkedin_url: contributor.linkedin_url ?? '',
+            youtube_url: contributor.youtube_url ?? '',
+            is_active: contributor.is_active,
+            is_featured: contributor.is_featured,
+          }}
+          onSubmit={handleSubmit}
+          submitLabel={t('admin.contributorForm.editAction')}
+        />
+      </SectionCard>
     </div>
   )
 }

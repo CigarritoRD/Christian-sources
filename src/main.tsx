@@ -8,7 +8,7 @@ import './index.css'
 import '@/lib/i18n'
 import './index.css'
 
-const savedTheme = window.localStorage.getItem('toolkit-box-theme')
+const savedTheme = window.localStorage.getItem('Toolkit Box-box-theme')
 const initialTheme = savedTheme === 'light' ? 'light' : 'dark'
 
 if (initialTheme === 'dark') {

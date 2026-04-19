@@ -1,113 +1,81 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Send, Sparkles, Users } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
+import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
-import AppButton from '@/components/ui/AppButton'
-import FileInput from '@/components/ui/FileInput'
-import {
-  createContributorApplication,
-  uploadContributorApplicationAvatar,
-} from '@/lib/api/contributor-applications'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function BecomeContributorPage() {
-  const navigate = useNavigate()
   const { t } = useTranslation()
-  const { user, profile } = useAuth()
 
-  const initialContactName = useMemo(
-    () => profile?.full_name?.trim() || '',
-    [profile?.full_name],
-  )
-
-  const initialContactEmail = useMemo(() => user?.email || '', [user?.email])
-
-  const [contactName, setContactName] = useState(initialContactName)
-  const [contactRole, setContactRole] = useState('')
-  const [contactEmail, setContactEmail] = useState(initialContactEmail)
-  const [contactPhone, setContactPhone] = useState('')
-
-  const [organizationName, setOrganizationName] = useState(
-    profile?.organization ?? '',
-  )
-  const [country, setCountry] = useState(profile?.country ?? '')
-  const [organization, setOrganization] = useState(profile?.organization ?? '')
-  const [specialty, setSpecialty] = useState('')
-  const [shortBio, setShortBio] = useState('')
-  const [fullBio, setFullBio] = useState('')
-  const [websiteUrl, setWebsiteUrl] = useState('')
-  const [instagramUrl, setInstagramUrl] = useState('')
-  const [facebookUrl, setFacebookUrl] = useState('')
-  const [linkedinUrl, setLinkedinUrl] = useState('')
-  const [youtubeUrl, setYoutubeUrl] = useState('')
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const [form, setForm] = useState({
+    contact_name: '',
+    contact_email: '',
+    contact_role: '',
+    contact_phone: '',
+    organization_name: '',
+    country: '',
+    organization: '',
+    specialty: '',
+    short_bio: '',
+    full_bio: '',
+    website_url: '',
+  })
 
-    const normalizedContactName = contactName.trim()
-    const normalizedContactEmail = contactEmail.trim().toLowerCase()
-    const normalizedOrganizationName = organizationName.trim()
+  const handleChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
 
-    if (!normalizedContactName) {
+  const validate = () => {
+    if (!form.contact_name) {
       toast.error(t('contributorApply.validation.contactName'))
-      return
+      return false
     }
-
-    if (!normalizedContactEmail) {
+    if (!form.contact_email) {
       toast.error(t('contributorApply.validation.contactEmail'))
-      return
+      return false
     }
-
-    if (!normalizedOrganizationName) {
+    if (!form.organization_name) {
       toast.error(t('contributorApply.validation.organizationName'))
-      return
+      return false
     }
+    return true
+  }
+
+  const handleSubmit = async () => {
+    if (!validate()) return
 
     try {
       setLoading(true)
 
-      let avatarUrl: string | null = null
+      const { error } = await supabase
+        .from('contributor_applications')
+        .insert([form])
 
-      if (avatarFile) {
-        avatarUrl = await uploadContributorApplicationAvatar(
-          avatarFile,
-          user?.id || normalizedContactEmail,
-        )
-      }
-
-      await createContributorApplication({
-        user_id: user?.id ?? null,
-
-        contact_name: normalizedContactName,
-        contact_role: contactRole.trim() || null,
-        contact_email: normalizedContactEmail,
-        contact_phone: contactPhone.trim() || null,
-
-        organization_name: normalizedOrganizationName,
-        avatar_url: avatarUrl,
-        country: country.trim() || null,
-        organization: organization.trim() || null,
-        specialty: specialty.trim() || null,
-        short_bio: shortBio.trim() || null,
-        full_bio: fullBio.trim() || null,
-        website_url: websiteUrl.trim() || null,
-        instagram_url: instagramUrl.trim() || null,
-        facebook_url: facebookUrl.trim() || null,
-        linkedin_url: linkedinUrl.trim() || null,
-        youtube_url: youtubeUrl.trim() || null,
-      })
+      if (error) throw error
 
       toast.success(t('contributorApply.success'))
-      navigate('/')
-    } catch (error) {
-      console.error(error)
+
+      setForm({
+        contact_name: '',
+        contact_email: '',
+        contact_role: '',
+        contact_phone: '',
+        organization_name: '',
+        country: '',
+        organization: '',
+        specialty: '',
+        short_bio: '',
+        full_bio: '',
+        website_url: '',
+      })
+    } catch (err) {
+      console.error(err)
       toast.error(t('contributorApply.error'))
     } finally {
       setLoading(false)
@@ -117,238 +85,182 @@ export default function BecomeContributorPage() {
   return (
     <div className="bg-bg text-text-primary">
       <FadeIn>
-        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-brand-primary shadow-[var(--shadow-soft)]">
-                  <Sparkles className="h-4 w-4 text-brand-primary" />
-                  {t('contributorApply.badge')}
-                </div>
+        <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
 
-                <h1 className="mt-4 font-heading text-4xl md:text-5xl">
-                  {t('contributorApply.title')}
-                </h1>
+          <div className="relative mx-auto max-w-4xl">
+            <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+              {t('contributorApply.badge')}
+            </p>
 
-                <p className="mt-4 max-w-2xl text-lg text-brand-primary">
-                  {t('contributorApply.subtitle')}
+            <h1 className="mt-4 font-heading text-4xl md:text-5xl">
+              {t('contributorApply.title')}
+            </h1>
+
+            <p className="mt-5 text-lg leading-8 text-text-secondary">
+              {t('contributorApply.subtitle')}
+            </p>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <SectionCard className="p-5">
+                <h3 className="font-heading text-lg">
+                  {t('contributorApply.point1Title')}
+                </h3>
+                <p className="mt-2 text-sm text-text-secondary">
+                  {t('contributorApply.point1Body')}
                 </p>
-              </div>
+              </SectionCard>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                <SectionCard className="p-5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
-                    <Users className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-4 font-heading text-lg text-text-primary">
-                    {t('contributorApply.point1Title')}
-                  </h3>
-                  <p className="mt-2 text-sm text-brand-primary">
-                    {t('contributorApply.point1Body')}
-                  </p>
-                </SectionCard>
-
-                <SectionCard className="p-5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
-                    <CheckCircle2 className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-4 font-heading text-lg text-text-primary">
-                    {t('contributorApply.point2Title')}
-                  </h3>
-                  <p className="mt-2 text-sm text-brand-primary">
-                    {t('contributorApply.point2Body')}
-                  </p>
-                </SectionCard>
-              </div>
+              <SectionCard className="p-5">
+                <h3 className="font-heading text-lg">
+                  {t('contributorApply.point2Title')}
+                </h3>
+                <p className="mt-2 text-sm text-text-secondary">
+                  {t('contributorApply.point2Body')}
+                </p>
+              </SectionCard>
             </div>
           </div>
         </section>
       </FadeIn>
 
-      <FadeIn delay={0.06}>
+      <FadeIn delay={0.08}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">
-          <div className="mx-auto max-w-5xl">
-            <SectionCard className="p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="font-heading text-xl">
-                      {t('contributorApply.contactSection')}
-                    </h2>
-                    <p className="mt-1 text-sm text-brand-primary">
-                      {t('contributorApply.contactHelp')}
-                    </p>
-                  </div>
+          <div className="mx-auto max-w-4xl">
+            <SectionCard className="p-6 md:p-8 space-y-8">
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <AppInput
-                      label={t('contributorApply.contactName')}
-                      value={contactName}
-                      onChange={(e) => setContactName(e.target.value)}
-                      placeholder={t('contributorApply.contactNamePlaceholder')}
-                    />
+              {/* CONTACT */}
+              <div>
+                <h2 className="font-heading text-xl">
+                  {t('contributorApply.contactSection')}
+                </h2>
+                <p className="mt-2 text-sm text-text-secondary">
+                  {t('contributorApply.contactHelp')}
+                </p>
 
-                    <AppInput
-                      label={t('contributorApply.contactRole')}
-                      value={contactRole}
-                      onChange={(e) => setContactRole(e.target.value)}
-                      placeholder={t('contributorApply.contactRolePlaceholder')}
-                    />
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  <AppInput
+                    label={t('contributorApply.contactName')}
+                    value={form.contact_name}
+                    onChange={(e) => handleChange('contact_name', e.target.value)}
+                  />
 
-                    <AppInput
-                      label={t('contributorApply.contactEmail')}
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      placeholder="you@email.com"
-                    />
+                  <AppInput
+                    label={t('contributorApply.contactEmail')}
+                    value={form.contact_email}
+                    onChange={(e) => handleChange('contact_email', e.target.value)}
+                  />
 
-                    <AppInput
-                      label={t('contributorApply.contactPhone')}
-                      value={contactPhone}
-                      onChange={(e) => setContactPhone(e.target.value)}
-                      placeholder={t('contributorApply.contactPhonePlaceholder')}
-                    />
-                  </div>
+                  <AppInput
+                    label={t('contributorApply.contactRole')}
+                    value={form.contact_role}
+                    onChange={(e) => handleChange('contact_role', e.target.value)}
+                  />
+
+                  <AppInput
+                    label={t('contributorApply.contactPhone')}
+                    value={form.contact_phone}
+                    onChange={(e) => handleChange('contact_phone', e.target.value)}
+                  />
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="font-heading text-xl">
-                      {t('contributorApply.ministrySection')}
-                    </h2>
-                    <p className="mt-1 text-sm text-brand-primary">
-                      {t('contributorApply.ministryHelp')}
-                    </p>
-                  </div>
+              {/* ORGANIZATION */}
+              <div>
+                <h2 className="font-heading text-xl">
+                  {t('contributorApply.ministrySection')}
+                </h2>
+                <p className="mt-2 text-sm text-text-secondary">
+                  {t('contributorApply.ministryHelp')}
+                </p>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <AppInput
-                      label={t('contributorApply.organizationName')}
-                      value={organizationName}
-                      onChange={(e) => setOrganizationName(e.target.value)}
-                      placeholder={t('contributorApply.organizationNamePlaceholder')}
-                    />
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  <AppInput
+                    label={t('contributorApply.organizationName')}
+                    value={form.organization_name}
+                    onChange={(e) =>
+                      handleChange('organization_name', e.target.value)
+                    }
+                  />
 
-                    <AppInput
-                      label={t('contributorApply.country')}
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      placeholder={t('contributorApply.countryPlaceholder')}
-                    />
+                  <AppInput
+                    label={t('contributorApply.country')}
+                    value={form.country}
+                    onChange={(e) => handleChange('country', e.target.value)}
+                  />
 
-                    <AppInput
-                      label={t('contributorApply.organization')}
-                      value={organization}
-                      onChange={(e) => setOrganization(e.target.value)}
-                      placeholder={t('contributorApply.organizationPlaceholder')}
-                    />
+                  <AppInput
+                    label={t('contributorApply.organization')}
+                    value={form.organization}
+                    onChange={(e) =>
+                      handleChange('organization', e.target.value)
+                    }
+                  />
 
-                    <AppInput
-                      label={t('contributorApply.specialty')}
-                      value={specialty}
-                      onChange={(e) => setSpecialty(e.target.value)}
-                      placeholder={t('contributorApply.specialtyPlaceholder')}
-                    />
-                  </div>
+                  <AppInput
+                    label={t('contributorApply.specialty')}
+                    value={form.specialty}
+                    onChange={(e) =>
+                      handleChange('specialty', e.target.value)
+                    }
+                  />
+                </div>
+              </div>
 
+              {/* DESCRIPTION */}
+              <div>
+                <h2 className="font-heading text-xl">
+                  {t('contributorApply.descriptionSection')}
+                </h2>
+
+                <div className="mt-5 space-y-4">
                   <AppTextarea
                     label={t('contributorApply.shortBio')}
-                    rows={3}
-                    value={shortBio}
-                    onChange={(e) => setShortBio(e.target.value)}
-                    placeholder={t('contributorApply.shortBioPlaceholder')}
+                    value={form.short_bio}
+                    onChange={(e) =>
+                      handleChange('short_bio', e.target.value)
+                    }
                   />
 
                   <AppTextarea
                     label={t('contributorApply.fullBio')}
-                    rows={6}
-                    value={fullBio}
-                    onChange={(e) => setFullBio(e.target.value)}
-                    placeholder={t('contributorApply.fullBioPlaceholder')}
+                    value={form.full_bio}
+                    onChange={(e) =>
+                      handleChange('full_bio', e.target.value)
+                    }
                   />
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="font-heading text-xl">
-                      {t('contributorApply.avatarSection')}
-                    </h2>
-                    <p className="mt-1 text-sm text-brand-primary">
-                      {t('contributorApply.avatarHelp')}
-                    </p>
-                  </div>
+              {/* LINKS */}
+              <div>
+                <h2 className="font-heading text-xl">
+                  {t('contributorApply.linksSection')}
+                </h2>
 
-                  <FileInput
-                    label={t('contributorApply.avatar')}
-                    accept="image/*"
-                    fileName={avatarFile?.name ?? null}
-                    hint="PNG, JPG o WEBP"
-                    onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-                    onClear={() => setAvatarFile(null)}
+                <div className="mt-5">
+                  <AppInput
+                    label={t('contributorApply.website')}
+                    value={form.website_url}
+                    onChange={(e) =>
+                      handleChange('website_url', e.target.value)
+                    }
                   />
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="font-heading text-xl">
-                      {t('contributorApply.linksSection')}
-                    </h2>
-                    <p className="mt-1 text-sm text-brand-primary">
-                      {t('contributorApply.linksHelp')}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <AppInput
-                      label={t('contributorApply.website')}
-                      value={websiteUrl}
-                      onChange={(e) => setWebsiteUrl(e.target.value)}
-                      placeholder="https://..."
-                    />
-
-                    <AppInput
-                      label="Instagram"
-                      value={instagramUrl}
-                      onChange={(e) => setInstagramUrl(e.target.value)}
-                      placeholder="https://instagram.com/..."
-                    />
-
-                    <AppInput
-                      label="Facebook"
-                      value={facebookUrl}
-                      onChange={(e) => setFacebookUrl(e.target.value)}
-                      placeholder="https://facebook.com/..."
-                    />
-
-                    <AppInput
-                      label="LinkedIn"
-                      value={linkedinUrl}
-                      onChange={(e) => setLinkedinUrl(e.target.value)}
-                      placeholder="https://linkedin.com/in/..."
-                    />
-
-                    <div className="md:col-span-2">
-                      <AppInput
-                        label="YouTube"
-                        value={youtubeUrl}
-                        onChange={(e) => setYoutubeUrl(e.target.value)}
-                        placeholder="https://youtube.com/..."
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <AppButton type="submit" disabled={loading}>
-                    <Send className="h-4 w-4" />
-                    {loading
-                      ? t('contributorApply.submitting')
-                      : t('contributorApply.submit')}
-                  </AppButton>
-                </div>
-              </form>
+              {/* SUBMIT */}
+              <div className="pt-4">
+                <AppButton
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="w-full md:w-auto"
+                >
+                  {loading
+                    ? t('contributorApply.submitting')
+                    : t('contributorApply.submit')}
+                </AppButton>
+              </div>
             </SectionCard>
           </div>
         </section>

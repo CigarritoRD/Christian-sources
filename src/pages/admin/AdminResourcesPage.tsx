@@ -1,20 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import EmptyState from '@/components/ui/EmptyState'
 import { FolderKanban, Plus, TrendingUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import EmptyState from '@/components/ui/EmptyState'
+import AppButton from '@/components/ui/AppButton'
+import SectionCard from '@/components/ui/SectionCard'
+import SearchInput from '@/components/ui/SearchInput'
+import StatusBadge from '@/components/ui/StatusBadge'
 import {
   activateResource,
   deactivateResource,
   getAdminResources,
 } from '@/lib/api/resources'
-import AppButton from '@/components/ui/AppButton'
-
-import PageHeader from '@/components/ui/PageHeader'
-import SectionCard from '@/components/ui/SectionCard'
-import StatCard from '@/components/ui/StatCard'
-import StatusBadge from '@/components/ui/StatusBadge'
 import { confirmAction } from '@/lib/api/confirm'
-import SearchInput from '@/components/ui/SearchInput'
 
 type ResourceListItem = {
   id: string
@@ -41,7 +39,32 @@ type ResourceListItem = {
   } | null
 }
 
+function formatTypeLabel(type: string | null | undefined, t: (key: string) => string) {
+  const normalized = (type || '').toLowerCase()
+
+  switch (normalized) {
+    case 'pdf':
+      return t('resources.typePdf')
+    case 'video':
+      return t('resources.typeVideo')
+    case 'audio':
+      return t('resources.typeAudio')
+    case 'image':
+      return t('resources.typeImage')
+    case 'document':
+      return t('resources.typeDocument')
+    case 'link':
+      return t('resources.typeLink')
+    case 'download':
+      return t('resources.typeDownload')
+    default:
+      return type || t('admin.resources.noType')
+  }
+}
+
 export default function AdminResourcesPage() {
+  const { t } = useTranslation()
+
   const [items, setItems] = useState<ResourceListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -55,7 +78,9 @@ export default function AdminResourcesPage() {
       const data = await getAdminResources()
       setItems((data ?? []) as unknown as ResourceListItem[])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load resources.')
+      setError(
+        err instanceof Error ? err.message : t('admin.resources.errorDescription'),
+      )
     } finally {
       setLoading(false)
     }
@@ -65,25 +90,32 @@ export default function AdminResourcesPage() {
     void loadResources()
   }, [])
 
-  const filteredItems = items.filter((item) => {
+  const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()
-    if (!term) return true
+    if (!term) return items
 
-    return (
-      item.title.toLowerCase().includes(term) ||
-      item.slug.toLowerCase().includes(term) ||
-      (item.resource_type ?? '').toLowerCase().includes(term) ||
-      (item.contributor?.name ?? '').toLowerCase().includes(term) ||
-      (item.category?.name ?? '').toLowerCase().includes(term)
-    )
-  })
+    return items.filter((item) => {
+      return (
+        item.title.toLowerCase().includes(term) ||
+        item.slug.toLowerCase().includes(term) ||
+        (item.resource_type ?? '').toLowerCase().includes(term) ||
+        (item.contributor?.name ?? '').toLowerCase().includes(term) ||
+        (item.category?.name ?? '').toLowerCase().includes(term)
+      )
+    })
+  }, [items, search])
 
   async function handleTogglePublished(item: ResourceListItem) {
     const action = item.is_published ? 'unpublish' : 'publish'
+
     const confirmed = await confirmAction({
-      title: `${action === 'unpublish' ? 'Unpublish' : 'Publish'} resource?`,
+      title: item.is_published
+        ? t('admin.resources.confirmUnpublishTitle')
+        : t('admin.resources.confirmPublishTitle'),
       text: item.title,
-      confirmText: action === 'unpublish' ? 'Unpublish' : 'Publish',
+      confirmText: item.is_published
+        ? t('admin.resources.unpublish')
+        : t('admin.resources.publish'),
     })
 
     if (!confirmed) return
@@ -91,7 +123,7 @@ export default function AdminResourcesPage() {
     try {
       setProcessingId(item.id)
 
-      if (item.is_published) {
+      if (action === 'unpublish') {
         await deactivateResource(item.id)
       } else {
         await activateResource(item.id)
@@ -100,49 +132,60 @@ export default function AdminResourcesPage() {
       await loadResources()
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to update resource status.',
+        err instanceof Error ? err.message : t('admin.resources.updateError'),
       )
     } finally {
       setProcessingId(null)
     }
   }
 
+  const total = items.length
+  const published = items.filter((item) => item.is_published).length
+  const featured = items.filter((item) => item.is_featured).length
+  const publicCount = items.filter((item) => item.is_public).length
+
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Resources"
-        description="Manage all resources published on the platform."
-        actions={
-          <Link to="/admin/resources/new">
-            <AppButton>
-              <Plus className="h-4 w-4" />
-              New resource
-            </AppButton>
-          </Link>
-        }
-      />
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+            {t('admin.resources.badge')}
+          </p>
+          <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+            {t('admin.resources.title')}
+          </h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            {t('admin.resources.subtitle')}
+          </p>
+        </div>
+
+        <Link to="/admin/resources/new">
+          <AppButton>
+            <Plus className="h-4 w-4" />
+            {t('admin.resources.newResource')}
+          </AppButton>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <StatCard
-          label="Total"
-          value={items.length}
+        <MetricCard
+          label={t('admin.resources.total')}
+          value={total}
           icon={<FolderKanban className="h-4 w-4" />}
         />
-        <StatCard
-          label="Published"
-          value={items.filter((item) => item.is_published).length}
+        <MetricCard
+          label={t('admin.resources.published')}
+          value={published}
           icon={<TrendingUp className="h-4 w-4" />}
         />
-        <StatCard
-          label="Featured"
-          value={items.filter((item) => item.is_featured).length}
+        <MetricCard
+          label={t('admin.resources.featured')}
+          value={featured}
           icon={<TrendingUp className="h-4 w-4" />}
         />
-        <StatCard
-          label="Public"
-          value={items.filter((item) => item.is_public).length}
+        <MetricCard
+          label={t('admin.resources.public')}
+          value={publicCount}
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -152,19 +195,21 @@ export default function AdminResourcesPage() {
           <SearchInput
             value={search}
             onChange={setSearch}
-            placeholder="Search resources..."
+            placeholder={t('admin.resources.searchPlaceholder')}
           />
         </div>
       </SectionCard>
 
       <SectionCard className="overflow-hidden">
         <div className="border-b border-surface-border px-4 py-3">
-          <h2 className="text-sm font-medium text-text-primary">Resource list</h2>
+          <h2 className="text-sm font-medium text-text-primary">
+            {t('admin.resources.listTitle')}
+          </h2>
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-brand-primary">
-            Loading resources...
+          <div className="px-4 py-6 text-sm text-text-secondary">
+            {t('common.loading')}
           </div>
         ) : error ? (
           <div className="px-4 py-6 text-sm text-red-600">{error}</div>
@@ -172,8 +217,8 @@ export default function AdminResourcesPage() {
           <div className="p-4">
             <EmptyState
               icon={<FolderKanban className="h-5 w-5" />}
-              title="No resources found"
-              description="Try a different search or add a new resource to the platform."
+              title={t('admin.resources.emptyTitle')}
+              description={t('admin.resources.emptyDescription')}
             />
           </div>
         ) : (
@@ -181,7 +226,7 @@ export default function AdminResourcesPage() {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between"
+                className="flex flex-col gap-3 px-4 py-4 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   {item.thumbnail_url ? (
@@ -203,29 +248,39 @@ export default function AdminResourcesPage() {
                       </p>
 
                       {item.is_featured ? (
-                        <StatusBadge label="Featured" tone="warning" />
+                        <StatusBadge
+                          label={t('admin.resources.featuredStatus')}
+                          tone="warning"
+                        />
                       ) : null}
 
                       <StatusBadge
-                        label={item.is_published ? 'Published' : 'Draft'}
+                        label={
+                          item.is_published
+                            ? t('admin.resources.publishedStatus')
+                            : t('admin.resources.draft')
+                        }
                         tone={item.is_published ? 'success' : 'muted'}
                       />
 
                       {item.is_public ? (
-                        <StatusBadge label="Public" tone="info" />
+                        <StatusBadge
+                          label={t('admin.resources.publicStatus')}
+                          tone="info"
+                        />
                       ) : null}
                     </div>
 
-                    <p className="mt-0.5 text-sm text-brand-primary">@{item.slug}</p>
+                    <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
 
-                    <p className="mt-0.5 text-sm text-brand-primary">
-                      {item.contributor?.name ?? 'No contributor'} ·{' '}
-                      {item.category?.name ?? 'No category'} ·{' '}
-                      {item.resource_type ?? 'No type'}
+                    <p className="mt-0.5 text-sm text-text-secondary">
+                      {item.contributor?.name ?? t('admin.resources.noContributor')} ·{' '}
+                      {item.category?.name ?? t('admin.resources.noCategory')} ·{' '}
+                      {formatTypeLabel(item.resource_type, t)}
                     </p>
 
                     {item.short_description ? (
-                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-brand-primary">
+                      <p className="mt-1 line-clamp-1 max-w-2xl text-sm text-text-secondary">
                         {item.short_description}
                       </p>
                     ) : null}
@@ -234,11 +289,15 @@ export default function AdminResourcesPage() {
 
                 <div className="flex shrink-0 flex-wrap gap-2">
                   <Link to={`/resources/${item.slug}`}>
-                    <AppButton variant="ghost">View</AppButton>
+                    <AppButton variant="ghost">
+                      {t('admin.resources.view')}
+                    </AppButton>
                   </Link>
 
                   <Link to={`/admin/resources/${item.id}/edit`}>
-                    <AppButton variant="secondary">Edit</AppButton>
+                    <AppButton variant="secondary">
+                      {t('admin.dashboard.edit')}
+                    </AppButton>
                   </Link>
 
                   <AppButton
@@ -248,11 +307,11 @@ export default function AdminResourcesPage() {
                   >
                     {processingId === item.id
                       ? item.is_published
-                        ? 'Unpublishing...'
-                        : 'Publishing...'
+                        ? t('admin.resources.unpublishing')
+                        : t('admin.resources.publishing')
                       : item.is_published
-                        ? 'Unpublish'
-                        : 'Publish'}
+                        ? t('admin.resources.unpublish')
+                        : t('admin.resources.publish')}
                   </AppButton>
                 </div>
               </div>
@@ -261,5 +320,30 @@ export default function AdminResourcesPage() {
         )}
       </SectionCard>
     </div>
+  )
+}
+
+function MetricCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string
+  value: string | number
+  icon: React.ReactNode
+}) {
+  return (
+    <SectionCard className="p-5">
+      <div className="flex items-center gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-sm text-text-secondary">{label}</p>
+          <p className="font-heading text-2xl text-text-primary">{value}</p>
+        </div>
+      </div>
+    </SectionCard>
   )
 }

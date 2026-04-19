@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import ResourceForm from '@/components/admin/ResourceForm'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import ResourceForm, { type ResourceFormValues } from '@/components/admin/ResourceForm'
 import {
   getResourceById,
   updateResource,
@@ -8,8 +10,8 @@ import {
   uploadResourceThumbnail,
   type AdminResourceInput,
 } from '@/lib/api/resources'
-import PageHeader from '@/components/ui/PageHeader'
 import SectionCard from '@/components/ui/SectionCard'
+import { getResourceTagIds, setResourceTags } from '@/lib/api/tags'
 
 type ResourceRecord = AdminResourceInput & {
   id: string
@@ -17,23 +19,20 @@ type ResourceRecord = AdminResourceInput & {
   external_url?: string | null
 }
 
-type ResourceFormValues = AdminResourceInput & {
-  file_url?: string | null
-  external_url?: string | null
-}
-
 export default function AdminResourceEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [resource, setResource] = useState<ResourceRecord | null>(null)
+  const [tagIds, setTagIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadResource() {
       if (!id) {
-        setError('Resource id is missing.')
+        setError(t('admin.resourceForm.missingId'))
         setLoading(false)
         return
       }
@@ -41,17 +40,25 @@ export default function AdminResourceEditPage() {
       try {
         setLoading(true)
         setError(null)
-        const data = await getResourceById(id)
+
+        const [data, resourceTagIds] = await Promise.all([
+          getResourceById(id),
+          getResourceTagIds(id),
+        ])
+
         setResource(data as ResourceRecord)
+        setTagIds(resourceTagIds)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load resource.')
+        setError(
+          err instanceof Error ? err.message : t('admin.resourceForm.loadError'),
+        )
       } finally {
         setLoading(false)
       }
     }
 
     void loadResource()
-  }, [id])
+  }, [id, t])
 
   async function handleSubmit(
     values: ResourceFormValues,
@@ -61,7 +68,7 @@ export default function AdminResourceEditPage() {
     },
   ) {
     if (!id) {
-      throw new Error('Resource id is missing.')
+      throw new Error(t('admin.resourceForm.missingId'))
     }
 
     let thumbnailUrl = values.thumbnail_url ?? resource?.thumbnail_url ?? null
@@ -81,13 +88,16 @@ export default function AdminResourceEditPage() {
       file_url: fileUrl,
     })
 
+    await setResourceTags(id, values.tagIds)
+
+    toast.success(t('admin.resourceForm.updateSuccess'))
     navigate('/admin/resources')
   }
 
   if (loading) {
     return (
       <SectionCard className="p-6">
-        <p className="text-sm text-brand-primary">Loading resource...</p>
+        <p className="text-sm text-brand-primary">{t('common.loading')}</p>
       </SectionCard>
     )
   }
@@ -96,21 +106,28 @@ export default function AdminResourceEditPage() {
     return (
       <SectionCard className="border-red-200 bg-red-50 p-6">
         <h1 className="text-lg font-semibold text-red-700">
-          Could not load resource
+          {t('admin.resourceForm.loadErrorTitle')}
         </h1>
         <p className="mt-2 text-sm text-red-600">
-          {error ?? 'Resource not found.'}
+          {error ?? t('admin.resourceForm.loadError')}
         </p>
       </SectionCard>
     )
   }
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Edit resource"
-        description="Update this resource and its publication settings."
-      />
+    <div className="space-y-8">
+      <div>
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+          {t('admin.resourceForm.badge')}
+        </p>
+        <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+          {t('admin.resourceForm.editTitle')}
+        </h1>
+        <p className="mt-3 text-sm text-text-secondary">
+          {t('admin.resourceForm.editSubtitle')}
+        </p>
+      </div>
 
       <ResourceForm
         initialValues={{
@@ -127,9 +144,10 @@ export default function AdminResourceEditPage() {
           is_featured: resource.is_featured,
           is_public: resource.is_public,
           is_published: resource.is_published,
+          tagIds,
         }}
         onSubmit={handleSubmit}
-        submitLabel="Save changes"
+        submitLabel={t('admin.resourceForm.editAction')}
       />
     </div>
   )

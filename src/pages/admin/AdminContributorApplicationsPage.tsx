@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FileSearch, ShieldCheck, XCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import SearchInput from '@/components/ui/SearchInput'
-import PageHeader from '@/components/ui/PageHeader'
 import {
   getContributorApplications,
   type ContributorApplicationRecord,
@@ -15,6 +15,8 @@ import {
 type FilterStatus = 'all' | 'pending_review' | 'approved' | 'rejected'
 
 export default function AdminContributorApplicationsPage() {
+  const { t } = useTranslation()
+
   const [items, setItems] = useState<ContributorApplicationRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
@@ -33,7 +35,11 @@ export default function AdminContributorApplicationsPage() {
         setItems(data)
       } catch (err) {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Failed to load applications.')
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('admin.applications.errorDescription'),
+        )
       } finally {
         if (active) setLoading(false)
       }
@@ -44,7 +50,7 @@ export default function AdminContributorApplicationsPage() {
     return () => {
       active = false
     }
-  }, [status])
+  }, [status, t])
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase()
@@ -63,18 +69,27 @@ export default function AdminContributorApplicationsPage() {
   }, [items, query])
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Contributor applications"
-        description="Review pending contributor requests and decide whether to approve them."
-      />
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+            {t('admin.applications.badge')}
+          </p>
+          <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+            {t('admin.applications.title')}
+          </h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            {t('admin.applications.subtitle')}
+          </p>
+        </div>
+      </div>
 
       <SectionCard className="p-5">
         <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
           <SearchInput
             value={query}
             onChange={setQuery}
-            placeholder="Search by ministry, contact, email, specialty, country..."
+            placeholder={t('admin.applications.searchPlaceholder')}
           />
 
           <div className="flex flex-wrap gap-2">
@@ -83,7 +98,7 @@ export default function AdminContributorApplicationsPage() {
               variant={status === 'pending_review' ? 'primary' : 'secondary'}
               onClick={() => setStatus('pending_review')}
             >
-              Pending
+              {t('admin.applications.pending')}
             </AppButton>
 
             <AppButton
@@ -91,7 +106,7 @@ export default function AdminContributorApplicationsPage() {
               variant={status === 'approved' ? 'primary' : 'secondary'}
               onClick={() => setStatus('approved')}
             >
-              Approved
+              {t('admin.applications.approved')}
             </AppButton>
 
             <AppButton
@@ -99,7 +114,7 @@ export default function AdminContributorApplicationsPage() {
               variant={status === 'rejected' ? 'primary' : 'secondary'}
               onClick={() => setStatus('rejected')}
             >
-              Rejected
+              {t('admin.applications.rejected')}
             </AppButton>
 
             <AppButton
@@ -107,7 +122,7 @@ export default function AdminContributorApplicationsPage() {
               variant={status === 'all' ? 'primary' : 'secondary'}
               onClick={() => setStatus('all')}
             >
-              All
+              {t('admin.applications.all')}
             </AppButton>
           </div>
         </div>
@@ -124,14 +139,16 @@ export default function AdminContributorApplicationsPage() {
         </div>
       ) : error ? (
         <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-          <h2 className="font-heading text-xl">Could not load applications</h2>
-          <p className="mt-2 text-sm text-brand-primary">{error}</p>
+          <h2 className="font-heading text-xl">
+            {t('admin.applications.errorTitle')}
+          </h2>
+          <p className="mt-2 text-sm text-text-secondary">{error}</p>
         </SectionCard>
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={<FileSearch className="h-5 w-5" />}
-          title="No applications found"
-          description="There are no contributor applications matching this filter."
+          title={t('admin.applications.emptyTitle')}
+          description={t('admin.applications.emptyDescription')}
         />
       ) : (
         <div className="grid gap-4">
@@ -142,44 +159,46 @@ export default function AdminContributorApplicationsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-heading text-xl text-text-primary">
-                        {item.organization_name || item.full_name || 'Unnamed organization'}
+                        {item.organization_name ||
+                          item.full_name ||
+                          t('admin.applications.unnamed')}
                       </h2>
 
                       {item.status === 'pending_review' ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
                           <FileSearch className="h-3.5 w-3.5" />
-                          Pending
+                          {t('admin.applications.pending')}
                         </span>
                       ) : null}
 
                       {item.status === 'approved' ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                           <ShieldCheck className="h-3.5 w-3.5" />
-                          Approved
+                          {t('admin.applications.approved')}
                         </span>
                       ) : null}
 
                       {item.status === 'rejected' ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700">
                           <XCircle className="h-3.5 w-3.5" />
-                          Rejected
+                          {t('admin.applications.rejected')}
                         </span>
                       ) : null}
                     </div>
 
-                    <p className="mt-2 text-sm text-brand-primary">
-                      Contact: {item.contact_name || 'No contact'}
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {t('admin.applications.contact')}: {item.contact_name || t('admin.applications.notAvailable')}
                       {item.contact_role ? ` • ${item.contact_role}` : ''}
                     </p>
 
-                    <p className="mt-1 text-sm text-brand-primary">
-                      {item.contact_email || 'No email'}
+                    <p className="mt-1 text-sm text-text-secondary">
+                      {item.contact_email || t('admin.applications.notAvailable')}
                       {item.country ? ` • ${item.country}` : ''}
                       {item.organization ? ` • ${item.organization}` : ''}
                     </p>
 
                     {item.specialty ? (
-                      <p className="mt-2 text-sm text-brand-primary">
+                      <p className="mt-2 text-sm text-text-secondary">
                         {item.specialty}
                       </p>
                     ) : null}
@@ -187,7 +206,9 @@ export default function AdminContributorApplicationsPage() {
 
                   <div>
                     <Link to={`/admin/contributor-applications/${item.id}`}>
-                      <AppButton type="button">Review</AppButton>
+                      <AppButton type="button">
+                        {t('common.review')}
+                      </AppButton>
                     </Link>
                   </div>
                 </div>

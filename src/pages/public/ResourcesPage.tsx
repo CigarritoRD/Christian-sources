@@ -23,17 +23,6 @@ import {
 import { getActiveTags, type TagRecord } from '@/lib/api/tags'
 import type { ResourceListItem } from '@/types/resources'
 
-const typeOptions = [
-  { label: 'Todos', value: 'all' },
-  { label: 'PDF', value: 'pdf' },
-  { label: 'Video', value: 'video' },
-  { label: 'Audio', value: 'audio' },
-  { label: 'Imagen', value: 'image' },
-  { label: 'Documento', value: 'document' },
-  { label: 'Enlace', value: 'link' },
-  { label: 'Descarga', value: 'download' },
-]
-
 type ResourceWithTags = ResourceListItem & {
   resource_tags?: Array<{
     tag?: {
@@ -46,6 +35,17 @@ type ResourceWithTags = ResourceListItem & {
 
 export default function ResourcesPage() {
   const { t } = useTranslation()
+
+  const typeOptions = [
+    { label: t('resources.typeAll'), value: 'all' },
+    { label: t('resources.typePdf'), value: 'pdf' },
+    { label: t('resources.typeVideo'), value: 'video' },
+    { label: t('resources.typeAudio'), value: 'audio' },
+    { label: t('resources.typeImage'), value: 'image' },
+    { label: t('resources.typeDocument'), value: 'document' },
+    { label: t('resources.typeLink'), value: 'link' },
+    { label: t('resources.typeDownload'), value: 'download' },
+  ]
 
   const [resources, setResources] = useState<ResourceWithTags[]>([])
   const [categories, setCategories] = useState<ResourceCategory[]>([])
@@ -85,7 +85,7 @@ export default function ResourcesPage() {
         if (!active) return
 
         const message =
-          err instanceof Error ? err.message : 'No se pudieron cargar los recursos.'
+          err instanceof Error ? err.message : t('resources.errorTitle')
 
         setError(message)
       } finally {
@@ -98,7 +98,7 @@ export default function ResourcesPage() {
     return () => {
       active = false
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     const nextParams = new URLSearchParams()
@@ -177,49 +177,55 @@ export default function ResourcesPage() {
   return (
     <div className="bg-bg text-text-primary">
       <FadeIn>
-        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_28%)]" />
-          <div className="mx-auto max-w-6xl">
+        <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
+          <div className="relative mx-auto max-w-6xl">
             <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                Biblioteca
+              <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+                {t('resources.badge')}
               </p>
-              <h1 className="mt-2 font-heading text-4xl md:text-5xl">
+              <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                 {t('resources.title')}
               </h1>
-              <p className="mt-4 font-body text-lg text-brand-primary">
+              <p className="mt-4 font-body text-lg leading-8 text-text-secondary">
                 {t('resources.subtitle')}
               </p>
             </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                   <FolderKanban className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Biblioteca curada</h3>
-                <p className="mt-2 text-sm text-brand-primary">
-                  Recursos organizados para exploración clara y útil.
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('resources.feature1Title')}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
+                  {t('resources.feature1Body')}
                 </p>
               </SectionCard>
 
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-accent/10 text-brand-accent">
                   <Search className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Búsqueda flexible</h3>
-                <p className="mt-2 text-sm text-brand-primary">
-                  Filtra por tema, tipo y encuentra materiales relevantes rápido.
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('resources.feature2Title')}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
+                  {t('resources.feature2Body')}
                 </p>
               </SectionCard>
 
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                   <Filter className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-heading text-lg">Exploración guiada</h3>
-                <p className="mt-2 text-sm text-brand-primary">
-                  Descubre recursos según tus intereses y necesidades reales.
+                <h3 className="mt-4 font-heading text-lg">
+                  {t('resources.feature3Title')}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
+                  {t('resources.feature3Body')}
                 </p>
               </SectionCard>
             </div>
@@ -239,7 +245,7 @@ export default function ResourcesPage() {
                   <h2 className="font-heading text-lg text-text-primary">
                     {t('resources.filters')}
                   </h2>
-                  <p className="text-sm text-brand-primary">
+                  <p className="text-sm text-text-secondary">
                     {t('resources.filterSubtitle')}
                   </p>
                 </div>
@@ -329,9 +335,9 @@ export default function ResourcesPage() {
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
-                    className="animate-pulse rounded-3xl border border-surface-border bg-surface p-5"
+                    className="animate-pulse rounded-xl border border-surface-border bg-surface p-5"
                   >
-                    <div className="mb-4 h-44 rounded-2xl bg-bg-soft" />
+                    <div className="mb-4 h-44 rounded-xl bg-bg-soft" />
                     <div className="mb-3 h-6 w-20 rounded-full bg-bg-soft" />
                     <div className="h-6 w-3/4 rounded bg-bg-soft" />
                     <div className="mt-3 h-4 w-full rounded bg-bg-soft" />
@@ -341,8 +347,10 @@ export default function ResourcesPage() {
               </div>
             ) : error ? (
               <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-                <h2 className="font-heading text-xl">No pudimos cargar los recursos</h2>
-                <p className="mt-2 text-sm text-brand-primary">{error}</p>
+                <h2 className="font-heading text-xl">
+                  {t('resources.errorTitle')}
+                </h2>
+                <p className="mt-2 text-sm text-text-secondary">{error}</p>
               </SectionCard>
             ) : filteredResources.length === 0 ? (
               <EmptyState
@@ -356,7 +364,7 @@ export default function ResourcesPage() {
               <>
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm text-brand-primary">
+                    <p className="text-sm text-text-secondary">
                       {t('resources.resultsFound', { count: filteredResources.length })}
                     </p>
 

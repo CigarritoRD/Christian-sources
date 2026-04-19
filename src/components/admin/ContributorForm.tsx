@@ -1,37 +1,26 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
-import { z } from 'zod'
-import type { AdminContributorInput } from '@/lib/api/contributors'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
-import SectionCard from '@/components/ui/SectionCard'
 
-const contributorSchema = z.object({
-  name: z.string().trim().min(1, 'Name is required.'),
-  slug: z.string().trim().min(1, 'Slug is required.'),
-  short_bio: z.string().optional().nullable(),
-  full_bio: z.string().optional().nullable(),
-  specialty: z.string().optional().nullable(),
-  avatar_url: z.string().optional().nullable(),
-  website_url: z.string().optional().nullable(),
-  instagram_url: z.string().optional().nullable(),
-  facebook_url: z.string().optional().nullable(),
-  linkedin_url: z.string().optional().nullable(),
-  youtube_url: z.string().optional().nullable(),
-  is_featured: z.boolean(),
-  is_active: z.boolean(),
-})
-
-type ContributorFormValues = z.infer<typeof contributorSchema>
+export type ContributorFormValues = {
+  name: string
+  slug: string
+  short_bio?: string
+  full_bio?: string
+  website_url?: string
+  instagram_url?: string
+  facebook_url?: string
+  linkedin_url?: string
+  youtube_url?: string
+  is_active: boolean
+  is_featured: boolean
+}
 
 type ContributorFormProps = {
-  initialValues?: Partial<AdminContributorInput>
-  onSubmit: (
-    values: AdminContributorInput,
-    avatarFile: File | null,
-  ) => Promise<void>
+  initialValues?: Partial<ContributorFormValues>
+  onSubmit: (values: ContributorFormValues) => Promise<void>
   submitLabel?: string
 }
 
@@ -49,405 +38,232 @@ function slugify(value: string) {
 export default function ContributorForm({
   initialValues,
   onSubmit,
-  submitLabel = 'Save contributor',
+  submitLabel,
 }: ContributorFormProps) {
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  const { t } = useTranslation()
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<ContributorFormValues>({
-    resolver: zodResolver(contributorSchema),
-    defaultValues: {
+  const defaults = useMemo<ContributorFormValues>(
+    () => ({
       name: initialValues?.name ?? '',
       slug: initialValues?.slug ?? '',
       short_bio: initialValues?.short_bio ?? '',
       full_bio: initialValues?.full_bio ?? '',
-      specialty: initialValues?.specialty ?? '',
-      avatar_url: initialValues?.avatar_url ?? '',
       website_url: initialValues?.website_url ?? '',
       instagram_url: initialValues?.instagram_url ?? '',
       facebook_url: initialValues?.facebook_url ?? '',
       linkedin_url: initialValues?.linkedin_url ?? '',
       youtube_url: initialValues?.youtube_url ?? '',
-      is_featured: initialValues?.is_featured ?? false,
       is_active: initialValues?.is_active ?? true,
-    },
-  })
-
-  useEffect(() => {
-    reset({
-      name: initialValues?.name ?? '',
-      slug: initialValues?.slug ?? '',
-      short_bio: initialValues?.short_bio ?? '',
-      full_bio: initialValues?.full_bio ?? '',
-      specialty: initialValues?.specialty ?? '',
-      avatar_url: initialValues?.avatar_url ?? '',
-      website_url: initialValues?.website_url ?? '',
-      instagram_url: initialValues?.instagram_url ?? '',
-      facebook_url: initialValues?.facebook_url ?? '',
-      linkedin_url: initialValues?.linkedin_url ?? '',
-      youtube_url: initialValues?.youtube_url ?? '',
       is_featured: initialValues?.is_featured ?? false,
-      is_active: initialValues?.is_active ?? true,
-    })
-  }, [initialValues, reset])
+    }),
+    [initialValues],
+  )
 
-  const nameValue = useWatch({
-    control,
-    name: 'name',
-    defaultValue: initialValues?.name ?? '',
-  })
+  const [values, setValues] = useState<ContributorFormValues>(defaults)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const slugValue = useWatch({
-    control,
-    name: 'slug',
-    defaultValue: initialValues?.slug ?? '',
-  })
+  function updateField<K extends keyof ContributorFormValues>(
+    key: K,
+    value: ContributorFormValues[K],
+  ) {
+    setValues((prev) => ({ ...prev, [key]: value }))
+  }
 
-  const shortBioValue = useWatch({
-    control,
-    name: 'short_bio',
-    defaultValue: initialValues?.short_bio ?? '',
-  })
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
 
-  const fullBioValue = useWatch({
-    control,
-    name: 'full_bio',
-    defaultValue: initialValues?.full_bio ?? '',
-  })
+    if (!values.name.trim()) {
+      setError(t('admin.contributorForm.validation.name'))
+      return
+    }
 
-  const specialtyValue = useWatch({
-    control,
-    name: 'specialty',
-    defaultValue: initialValues?.specialty ?? '',
-  })
-
-  const avatarUrlValue = useWatch({
-    control,
-    name: 'avatar_url',
-    defaultValue: initialValues?.avatar_url ?? '',
-  })
-
-  const websiteUrlValue = useWatch({
-    control,
-    name: 'website_url',
-    defaultValue: initialValues?.website_url ?? '',
-  })
-
-  const instagramUrlValue = useWatch({
-    control,
-    name: 'instagram_url',
-    defaultValue: initialValues?.instagram_url ?? '',
-  })
-
-  const facebookUrlValue = useWatch({
-    control,
-    name: 'facebook_url',
-    defaultValue: initialValues?.facebook_url ?? '',
-  })
-
-  const linkedinUrlValue = useWatch({
-    control,
-    name: 'linkedin_url',
-    defaultValue: initialValues?.linkedin_url ?? '',
-  })
-
-  const youtubeUrlValue = useWatch({
-    control,
-    name: 'youtube_url',
-    defaultValue: initialValues?.youtube_url ?? '',
-  })
-
-  const isFeaturedValue = useWatch({
-    control,
-    name: 'is_featured',
-    defaultValue: initialValues?.is_featured ?? false,
-  })
-
-  const isActiveValue = useWatch({
-    control,
-    name: 'is_active',
-    defaultValue: initialValues?.is_active ?? true,
-  })
-
-  async function submit(values: ContributorFormValues) {
-    setSubmitError(null)
+    if (!values.slug.trim()) {
+      setError(t('admin.contributorForm.validation.slug'))
+      return
+    }
 
     try {
-      await onSubmit(
-        {
-          name: values.name.trim(),
-          slug: values.slug.trim(),
-          short_bio: values.short_bio?.trim() || null,
-          full_bio: values.full_bio?.trim() || null,
-          specialty: values.specialty?.trim() || null,
-          avatar_url: values.avatar_url?.trim() || null,
-          website_url: values.website_url?.trim() || null,
-          instagram_url: values.instagram_url?.trim() || null,
-          facebook_url: values.facebook_url?.trim() || null,
-          linkedin_url: values.linkedin_url?.trim() || null,
-          youtube_url: values.youtube_url?.trim() || null,
-          is_featured: values.is_featured,
-          is_active: values.is_active,
-        },
-        avatarFile,
-      )
+      setIsSubmitting(true)
+
+      await onSubmit({
+        ...values,
+        name: values.name.trim(),
+        slug: values.slug.trim(),
+        short_bio: values.short_bio?.trim() || '',
+        full_bio: values.full_bio?.trim() || '',
+        website_url: values.website_url?.trim() || '',
+        instagram_url: values.instagram_url?.trim() || '',
+        facebook_url: values.facebook_url?.trim() || '',
+        linkedin_url: values.linkedin_url?.trim() || '',
+        youtube_url: values.youtube_url?.trim() || '',
+      })
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Something went wrong.')
+      setError(
+        err instanceof Error
+          ? err.message
+          : t('admin.contributorForm.submitError'),
+      )
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="space-y-5 font-heading">
-      {submitError ? (
-        <SectionCard className="border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-700">{submitError}</p>
-        </SectionCard>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
       ) : null}
 
-      <SectionCard className="p-5">
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-heading text-lg text-text-primary">
-              Basic information
-            </h2>
-            <p className="mt-1 text-sm text-brand-primary">
-              Main public details for this contributor profile.
-            </p>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg text-text-primary">
+            {t('admin.contributorForm.basicInfoTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            {t('admin.contributorForm.basicInfoBody')}
+          </p>
+        </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <AppInput
-              label="Name"
-              value={nameValue ?? ''}
-              error={errors.name?.message}
-              placeholder="Jane Doe"
-              {...register('name')}
-              onChange={(e) => {
-                const nextName = e.target.value
-                const currentSlugMatchesName =
-                  !slugValue || slugValue === slugify(nameValue || '')
+        <div className="grid gap-4 md:grid-cols-2">
+          <AppInput
+            label={t('admin.contributorForm.name')}
+            value={values.name}
+            onChange={(e) => {
+              const nextName = e.target.value
+              const currentSlugMatchesName =
+                !values.slug || values.slug === slugify(values.name)
 
-                setValue('name', nextName, { shouldValidate: true })
+              updateField('name', nextName)
 
-                if (currentSlugMatchesName) {
-                  setValue('slug', slugify(nextName), { shouldValidate: true })
-                }
-              }}
-            />
-
-            <AppInput
-              label="Slug"
-              value={slugValue ?? ''}
-              error={errors.slug?.message}
-              placeholder="jane-doe"
-              {...register('slug')}
-              onChange={(e) => {
-                setValue('slug', slugify(e.target.value), { shouldValidate: true })
-              }}
-            />
-          </div>
+              if (currentSlugMatchesName) {
+                updateField('slug', slugify(nextName))
+              }
+            }}
+            placeholder={t('admin.contributorForm.namePlaceholder')}
+          />
 
           <AppInput
-            label="Specialty"
-            value={specialtyValue ?? ''}
-            placeholder="Education, mentoring, family support..."
-            {...register('specialty')}
-            onChange={(e) => {
-              setValue('specialty', e.target.value, { shouldValidate: true })
-            }}
+            label={t('admin.contributorForm.slug')}
+            value={values.slug}
+            onChange={(e) => updateField('slug', slugify(e.target.value))}
+            placeholder={t('admin.contributorForm.slugPlaceholder')}
           />
         </div>
-      </SectionCard>
+      </div>
 
-      <SectionCard className="p-5">
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-heading text-lg text-text-primary">Bio</h2>
-            <p className="mt-1 text-sm text-brand-primary">
-              Short and detailed public descriptions.
-            </p>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg text-text-primary">
+            {t('admin.contributorForm.contentTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            {t('admin.contributorForm.contentBody')}
+          </p>
+        </div>
 
-          <AppTextarea
-            label="Short bio"
-            rows={3}
-            value={shortBioValue ?? ''}
-            {...register('short_bio')}
-            onChange={(e) => {
-              setValue('short_bio', e.target.value, { shouldValidate: true })
-            }}
-            placeholder="A short summary for cards and previews."
+        <AppTextarea
+          label={t('admin.contributorForm.shortBio')}
+          value={values.short_bio || ''}
+          onChange={(e) => updateField('short_bio', e.target.value)}
+          placeholder={t('admin.contributorForm.shortBioPlaceholder')}
+          rows={3}
+        />
+
+        <AppTextarea
+          label={t('admin.contributorForm.fullBio')}
+          value={values.full_bio || ''}
+          onChange={(e) => updateField('full_bio', e.target.value)}
+          placeholder={t('admin.contributorForm.fullBioPlaceholder')}
+          rows={6}
+        />
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg text-text-primary">
+            {t('admin.contributorForm.linksTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            {t('admin.contributorForm.linksBody')}
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <AppInput
+            label={t('admin.contributorForm.website')}
+            value={values.website_url || ''}
+            onChange={(e) => updateField('website_url', e.target.value)}
+            placeholder="https://..."
           />
 
-          <AppTextarea
-            label="Full bio"
-            rows={6}
-            value={fullBioValue ?? ''}
-            {...register('full_bio')}
-            onChange={(e) => {
-              setValue('full_bio', e.target.value, { shouldValidate: true })
-            }}
-            placeholder="Longer description for the public contributor page."
+          <AppInput
+            label={t('admin.contributorForm.instagram')}
+            value={values.instagram_url || ''}
+            onChange={(e) => updateField('instagram_url', e.target.value)}
+            placeholder="https://instagram.com/..."
+          />
+
+          <AppInput
+            label={t('admin.contributorForm.facebook')}
+            value={values.facebook_url || ''}
+            onChange={(e) => updateField('facebook_url', e.target.value)}
+            placeholder="https://facebook.com/..."
+          />
+
+          <AppInput
+            label={t('admin.contributorForm.linkedin')}
+            value={values.linkedin_url || ''}
+            onChange={(e) => updateField('linkedin_url', e.target.value)}
+            placeholder="https://linkedin.com/in/..."
+          />
+
+          <AppInput
+            label={t('admin.contributorForm.youtube')}
+            value={values.youtube_url || ''}
+            onChange={(e) => updateField('youtube_url', e.target.value)}
+            placeholder="https://youtube.com/..."
           />
         </div>
-      </SectionCard>
+      </div>
 
-      <SectionCard className="p-5">
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-heading text-lg text-text-primary">Avatar</h2>
-            <p className="mt-1 text-sm text-brand-primary">
-              Upload the public profile image for this contributor.
-            </p>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg text-text-primary">
+            {t('admin.contributorForm.visibilityTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            {t('admin.contributorForm.visibilityBody')}
+          </p>
+        </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
-              Avatar image
-            </label>
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="flex items-center gap-3 rounded-xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-primary">
             <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-brand-primary file:mr-4 file:rounded-xl file:border-0 file:bg-bg-soft file:px-4 file:py-2 file:text-sm file:font-medium file:text-text-primary"
+              type="checkbox"
+              checked={values.is_active}
+              onChange={(e) => updateField('is_active', e.target.checked)}
             />
-          </div>
+            {t('admin.contributorForm.active')}
+          </label>
 
-          {avatarUrlValue ? (
-            <div>
-              <p className="mb-2 text-sm font-medium text-text-primary">
-                Current avatar
-              </p>
-              <img
-                src={avatarUrlValue}
-                alt={nameValue || 'Contributor'}
-                className="h-20 w-20 rounded-full object-cover"
-              />
-            </div>
-          ) : null}
-
-          {avatarFile ? (
-            <p className="text-sm text-brand-primary">
-              Selected file: {avatarFile.name}
-            </p>
-          ) : null}
+          <label className="flex items-center gap-3 rounded-xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-primary">
+            <input
+              type="checkbox"
+              checked={values.is_featured}
+              onChange={(e) => updateField('is_featured', e.target.checked)}
+            />
+            {t('admin.contributorForm.featured')}
+          </label>
         </div>
-      </SectionCard>
+      </div>
 
-      <SectionCard className="p-5">
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-heading text-lg text-text-primary">Links</h2>
-            <p className="mt-1 text-sm text-brand-primary">
-              Public website and social media links.
-            </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <AppInput
-              label="Website URL"
-              value={websiteUrlValue ?? ''}
-              {...register('website_url')}
-              onChange={(e) => {
-                setValue('website_url', e.target.value, { shouldValidate: true })
-              }}
-              placeholder="https://..."
-            />
-
-            <AppInput
-              label="Instagram URL"
-              value={instagramUrlValue ?? ''}
-              {...register('instagram_url')}
-              onChange={(e) => {
-                setValue('instagram_url', e.target.value, { shouldValidate: true })
-              }}
-              placeholder="https://instagram.com/..."
-            />
-
-            <AppInput
-              label="Facebook URL"
-              value={facebookUrlValue ?? ''}
-              {...register('facebook_url')}
-              onChange={(e) => {
-                setValue('facebook_url', e.target.value, { shouldValidate: true })
-              }}
-              placeholder="https://facebook.com/..."
-            />
-
-            <AppInput
-              label="LinkedIn URL"
-              value={linkedinUrlValue ?? ''}
-              {...register('linkedin_url')}
-              onChange={(e) => {
-                setValue('linkedin_url', e.target.value, { shouldValidate: true })
-              }}
-              placeholder="https://linkedin.com/in/..."
-            />
-
-            <div className="md:col-span-2">
-              <AppInput
-                label="YouTube URL"
-                value={youtubeUrlValue ?? ''}
-                {...register('youtube_url')}
-                onChange={(e) => {
-                  setValue('youtube_url', e.target.value, { shouldValidate: true })
-                }}
-                placeholder="https://youtube.com/..."
-              />
-            </div>
-          </div>
-        </div>
-      </SectionCard>
-
-      <SectionCard className="p-5">
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-heading text-lg text-text-primary">
-              Visibility
-            </h2>
-            <p className="mt-1 text-sm text-brand-primary">
-              Control how this contributor appears in the platform.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm text-text-primary">
-              <input
-                type="checkbox"
-                checked={!!isFeaturedValue}
-                {...register('is_featured')}
-                onChange={(e) => {
-                  setValue('is_featured', e.target.checked, { shouldValidate: true })
-                }}
-              />
-              Featured
-            </label>
-
-            <label className="flex items-center gap-2 text-sm text-text-primary">
-              <input
-                type="checkbox"
-                checked={!!isActiveValue}
-                {...register('is_active')}
-                onChange={(e) => {
-                  setValue('is_active', e.target.checked, { shouldValidate: true })
-                }}
-              />
-              Active
-            </label>
-          </div>
-        </div>
-      </SectionCard>
-
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap gap-3">
         <AppButton type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : submitLabel}
+          {isSubmitting ? t('common.saving') : submitLabel || t('common.save')}
         </AppButton>
       </div>
     </form>

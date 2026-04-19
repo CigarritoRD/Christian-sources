@@ -69,54 +69,54 @@ export default function ContributorsPage() {
   return (
     <div className="bg-bg text-text-primary">
       <FadeIn>
-        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.10),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.08),transparent_28%)]" />
-          <div className="mx-auto max-w-6xl">
+        <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
+          <div className="relative mx-auto max-w-6xl">
             <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+              <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
                 {t('contributors.badge')}
               </p>
-              <h1 className="mt-2 font-heading text-4xl md:text-5xl">
+              <h1 className="mt-3 font-heading text-4xl md:text-5xl">
                 {t('contributors.title')}
               </h1>
-              <p className="mt-4 font-body text-lg text-brand-primary">
+              <p className="mt-4 font-body text-lg leading-8 text-text-secondary">
                 {t('contributors.subtitle')}
               </p>
             </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                   <Users className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature1Title')}
                 </h3>
-                <p className="mt-2 text-sm text-brand-primary">
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
                   {t('contributors.feature1Body')}
                 </p>
               </SectionCard>
 
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-accent/10 text-brand-accent">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature2Title')}
                 </h3>
-                <p className="mt-2 text-sm text-brand-primary">
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
                   {t('contributors.feature2Body')}
                 </p>
               </SectionCard>
 
               <SectionCard className="p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                   <Globe2 className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-heading text-lg">
                   {t('contributors.feature3Title')}
                 </h3>
-                <p className="mt-2 text-sm text-brand-primary">
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
                   {t('contributors.feature3Body')}
                 </p>
               </SectionCard>
@@ -133,7 +133,7 @@ export default function ContributorsPage() {
                 <h2 className="font-heading text-lg text-text-primary">
                   {t('contributors.searchTitle')}
                 </h2>
-                <p className="mt-1 text-sm text-brand-primary">
+                <p className="mt-1 text-sm text-text-secondary">
                   {t('contributors.searchHelp')}
                 </p>
               </div>
@@ -158,10 +158,10 @@ export default function ContributorsPage() {
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
-                    className="animate-pulse rounded-3xl border border-surface-border bg-surface p-6"
+                    className="animate-pulse rounded-xl border border-surface-border bg-surface p-6"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="h-16 w-16 rounded-2xl bg-bg-soft" />
+                      <div className="h-16 w-16 rounded-xl bg-bg-soft" />
                       <div className="flex-1">
                         <div className="h-5 w-2/3 rounded bg-bg-soft" />
                         <div className="mt-3 h-4 w-1/2 rounded bg-bg-soft" />
@@ -177,7 +177,7 @@ export default function ContributorsPage() {
                 <h2 className="font-heading text-xl">
                   {t('contributors.errorTitle')}
                 </h2>
-                <p className="mt-2 text-sm text-brand-primary">{error}</p>
+                <p className="mt-2 text-sm text-text-secondary">{error}</p>
               </SectionCard>
             ) : filteredContributors.length === 0 ? (
               <EmptyState
@@ -188,7 +188,7 @@ export default function ContributorsPage() {
             ) : (
               <>
                 <div className="mb-6 flex items-center justify-between gap-4">
-                  <p className="text-sm text-brand-primary">
+                  <p className="text-sm text-text-secondary">
                     {t('contributors.resultsFound', {
                       count: filteredContributors.length,
                     })}
@@ -198,16 +198,14 @@ export default function ContributorsPage() {
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredContributors.map((contributor, index) => (
                     <FadeIn key={contributor.id} delay={0.02 * (index % 6)}>
-                      <div className="transition-transform duration-200 hover:-translate-y-1">
-                        <ContributorCard
-                          name={contributor.name}
-                          slug={contributor.slug}
-                          shortBio={contributor.short_bio}
-                          specialty={contributor.specialty}
-                          avatarUrl={contributor.avatar_url}
-                          websiteUrl={contributor.website_url}
-                        />
-                      </div>
+                      <ContributorCard
+                        name={contributor.name}
+                        slug={contributor.slug}
+                        shortBio={contributor.short_bio}
+                        specialty={contributor.specialty}
+                        avatarUrl={contributor.avatar_url}
+                        websiteUrl={contributor.website_url}
+                      />
                     </FadeIn>
                   ))}
                 </div>

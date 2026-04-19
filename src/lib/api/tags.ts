@@ -4,8 +4,17 @@ export type TagRecord = {
   id: string
   name: string
   slug: string
+  description?: string | null
+  group_key?: string | null
   is_active: boolean
   created_at?: string
+}
+
+export type TagInput = {
+  name: string
+  slug?: string
+  description?: string | null
+  group_key?: string | null
 }
 
 function slugify(value: string) {
@@ -22,7 +31,7 @@ function slugify(value: string) {
 export async function getTags() {
   const { data, error } = await supabase
     .from('tags')
-    .select('id, name, slug, is_active, created_at')
+    .select('id, name, slug, description, group_key, is_active, created_at')
     .order('name', { ascending: true })
 
   if (error) throw error
@@ -32,7 +41,7 @@ export async function getTags() {
 export async function getActiveTags() {
   const { data, error } = await supabase
     .from('tags')
-    .select('id, name, slug, is_active, created_at')
+    .select('id, name, slug, description, group_key, is_active, created_at')
     .eq('is_active', true)
     .order('name', { ascending: true })
 
@@ -40,18 +49,19 @@ export async function getActiveTags() {
   return (data ?? []) as TagRecord[]
 }
 
-export async function createTag(name: string) {
-  const normalizedName = name.trim()
-  const slug = slugify(normalizedName)
+export async function createTag(values: TagInput) {
+  const finalSlug = values.slug?.trim() || slugify(values.name)
 
   const { data, error } = await supabase
     .from('tags')
     .insert({
-      name: normalizedName,
-      slug,
+      name: values.name.trim(),
+      slug: finalSlug,
+      description: values.description ?? null,
+      group_key: values.group_key ?? null,
       is_active: true,
     })
-    .select('id, name, slug, is_active, created_at')
+    .select('id, name, slug, description, group_key, is_active, created_at')
     .single()
 
   if (error) throw error
@@ -60,18 +70,31 @@ export async function createTag(name: string) {
 
 export async function updateTag(
   id: string,
-  values: Partial<Pick<TagRecord, 'name' | 'slug' | 'is_active'>>,
+  values: Partial<TagInput> & { is_active?: boolean },
 ) {
   const payload = {
-    ...values,
-    ...(values.name ? { slug: slugify(values.name) } : {}),
+    ...(values.name !== undefined ? { name: values.name.trim() } : {}),
+    ...(values.slug !== undefined
+      ? { slug: values.slug.trim() || (values.name ? slugify(values.name) : undefined) }
+      : values.name !== undefined
+        ? { slug: slugify(values.name) }
+        : {}),
+    ...(values.description !== undefined
+      ? { description: values.description }
+      : {}),
+    ...(values.group_key !== undefined
+      ? { group_key: values.group_key }
+      : {}),
+    ...(values.is_active !== undefined
+      ? { is_active: values.is_active }
+      : {}),
   }
 
   const { data, error } = await supabase
     .from('tags')
     .update(payload)
     .eq('id', id)
-    .select('id, name, slug, is_active, created_at')
+    .select('id, name, slug, description, group_key, is_active, created_at')
     .single()
 
   if (error) throw error

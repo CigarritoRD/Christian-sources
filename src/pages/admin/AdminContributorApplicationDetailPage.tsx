@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CheckCircle2, Mail, Phone, UserSquare2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import AppTextarea from '@/components/ui/AppTextarea'
-import PageHeader from '@/components/ui/PageHeader'
 import {
   approveContributorApplication,
   getContributorApplicationById,
@@ -16,6 +16,7 @@ import {
 } from '@/lib/api/contributor-applications-admin'
 
 export default function AdminContributorApplicationDetailPage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -31,7 +32,7 @@ export default function AdminContributorApplicationDetailPage() {
 
     const load = async () => {
       if (!id) {
-        setError('Application id is missing.')
+        setError(t('admin.applicationDetail.missingId'))
         setLoading(false)
         return
       }
@@ -45,7 +46,11 @@ export default function AdminContributorApplicationDetailPage() {
         setAdminNotes(data.admin_notes ?? '')
       } catch (err) {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Failed to load application.')
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('admin.applicationDetail.errorDescription'),
+        )
       } finally {
         if (active) setLoading(false)
       }
@@ -56,7 +61,7 @@ export default function AdminContributorApplicationDetailPage() {
     return () => {
       active = false
     }
-  }, [id])
+  }, [id, t])
 
   const handleApprove = async () => {
     if (!id || !user?.id) return
@@ -64,11 +69,11 @@ export default function AdminContributorApplicationDetailPage() {
     try {
       setProcessing('approve')
       await approveContributorApplication(id, user.id, adminNotes.trim() || undefined)
-      toast.success('Application approved successfully.')
+      toast.success(t('admin.applicationDetail.approveSuccess'))
       navigate('/admin/contributor-applications')
     } catch (err) {
       console.error(err)
-      toast.error('Could not approve application.')
+      toast.error(t('admin.applicationDetail.approveError'))
     } finally {
       setProcessing(null)
     }
@@ -80,11 +85,11 @@ export default function AdminContributorApplicationDetailPage() {
     try {
       setProcessing('reject')
       await rejectContributorApplication(id, user.id, adminNotes.trim() || undefined)
-      toast.success('Application rejected successfully.')
+      toast.success(t('admin.applicationDetail.rejectSuccess'))
       navigate('/admin/contributor-applications')
     } catch (err) {
       console.error(err)
-      toast.error('Could not reject application.')
+      toast.error(t('admin.applicationDetail.rejectError'))
     } finally {
       setProcessing(null)
     }
@@ -102,29 +107,38 @@ export default function AdminContributorApplicationDetailPage() {
   if (error || !item) {
     return (
       <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-        <h2 className="font-heading text-xl">Could not load application</h2>
-        <p className="mt-2 text-sm text-brand-primary">
-          {error ?? 'Application not found.'}
+        <h2 className="font-heading text-xl">
+          {t('admin.applicationDetail.errorTitle')}
+        </h2>
+        <p className="mt-2 text-sm text-text-secondary">
+          {error ?? t('admin.applicationDetail.errorDescription')}
         </p>
       </SectionCard>
     )
   }
 
   const displayName =
-    item.organization_name || item.full_name || 'Unnamed organization'
+    item.organization_name || item.full_name || t('admin.applicationDetail.unnamed')
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Review contributor application"
-        description="Check the contact person and ministry profile before approving or rejecting."
-      />
+    <div className="space-y-8">
+      <div>
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+          {t('admin.applicationDetail.badge')}
+        </p>
+        <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+          {t('admin.applicationDetail.title')}
+        </h1>
+        <p className="mt-3 text-sm text-text-secondary">
+          {t('admin.applicationDetail.subtitle')}
+        </p>
+      </div>
 
       <FadeIn>
         <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionCard className="p-6">
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl bg-bg-soft shadow-[var(--shadow-soft)]">
+              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-bg-soft shadow-[var(--shadow-soft)]">
                 {item.avatar_url ? (
                   <img
                     src={item.avatar_url}
@@ -141,41 +155,41 @@ export default function AdminContributorApplicationDetailPage() {
               <h2 className="mt-4 font-heading text-2xl">{displayName}</h2>
 
               {item.country ? (
-                <p className="mt-2 text-sm text-brand-primary">{item.country}</p>
+                <p className="mt-2 text-sm text-text-secondary">{item.country}</p>
               ) : null}
 
               {item.organization ? (
-                <p className="mt-1 text-sm text-brand-primary">
+                <p className="mt-1 text-sm text-text-secondary">
                   {item.organization}
                 </p>
               ) : null}
             </div>
 
-            <div className="mt-6 space-y-4 rounded-3xl border border-surface-border bg-bg-soft p-4">
+            <div className="mt-6 space-y-4 rounded-xl border border-surface-border bg-bg-soft p-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-brand-primary">
-                  Contact person
+                  {t('admin.applicationDetail.contactSection')}
                 </p>
                 <p className="mt-2 font-medium text-text-primary">
-                  {item.contact_name || 'No contact name'}
+                  {item.contact_name || t('admin.applicationDetail.notAvailable')}
                 </p>
                 {item.contact_role ? (
-                  <p className="mt-1 text-sm text-brand-primary">
+                  <p className="mt-1 text-sm text-text-secondary">
                     {item.contact_role}
                   </p>
                 ) : null}
               </div>
 
               {item.contact_email ? (
-                <div className="flex items-center gap-2 text-sm text-brand-primary">
-                  <Mail className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Mail className="h-4 w-4 text-brand-primary" />
                   {item.contact_email}
                 </div>
               ) : null}
 
               {item.contact_phone ? (
-                <div className="flex items-center gap-2 text-sm text-brand-primary">
-                  <Phone className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Phone className="h-4 w-4 text-brand-primary" />
                   {item.contact_phone}
                 </div>
               ) : null}
@@ -186,38 +200,50 @@ export default function AdminContributorApplicationDetailPage() {
             <div className="space-y-6">
               {item.specialty ? (
                 <div>
-                  <h3 className="font-heading text-lg">Specialty</h3>
-                  <p className="mt-2 text-sm text-brand-primary">{item.specialty}</p>
+                  <h3 className="font-heading text-lg">
+                    {t('admin.applicationDetail.specialty')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {item.specialty}
+                  </p>
                 </div>
               ) : null}
 
               {item.short_bio ? (
                 <div>
-                  <h3 className="font-heading text-lg">Short bio</h3>
-                  <p className="mt-2 text-sm text-brand-primary">{item.short_bio}</p>
+                  <h3 className="font-heading text-lg">
+                    {t('admin.applicationDetail.shortBio')}
+                  </h3>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {item.short_bio}
+                  </p>
                 </div>
               ) : null}
 
               {item.full_bio ? (
                 <div>
-                  <h3 className="font-heading text-lg">Full bio</h3>
-                  <p className="mt-2 text-sm leading-7 text-brand-primary">
+                  <h3 className="font-heading text-lg">
+                    {t('admin.applicationDetail.fullBio')}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-text-secondary">
                     {item.full_bio}
                   </p>
                 </div>
               ) : null}
 
               <div>
-                <h3 className="font-heading text-lg">Links</h3>
+                <h3 className="font-heading text-lg">
+                  {t('admin.applicationDetail.links')}
+                </h3>
                 <div className="mt-3 flex flex-wrap gap-3">
                   {item.website_url ? (
                     <a
                       href={item.website_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
-                      Website
+                      {t('admin.applicationDetail.website')}
                     </a>
                   ) : null}
 
@@ -226,7 +252,7 @@ export default function AdminContributorApplicationDetailPage() {
                       href={item.instagram_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
                       Instagram
                     </a>
@@ -237,7 +263,7 @@ export default function AdminContributorApplicationDetailPage() {
                       href={item.facebook_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
                       Facebook
                     </a>
@@ -248,7 +274,7 @@ export default function AdminContributorApplicationDetailPage() {
                       href={item.linkedin_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
                       LinkedIn
                     </a>
@@ -259,7 +285,7 @@ export default function AdminContributorApplicationDetailPage() {
                       href={item.youtube_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
+                      className="rounded-xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                     >
                       YouTube
                     </a>
@@ -267,28 +293,26 @@ export default function AdminContributorApplicationDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-surface-border bg-bg-soft p-4">
+              <div className="rounded-xl border border-surface-border bg-bg-soft p-4">
                 <div className="flex items-center gap-2">
                   <UserSquare2 className="h-4 w-4 text-brand-primary" />
                   <p className="text-sm font-medium text-text-primary">
-                    Approval behavior
+                    {t('admin.applicationDetail.approvalBehaviorTitle')}
                   </p>
                 </div>
-                <p className="mt-2 text-sm text-brand-primary">
-                  When approved, the public contributor profile will be created using{' '}
-                  <span className="font-medium text-text-primary">
-                    {displayName}
-                  </span>{' '}
-                  as the contributor name.
+                <p className="mt-2 text-sm text-text-secondary">
+                  {t('admin.applicationDetail.approvalBehaviorBody', {
+                    name: displayName,
+                  })}
                 </p>
               </div>
 
               <AppTextarea
-                label="Admin notes"
+                label={t('admin.applicationDetail.adminNotes')}
                 rows={5}
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
-                placeholder="Add optional notes for this review..."
+                placeholder={t('admin.applicationDetail.adminNotesPlaceholder')}
               />
 
               {item.status === 'pending_review' ? (
@@ -299,7 +323,9 @@ export default function AdminContributorApplicationDetailPage() {
                     disabled={processing !== null}
                   >
                     <CheckCircle2 className="h-4 w-4" />
-                    {processing === 'approve' ? 'Approving...' : 'Approve'}
+                    {processing === 'approve'
+                      ? t('admin.applicationDetail.approving')
+                      : t('common.approve')}
                   </AppButton>
 
                   <AppButton
@@ -309,12 +335,14 @@ export default function AdminContributorApplicationDetailPage() {
                     disabled={processing !== null}
                   >
                     <XCircle className="h-4 w-4" />
-                    {processing === 'reject' ? 'Rejecting...' : 'Reject'}
+                    {processing === 'reject'
+                      ? t('admin.applicationDetail.rejecting')
+                      : t('common.reject')}
                   </AppButton>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-brand-primary">
-                  This application has already been reviewed.
+                <div className="rounded-xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-secondary">
+                  {t('admin.applicationDetail.alreadyReviewed')}
                 </div>
               )}
             </div>

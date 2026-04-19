@@ -1,173 +1,209 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Tag } from 'lucide-react'
-import { toast } from 'sonner'
-import AppButton from '@/components/ui/AppButton'
-import AppInput from '@/components/ui/AppInput'
+import { Link } from 'react-router-dom'
+import { Plus, Tag, Shapes } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import EmptyState from '@/components/ui/EmptyState'
-import PageHeader from '@/components/ui/PageHeader'
-import SearchInput from '@/components/ui/SearchInput'
+import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
-import StatusBadge from '@/components/ui/StatusBadge'
-import { createTag, getTags, updateTag, type TagRecord } from '@/lib/api/tags'
+import SearchInput from '@/components/ui/SearchInput'
+import { getTags } from '@/lib/api/tags'
+
+type AdminTagItem = {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  group_key?: string | null
+  is_active: boolean
+  created_at?: string
+}
 
 export default function AdminTagsPage() {
-  const [items, setItems] = useState<TagRecord[]>([])
+  const { t } = useTranslation()
+
+  const [items, setItems] = useState<AdminTagItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [query, setQuery] = useState('')
-  const [newTagName, setNewTagName] = useState('')
-  const [creating, setCreating] = useState(false)
-  const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+
+  async function loadTags() {
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await getTags()
+      setItems((data ?? []) as unknown as AdminTagItem[])
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : t('admin.tags.errorDescription'),
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true)
-        setError(null)
-        const data = await getTags()
-        setItems(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load tags.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    void load()
+    void loadTags()
   }, [])
 
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase()
-    if (!normalized) return items
+  const filteredItems = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    if (!term) return items
 
     return items.filter((item) => {
       return (
-        item.name.toLowerCase().includes(normalized) ||
-        item.slug.toLowerCase().includes(normalized)
+        item.name.toLowerCase().includes(term) ||
+        item.slug.toLowerCase().includes(term) ||
+        (item.description ?? '').toLowerCase().includes(term) ||
+        (item.group_key ?? '').toLowerCase().includes(term)
       )
     })
-  }, [items, query])
-
-  const handleCreate = async () => {
-    const normalized = newTagName.trim()
-    if (!normalized) {
-      toast.error('Write a tag name first.')
-      return
-    }
-
-    try {
-      setCreating(true)
-      const created = await createTag(normalized)
-      setItems((current) => [created, ...current].sort((a, b) => a.name.localeCompare(b.name)))
-      setNewTagName('')
-      toast.success('Tag created successfully.')
-    } catch (err) {
-      console.error(err)
-      toast.error('Could not create tag.')
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  const handleToggle = async (item: TagRecord) => {
-    try {
-      setUpdatingId(item.id)
-      const updated = await updateTag(item.id, {
-        is_active: !item.is_active,
-      })
-
-      setItems((current) =>
-        current.map((row) => (row.id === item.id ? updated : row)),
-      )
-      toast.success(updated.is_active ? 'Tag activated.' : 'Tag deactivated.')
-    } catch (err) {
-      console.error(err)
-      toast.error('Could not update tag.')
-    } finally {
-      setUpdatingId(null)
-    }
-  }
+  }, [items, search])
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Tags"
-        description="Create and manage tags to improve resource search and discovery."
-      />
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
+            {t('admin.tags.badge')}
+          </p>
+          <h1 className="mt-2 font-heading text-3xl md:text-4xl">
+            {t('admin.tags.title')}
+          </h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            {t('admin.tags.subtitle')}
+          </p>
+        </div>
 
-      <SectionCard className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+        <Link to="/admin/tags/new">
+          <AppButton>
+            <Plus className="h-4 w-4" />
+            {t('admin.tags.newTag')}
+          </AppButton>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <MetricCard
+          label={t('admin.tags.total')}
+          value={items.length}
+          icon={<Tag className="h-4 w-4" />}
+        />
+        <MetricCard
+          label={t('admin.tags.withDescription')}
+          value={items.filter((item) => !!item.description).length}
+          icon={<Shapes className="h-4 w-4" />}
+        />
+        <MetricCard
+          label={t('admin.tags.grouped')}
+          value={items.filter((item) => !!item.group_key).length}
+          icon={<Shapes className="h-4 w-4" />}
+        />
+      </div>
+
+      <SectionCard className="p-4">
+        <div className="max-w-md">
           <SearchInput
-            value={query}
-            onChange={setQuery}
-            placeholder="Search tags..."
+            value={search}
+            onChange={setSearch}
+            placeholder={t('admin.tags.searchPlaceholder')}
           />
-
-          <div className="flex gap-3">
-            <AppInput
-              value={newTagName}
-              onChange={(e) => setNewTagName(e.target.value)}
-              placeholder="New tag name"
-            />
-            <AppButton type="button" onClick={handleCreate} disabled={creating}>
-              {creating ? 'Creating...' : 'Create tag'}
-            </AppButton>
-          </div>
         </div>
       </SectionCard>
 
-      {loading ? (
-        <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">Loading tags...</p>
-        </SectionCard>
-      ) : error ? (
-        <SectionCard className="border-red-200 bg-red-50 p-6">
-          <h2 className="font-heading text-lg text-red-700">Could not load tags</h2>
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-        </SectionCard>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={<Tag className="h-5 w-5" />}
-          title="No tags found"
-          description="Create a tag to start organizing resource topics."
-        />
-      ) : (
-        <div className="grid gap-4">
-          {filtered.map((item) => (
-            <SectionCard key={item.id} className="p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="font-heading text-lg text-text-primary">
-                      {item.name}
-                    </h2>
-                    <StatusBadge
-                      label={item.is_active ? 'Active' : 'Inactive'}
-                      tone={item.is_active ? 'success' : 'muted'}
-                    />
+      <SectionCard className="overflow-hidden">
+        <div className="border-b border-surface-border px-4 py-3">
+          <h2 className="text-sm font-medium text-text-primary">
+            {t('admin.tags.listTitle')}
+          </h2>
+        </div>
+
+        {loading ? (
+          <div className="px-4 py-6 text-sm text-text-secondary">
+            {t('common.loading')}
+          </div>
+        ) : error ? (
+          <div className="px-4 py-6 text-sm text-red-600">{error}</div>
+        ) : filteredItems.length === 0 ? (
+          <div className="p-4">
+            <EmptyState
+              icon={<Tag className="h-5 w-5" />}
+              title={t('admin.tags.emptyTitle')}
+              description={t('admin.tags.emptyDescription')}
+            />
+          </div>
+        ) : (
+          <div className="divide-y divide-surface-border">
+            {filteredItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col gap-3 px-4 py-4 lg:flex-row lg:items-center lg:justify-between"
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-medium text-text-primary">{item.name}</p>
+                    {item.group_key ? (
+                      <span className="inline-flex rounded-full border border-surface-border bg-bg-soft px-3 py-1 text-xs font-medium text-text-secondary">
+                        {item.group_key}
+                      </span>
+                    ) : null}
                   </div>
-                  <p className="mt-2 text-sm text-brand-primary">{item.slug}</p>
+
+                  <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
+
+                  {item.description ? (
+                    <p className="mt-1 line-clamp-2 max-w-2xl text-sm text-text-secondary">
+                      {item.description}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-sm text-text-secondary">
+                      {t('admin.tags.noDescription')}
+                    </p>
+                  )}
                 </div>
 
-                <div>
-                  <AppButton
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handleToggle(item)}
-                    disabled={updatingId === item.id}
-                  >
-                    {updatingId === item.id
-                      ? 'Updating...'
-                      : item.is_active
-                      ? 'Deactivate'
-                      : 'Activate'}
-                  </AppButton>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Link to={`/resources?tag=${encodeURIComponent(item.slug)}`}>
+                    <AppButton variant="ghost">
+                      {t('admin.tags.view')}
+                    </AppButton>
+                  </Link>
+
+                  <Link to={`/admin/tags/${item.id}/edit`}>
+                    <AppButton variant="secondary">
+                      {t('admin.dashboard.edit')}
+                    </AppButton>
+                  </Link>
                 </div>
               </div>
-            </SectionCard>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </SectionCard>
     </div>
+  )
+}
+
+function MetricCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string
+  value: string | number
+  icon: React.ReactNode
+}) {
+  return (
+    <SectionCard className="p-5">
+      <div className="flex items-center gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-sm text-text-secondary">{label}</p>
+          <p className="font-heading text-2xl text-text-primary">{value}</p>
+        </div>
+      </div>
+    </SectionCard>
   )
 }

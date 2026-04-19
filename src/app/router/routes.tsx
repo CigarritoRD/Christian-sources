@@ -37,6 +37,8 @@ import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage
 import AdminContributorApplicationsPage from '@/pages/admin/AdminContributorApplicationsPage'
 import AdminContributorApplicationDetailPage from '@/pages/admin/AdminContributorApplicationDetailPage'
 import AdminTagsPage from '@/pages/admin/AdminTagsPage'
+import AdminTagCreatePage from '@/pages/admin/AdminTagCreatePage'
+import AdminTagEditPage from '@/pages/admin/AdminTagEditPage'
 
 export const router = createBrowserRouter([
   {
@@ -104,6 +106,8 @@ export const router = createBrowserRouter([
       { path: 'contributor-applications/:id', element: <AdminContributorApplicationDetailPage /> },
 
       { path: 'tags', element: <AdminTagsPage /> },
+      { path: 'tags/new', element: <AdminTagCreatePage /> },
+      { path: 'tags/:id/edit', element: <AdminTagEditPage /> }
     ],
   },
 
